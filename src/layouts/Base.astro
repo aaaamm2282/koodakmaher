@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+import vazirArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, units } from '../data/site';
+
+interface Props {
+  /** Full <title>, exactly as in section 5 of the content brief */
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  crumbs?: { href?: string; label: string }[];
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+
+const defaultDescription = `مؤسسه آموزشی مهارت‌محور${site.city ? ` در ${site.city}` : ''}: کودکستان، دبستان، متوسطه اول، آموزشگاه زبان و فنی‌وحرفه‌ای.`;
+const {
+  title = `کودک ماهر مانا · ${site.slogan}`,
+  description = defaultDescription,
+  image = '/og.png',
+  type = 'website',
+  crumbs = [],
+  schema = [],
+  noindex = false,
+} = Astro.props;
+const fullTitle = title;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+const origin = new URL('/', Astro.site).href;
+
+// Only confirmed facts go into structured data; unknown values (null in site.ts) are left out.
+const orgSchema: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'EducationalOrganization',
+  '@id': `${origin}#org`,
+  name: site.name,
+  alternateName: [site.brand, 'کودک ماهر مانا'],
+  slogan: site.slogan,
+  description: site.mission,
+  url: origin,
+  logo: new URL('/favicon.svg', Astro.site).href,
+  image: ogImage,
+  founder: { '@type': 'Person', name: site.founder },
+  department: units.filter((u) => !u.soon).map((u) => ({ '@type': 'EducationalOrganization', name: `${u.name} کودک ماهر`, url: new URL(`/units/${u.slug}/`, Astro.site).href })),
+};
+if (site.phone) orgSchema.telephone = site.phone;
+if (site.address || site.city) orgSchema.address = { '@type': 'PostalAddress', ...(site.address && { streetAddress: site.address }), ...(site.city && { addressLocality: site.city }), addressCountry: 'IR' };
+if (site.foundingYear) orgSchema.foundingDate = site.foundingYear;
+if (site.social.length) orgSchema.sameAs = site.social.map((s) => s.href);
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  '@id': `${origin}#website`,
+  name: site.name,
+  url: origin,
+  inLanguage: 'fa-IR',
+  publisher: { '@id': `${origin}#org` },
+};
+const crumbSchema = crumbs.length
+  ? [{
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [{ label: 'خانه', href: '/' }, ...crumbs].map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: c.label,
+        item: new URL(c.href ?? Astro.url.pathname, Astro.site).href,
+      })),
+    }]
+  : [];
+const allSchema = [orgSchema, websiteSchema, ...crumbSchema, ...schema];
+---
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
+    <meta name="theme-color" content="#fff8ee" />
+    <link rel="preload" href={vazirArabic} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" title="LLM summary" href="/llms.txt" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="fa_IR" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {allSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+
+    <script is:inline>document.documentElement.classList.add('js');</script>
+  </head>
+  <body class="overflow-x-hidden">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
+    <div id="progress" class="fixed inset-x-0 top-0 z-[60] h-1 origin-right scale-x-0 bg-gradient-to-l from-coral via-sun to-mint" aria-hidden="true"></div>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>

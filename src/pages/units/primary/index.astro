@@ -1,0 +1,40 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import InfoList from '../../../components/InfoList.astro';
+import CTA from '../../../components/CTA.astro';
+import Icon from '../../../components/Icon.astro';
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'دبستان مهارت‌محور' }];
+const workshops = ['خلاقیت', 'کار با چوب', 'هوش مصنوعی', 'الکترونیک', 'نقاشی خلاق'];
+---
+<Base title="دبستان مهارت‌محور کودک ماهر" description="برنامه رسمی همراه با جلسه روزانه مهارت‌های نرم و کارگاه‌های خلاقیت، چوب، هوش مصنوعی و الکترونیک." crumbs={crumbs}>
+  <PageHero title="دبستان مهارت‌محور؛ درس رسمی، همراه با مهارت زندگی" eyebrow="دبستان مهارت‌محور" icon="pencil" crumbs={crumbs} />
+  <section class="container-x pb-10">
+    <div class="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <div class="space-y-10">
+        <div class="space-y-4 text-lg leading-loose" data-reveal>
+          <p>برنامه درسی رسمی آموزش‌وپرورش کامل اجرا می‌شود. در کنار آن، دانش‌آموزان هر روز یک جلسه مهارت‌های نرم و یک جلسه کارگاه دارند.</p>
+          <p class="text-ink-soft">در جلسه مهارت نرم، تصمیم گرفتن، همکاری، گفت‌وگو و مسئولیت‌پذیری تمرین می‌شود. در کارگاه‌ها بچه‌ها چیزی را واقعاً می‌سازند.</p>
+        </div>
+        <ul class="flex flex-wrap gap-2" data-stagger>{workshops.map((w) => <li class="rounded-full bg-white px-4 py-2 font-bold ring-2 ring-ink">{w}</li>)}</ul>
+        <div data-reveal>
+          <h2 class="text-2xl font-black">متد در دبستان</h2>
+          <div class="mt-5 grid gap-4 sm:grid-cols-2" data-stagger>
+            <div class="card p-6"><span class="rounded-full bg-sky-soft px-3 py-1 text-sm font-black">پایه‌های اول و دوم</span><p class="mt-3 text-ink-soft">«کارت حدس» ساده قبل و بعد از فعالیت‌ها، و چرخش نقش‌ها در کلاس تا هر کودک مسئولیت‌های مختلف را تجربه کند.</p></div>
+            <div class="card p-6"><span class="rounded-full bg-sun-soft px-3 py-1 text-sm font-black">پایه‌های سوم تا ششم</span><p class="mt-3 text-ink-soft">«دفتر پیش‌بینی» که کودک حدس‌ها و نتیجه‌ها را در آن می‌نویسد. از پایه چهارم فاصله حدس و نتیجه در پرونده رشد ثبت می‌شود.</p></div>
+          </div>
+        </div>
+        <div class="card flex gap-4 bg-mint-soft p-6" data-reveal>
+          <Icon name="users" size={28} class="shrink-0" />
+          <div><h2 class="text-xl font-black">نقش خانواده</h2><p class="mt-1 text-ink-soft">گفت‌وگوی کوتاه در خانه درباره اینکه «امروز چه حدسی زدی و چه شد؟» و شرکت در جلسه‌های بازخورد.</p></div>
+        </div>
+      </div>
+      <InfoList items={[
+        { label: 'ساعت کار', pending: 'تکمیل شود' },
+        { label: 'ظرفیت کلاس', pending: 'تکمیل شود' },
+        { label: 'شهریه', pending: 'تکمیل شود' },
+      ]} />
+    </div>
+  </section>
+  <CTA />
+</Base>

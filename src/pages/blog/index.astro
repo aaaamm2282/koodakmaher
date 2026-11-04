@@ -1,0 +1,21 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+const crumbs = [{ label: 'دفتر اندیشه‌ها' }];
+const cats = ['شناخت کودک', 'مهارت‌های نرم', 'انتخاب رشته و مسیر', 'یادگیری در خانه', 'از کلاس‌های ما'];
+---
+<Base title="دفتر اندیشه‌های کودک ماهر" description="یادداشت‌های کوتاه و کاربردی برای والدین و معلمان، درباره شناخت کودک، مهارت‌های زندگی و انتخاب مسیر." crumbs={crumbs}>
+  <PageHero title="دفتر اندیشه‌های کودک ماهر" eyebrow="مقاله‌ها" icon="book" crumbs={crumbs}
+    subtitle="یادداشت‌های کوتاه و کاربردی برای والدین و معلمان، درباره شناخت کودک، مهارت‌های زندگی و انتخاب مسیر." />
+  <section class="container-x pb-16">
+    <ul class="flex flex-wrap gap-2" aria-label="دسته‌ها" data-stagger>
+      {cats.map((c) => <li class="rounded-full bg-white px-4 py-2 font-bold ring-1 ring-ink/10">{c}</li>)}
+    </ul>
+    <div class="card mt-10 grid place-items-center gap-4 border-2 border-dashed border-ink/15 p-12 text-center" data-reveal="scale">
+      <span class="float-a grid h-20 w-20 place-items-center rounded-3xl bg-grape text-white ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]"><Icon name="book" size={36} /></span>
+      <p class="text-2xl font-black">به‌زودی</p>
+      <p class="text-ink-soft">اولین یادداشت‌ها به‌زودی منتشر می‌شوند.</p>
+    </div>
+  </section>
+</Base>

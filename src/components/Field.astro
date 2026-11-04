@@ -1,0 +1,52 @@
+---
+interface Props {
+  label: string;
+  name: string;
+  type?: 'text' | 'tel' | 'email' | 'select' | 'textarea' | 'file' | 'checkbox';
+  required?: boolean;
+  options?: string[];
+  placeholder?: string;
+  hint?: string;
+  full?: boolean;
+  autocomplete?: string;
+  maxwords?: number;
+  accept?: string;
+}
+const { label, name, type = 'text', required = false, options = [], placeholder, hint, full = false, autocomplete, maxwords, accept } = Astro.props;
+const id = `f-${name}-${Math.random().toString(36).slice(2, 7)}`;
+const base = 'mt-1.5 block w-full min-h-12 rounded-2xl border-2 border-ink/10 bg-white px-4 text-base text-ink outline-none transition focus:border-ink placeholder:text-ink/40 aria-[invalid=true]:border-coral';
+---
+{type === 'checkbox' ? (
+  <div class:list={[full && 'sm:col-span-2']}>
+    <label class="flex cursor-pointer items-start gap-3 font-bold" for={id}>
+      <input id={id} type="checkbox" name={name} required={required} class="peer mt-1 h-6 w-6 shrink-0 cursor-pointer accent-ink" />
+      <span>{label}{required && <span class="text-coral" aria-hidden="true"> *</span>}</span>
+    </label>
+    <p id={`${id}-err`} class="field-error mt-1 hidden text-sm font-bold text-[#c2362f]" aria-live="polite"></p>
+  </div>
+) : (
+  <div class:list={[full && 'sm:col-span-2']}>
+    <label for={id} class="block font-bold">
+      {label}
+      {required ? <span class="text-coral" aria-hidden="true"> *</span> : <span class="text-sm font-medium text-ink-soft"> (اختیاری)</span>}
+    </label>
+    {type === 'select' ? (
+      <select id={id} name={name} required={required} class={base}>
+        <option value="">انتخاب کنید</option>
+        {options.map((o) => <option>{o}</option>)}
+      </select>
+    ) : type === 'textarea' ? (
+      <textarea id={id} name={name} required={required} rows="4" placeholder={placeholder} class={base + ' py-3'} data-maxwords={maxwords} aria-describedby={hint ? `${id}-hint` : undefined}></textarea>
+    ) : type === 'file' ? (
+      <input id={id} name={name} type="file" required={required} accept={accept} class={base + ' py-2.5 file:ml-3 file:rounded-full file:border-0 file:bg-sun-soft file:px-4 file:py-1.5 file:font-bold file:text-ink'} />
+    ) : (
+      <input id={id} name={name} type={type} required={required} placeholder={placeholder} autocomplete={autocomplete ?? 'off'} class={base}
+        spellcheck={type === 'tel' || type === 'email' ? 'false' : undefined}
+        aria-describedby={hint ? `${id}-hint` : undefined}
+        dir={type === 'tel' || type === 'email' ? 'ltr' : undefined}
+        inputmode={type === 'tel' ? 'tel' : undefined} />
+    )}
+    {hint && <p id={`${id}-hint`} class="mt-1 text-sm text-ink-soft">{hint}</p>}
+    <p id={`${id}-err`} class="field-error mt-1 hidden text-sm font-bold text-[#c2362f]" aria-live="polite"></p>
+  </div>
+)}

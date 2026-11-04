@@ -1,0 +1,47 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import InfoList from '../../../components/InfoList.astro';
+import CTA from '../../../components/CTA.astro';
+import Icon from '../../../components/Icon.astro';
+import { site } from '../../../data/site';
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'کودکستان' }];
+const experiences = ['بازی آزاد و هدایت‌شده', 'فعالیت‌های خلاقیت و نقاشی', 'مسئولیت‌های کوچک (مثل مرتب کردن وسایل یا کمک به دوستان)', 'آشنایی با کارها و شغل‌ها از راه بازی نقش'];
+---
+<Base title={`کودکستان کودک ماهر${site.city ? ` در ${site.city}` : ''}`} description="بازی، حدس زدن و امتحان کردن؛ اولین قدم‌های شناخت خود برای کودکان ۳ تا ۵ سال." crumbs={crumbs}>
+  <PageHero title="کودکستان کودک ماهر؛ جایی برای حدس زدن و امتحان کردن" eyebrow="کودکستان" icon="blocks" crumbs={crumbs} />
+  <section class="container-x pb-10">
+    <div class="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <div class="space-y-10">
+        <div class="space-y-4 text-lg leading-loose" data-reveal>
+          <p>در سنین ۳ تا ۵ سال، کودک با بازی یاد می‌گیرد. در کودکستان ما بچه‌ها پیش از هر بازی یا فعالیت، به زبان خودشان حدس می‌زنند: «فکر می‌کنی این برج چند تا مکعب می‌خورد تا بیفتد؟» بعد امتحان می‌کنند و با هم نگاه می‌کنند که چه شد.</p>
+          <p class="text-ink-soft">در این سن دقت حدس مهم نیست و آن را نمی‌سنجیم. کودکان کوچک معمولاً خوش‌بینانه حدس می‌زنند و این طبیعی است. ما فقط عادت «حدس بزن، امتحان کن، ببین چه شد» را می‌سازیم.</p>
+        </div>
+        <!-- Tower game: a small visual for "guess, try, see" -->
+        <div class="card flex flex-wrap items-end justify-center gap-6 bg-sun-soft p-8" data-reveal aria-hidden="true">
+          {[['حدس بزن', 'bg-sun', 'sparkle'], ['امتحان کن', 'bg-coral', 'hand'], ['ببین چه شد', 'bg-sky', 'refresh']].map(([t, c, i], k) => (
+            <div class="flex flex-col items-center gap-2">
+              <div class="flex flex-col-reverse items-center">
+                {Array.from({ length: k + 2 }).map((_, j) => <span class:list={['block h-8 w-12 rounded-md ring-2 ring-ink float-a', c]} style={`animation-delay:-${j}s; margin-top:-2px`}></span>)}
+              </div>
+              <span class="flex items-center gap-1 text-sm font-black"><Icon name={i} size={16} />{t}</span>
+            </div>
+          ))}
+        </div>
+        <div data-reveal>
+          <h2 class="text-2xl font-black">آنچه کودک تجربه می‌کند</h2>
+          <ul class="mt-4 grid gap-3 sm:grid-cols-2" data-stagger>
+            {experiences.map((e) => <li class="card flex gap-3 p-4"><Icon name="check" size={20} class="mt-1 shrink-0 text-mint" />{e}</li>)}
+          </ul>
+        </div>
+      </div>
+      <InfoList items={[
+        { label: 'سن پذیرش', pending: 'مثلاً ۳ تا ۶ سال — تأیید شود' },
+        { label: 'ساعت کار', pending: 'ساعت' },
+        { label: 'ظرفیت هر گروه و نسبت مربی به کودک', pending: 'عدد واقعی' },
+        { label: 'شهریه', value: 'در جلسه مشاوره اعلام می‌شود', pending: 'یا مبلغ، اگر قرار است عمومی باشد' },
+      ]} />
+    </div>
+  </section>
+  <CTA />
+</Base>

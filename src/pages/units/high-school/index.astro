@@ -1,0 +1,25 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Pending from '../../../components/Pending.astro';
+import FormShell from '../../../components/FormShell.astro';
+import Field from '../../../components/Field.astro';
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'متوسطه دوم' }];
+---
+<Base title="متوسطه دوم کودک ماهر (به‌زودی)" description="راه‌اندازی متوسطه دوم کودک ماهر برای ادامه مسیر از ۱۵ تا ۱۸ سالگی در دست برنامه‌ریزی است." crumbs={crumbs}>
+  <PageHero title="متوسطه دوم؛ از انتخاب اول تا انتخاب نهایی" eyebrow="متوسطه دوم" badge="به‌زودی" icon="flag" crumbs={crumbs} />
+  <section class="container-x pb-16">
+    <div class="grid gap-10 lg:grid-cols-2">
+      <div class="space-y-6" data-reveal>
+        <p class="text-lg leading-loose">برای ادامه مسیر از ۱۵ تا ۱۸ سالگی، راه‌اندازی متوسطه دوم در دست برنامه‌ریزی است. در این دوره نوجوان انتخاب اولش را در عمل می‌آزماید، خود و دنیای کار را دوباره واکاوی می‌کند و برای انتخاب نهایی در ۱۸ سالگی آماده می‌شود.</p>
+        <div><h2 class="text-lg font-black">وضعیت</h2><Pending class="mt-2" label="زمان احتمالی شروع، رشته‌ها و وضعیت مجوز" /></div>
+        <p class="rounded-2xl bg-grape-soft p-4 font-bold">این واحد هنوز ثبت‌نام ندارد. اگر می‌خواهید وقتی ثبت‌نام آغاز شد خبردار شوید، فرم کنار را پر کنید.</p>
+      </div>
+      <FormShell id="notify-form" title="خبرم کنید" submit="خبرم کنید">
+        <Field label="نام والد" name="parent" required autocomplete="name" />
+        <Field label="شماره تماس" name="phone" type="tel" required autocomplete="tel" />
+        <Field label="پایه فعلی فرزند" name="grade" type="select" required full options={['هفتم', 'هشتم', 'نهم', 'دهم', 'یازدهم', 'دوازدهم']} />
+      </FormShell>
+    </div>
+  </section>
+</Base>

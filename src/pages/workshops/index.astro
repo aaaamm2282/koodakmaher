@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import Icon from '../../components/Icon.astro';
+import CTA from '../../components/CTA.astro';
+const crumbs = [{ label: 'کارگاه‌ها' }];
+const items = [
+  { n: 'خلاقیت', d: 'ایده دادن، ساختن و آزمودن ایده‌ها.', icon: 'bulb', c: 'bg-sun' },
+  { n: 'کار با چوب', d: 'طراحی و ساختن اشیای واقعی با رعایت ایمنی.', icon: 'hammer', c: 'bg-coral' },
+  { n: 'هوش مصنوعی', d: 'آشنایی با اینکه هوش مصنوعی چطور کار می‌کند و استفاده درست و مسئولانه از آن.', icon: 'cpu', c: 'bg-sky' },
+  { n: 'الکترونیک', d: 'مدارهای ساده و ساختن وسایل کوچک.', icon: 'zap', c: 'bg-grape' },
+  { n: 'نقاشی خلاق', d: 'بیان آزاد، رنگ و فرم.', icon: 'palette', c: 'bg-mint' },
+  { n: 'مهارت‌های نرم', d: 'تصمیم‌گیری، همکاری، گفت‌وگو و مسئولیت‌پذیری (جلسه روزانه).', icon: 'users', c: 'bg-sun' },
+];
+---
+<Base title="کارگاه‌های مهارتی کودک ماهر" description="کارگاه‌های خلاقیت، کار با چوب، هوش مصنوعی، الکترونیک، نقاشی خلاق و مهارت‌های نرم؛ لایه «تجربه» در متد کودک ماهر." crumbs={crumbs}>
+  <PageHero title="کارگاه‌ها؛ جایی که تجربه واقعی اتفاق می‌افتد" eyebrow="کارگاه‌های مهارتی" icon="hammer" crumbs={crumbs}
+    subtitle="کارگاه‌ها لایه «تجربه» در متد ما هستند. قبل از هر کارگاه، بچه‌ها چند دقیقه حدس می‌زنند و بعد از آن چند دقیقه بازبینی می‌کنند. هدف این نیست که هر کودک در هر کارگاه ماهر شود؛ هدف این است که کارهای متفاوت را امتحان کند و ببیند در هر کدام چه حالی دارد." />
+  <section class="container-x pb-10">
+    <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+      {items.map((w) => (
+        <li class="spotlight card overflow-hidden" data-tilt>
+          <div class="relative grid aspect-[16/9] place-items-center border-b-2 border-dashed border-ink/15 bg-cream text-ink/25" role="img" aria-label={`جای تصویر کارگاه ${w.n}`}>
+            <Icon name={w.icon} size={56} />
+            <span class="absolute bottom-2 left-2 rounded-full bg-white/80 px-2 py-0.5 text-xs font-bold text-ink-soft">جای تصویر</span>
+          </div>
+          <div class="p-6">
+            <div class="flex items-center gap-3"><span class:list={['grid h-11 w-11 place-items-center rounded-xl ring-2 ring-ink', w.c, w.c === 'bg-grape' ? 'text-white' : 'text-ink']}><Icon name={w.icon} size={22} /></span><h2 class="text-xl font-black">{w.n}</h2></div>
+            <p class="mt-3 text-ink-soft">{w.d}</p>
+            <p class="mt-3 text-sm"><span class="font-bold">سن مناسب: </span><Pending inline label="تکمیل شود" /></p>
+          </div>
+        </li>
+      ))}
+    </ul>
+    <div class="card mt-10 p-6" data-reveal>
+      <h2 class="text-xl font-black">آیا کارگاه‌ها برای کودکان بیرون از مؤسسه هم هست؟</h2>
+      <Pending class="mt-3" label="بله/خیر؛ در صورت بله، زمان و شرایط" />
+    </div>
+  </section>
+  <CTA />
+</Base>

@@ -1,0 +1,25 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import InfoList from '../../../components/InfoList.astro';
+import Pending from '../../../components/Pending.astro';
+import CTA from '../../../components/CTA.astro';
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'آموزشگاه فنی‌وحرفه‌ای' }];
+---
+<Base title="آموزشگاه آزاد فنی‌وحرفه‌ای کودک ماهر" description="آموزشگاه آزاد فنی‌وحرفه‌ای مؤسسه آموزشی کودک ماهر مانا." crumbs={crumbs}>
+  <PageHero title="آموزشگاه آزاد فنی‌وحرفه‌ای کودک ماهر" eyebrow="آموزشگاه فنی‌وحرفه‌ای" icon="wrench" crumbs={crumbs} />
+  <section class="container-x pb-10">
+    <div class="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <div class="space-y-8">
+        <div data-reveal><h2 class="text-2xl font-black">معرفی</h2><Pending class="mt-3" label="فهرست دوره‌ها، مخاطبان (نوجوان/بزرگسال)، مدت دوره‌ها، نوع گواهی‌نامه و مرجع صادرکننده آن" /></div>
+        <div data-reveal>
+          <h2 class="text-2xl font-black">پیوند با مسیر کودک ماهر</h2>
+          <p class="mt-3 text-lg text-ink-soft">برای نوجوانان متوسطه، این آموزشگاه می‌تواند جایی برای تجربه کوتاه و واقعی یک حرفه باشد؛ تجربه‌ای که به پرونده انتخاب اضافه می‌شود.</p>
+          <Pending inline class="mt-2" label="پیشنهادی؛ تأیید شود" />
+        </div>
+      </div>
+      <InfoList items={[{ label: 'ثبت‌نام', pending: 'تکمیل شود' }, { label: 'شهریه', pending: 'تکمیل شود' }]} />
+    </div>
+  </section>
+  <CTA />
+</Base>

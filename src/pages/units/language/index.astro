@@ -1,0 +1,25 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import InfoList from '../../../components/InfoList.astro';
+import Pending from '../../../components/Pending.astro';
+import CTA from '../../../components/CTA.astro';
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'آموزشگاه زبان' }];
+---
+<Base title="آموزشگاه زبان کودک ماهر" description="آموزشگاه زبان مؤسسه آموزشی کودک ماهر مانا." crumbs={crumbs}>
+  <PageHero title="آموزشگاه زبان کودک ماهر" eyebrow="آموزشگاه زبان" icon="chat" crumbs={crumbs} />
+  <section class="container-x pb-10">
+    <div class="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <div class="space-y-8">
+        <div data-reveal><h2 class="text-2xl font-black">معرفی</h2><Pending class="mt-3" label="زبان‌های ارائه‌شده، گروه‌های سنی، سطح‌ها، روش تدریس و کتاب‌ها" /></div>
+        <div data-reveal>
+          <h2 class="text-2xl font-black">پیوند با متد</h2>
+          <p class="mt-3 text-lg text-ink-soft">زبان‌آموز پیش از هر واحد پیش‌بینی می‌کند چه چیزی برایش سخت خواهد بود و در پایان واحد آن را بازبینی می‌کند؛ این کار به او کمک می‌کند روش یادگیری خودش را بشناسد.</p>
+          <Pending inline class="mt-2" label="پیشنهادی؛ تأیید شود" />
+        </div>
+      </div>
+      <InfoList items={[{ label: 'زمان کلاس‌ها', pending: 'تکمیل شود' }, { label: 'شهریه', pending: 'تکمیل شود' }, { label: 'تعیین سطح', pending: 'تکمیل شود' }]} />
+    </div>
+  </section>
+  <CTA />
+</Base>

@@ -1,0 +1,104 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Icon from '../components/Icon.astro';
+import Pending from '../components/Pending.astro';
+import Section from '../components/Section.astro';
+import CycleSteps from '../components/CycleSteps.astro';
+import UnitCards from '../components/UnitCards.astro';
+import CTA from '../components/CTA.astro';
+
+const workshops = [
+  { name: 'خلاقیت', icon: 'bulb' },
+  { name: 'کار با چوب', icon: 'hammer' },
+  { name: 'هوش مصنوعی', icon: 'cpu' },
+  { name: 'الکترونیک', icon: 'zap' },
+  { name: 'نقاشی خلاق', icon: 'palette' },
+];
+const pillars = [
+  { t: 'یادگیری با تجربه واقعی', d: 'کودک با دست و ذهن کار می‌کند، نه فقط با حفظ کردن.', icon: 'hand' },
+  { t: 'مسئولیت تدریجی', d: 'هر سال کمی بیشتر از کارهای واقعی مدرسه به خود بچه‌ها سپرده می‌شود.', icon: 'flag' },
+  { t: 'بدون برچسب', d: 'به کودک نمی‌گوییم «تو استعداد فلان کار را داری». کمکش می‌کنیم خودش با شاهد بفهمد.', icon: 'tag' },
+  { t: 'پرونده رشد', d: 'مسیر هر کودک، از حدس‌ها تا انتخاب‌هایش، سال‌به‌سال ثبت می‌شود.', icon: 'folder' },
+];
+---
+<Base>
+  <Hero />
+
+  <!-- The problem -->
+  <section class="container-x py-14 sm:py-20" aria-labelledby="problem-title">
+    <div class="grid items-center gap-10 lg:grid-cols-[1fr_1.2fr]">
+      <div data-reveal>
+        <p class="eyebrow">مسئله‌ای که به خاطرش اینجاییم</p>
+        <h2 id="problem-title" class="section-title mt-4">انتخاب آگاهانه یک مهارت است</h2>
+        <p class="mt-4 text-lg text-ink-soft">و باید از کودکی تمرین شود، نه اینکه یک‌باره در پایه نهم از نوجوان خواسته شود.</p>
+      </div>
+      <div class="card relative p-7 sm:p-9" data-reveal>
+        <Icon name="quote" size={40} class="absolute -top-5 right-7 rounded-xl bg-coral p-2 text-ink ring-4 ring-cream" />
+        <p class="text-lg leading-loose">بسیاری از نوجوان‌ها در ۱۵ سالگی رشته‌ای را انتخاب می‌کنند که خودشان آن را نیازموده‌اند. انتخاب‌ها اغلب بر پایه نمره، حرف دیگران یا تصویری کلی از یک شغل است.</p>
+        <p class="mt-4 text-lg leading-loose text-ink-soft">نتیجه‌اش را بعدها در دانشگاه و کار می‌بینیم: تغییر رشته، بی‌انگیزگی و سال‌هایی که دوباره باید جبران شود.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Three steps -->
+  <Section id="steps" eyebrow="متد کودک ماهر" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" center>
+    <div class="mt-14"><CycleSteps /></div>
+    <div class="mt-10 text-center" data-reveal><a href="/method/" class="btn-ghost">بیشتر درباره متد<Icon name="arrow" size={18} /></a></div>
+  </Section>
+
+  <!-- Units -->
+  <Section id="units" title="واحدهای ما">
+    <div class="mt-12"><UnitCards /></div>
+  </Section>
+
+  <!-- A day -->
+  <section class="relative overflow-hidden bg-sky-soft/60 py-16 sm:py-24" aria-labelledby="day-title">
+    <div class="container-x grid items-center gap-12 lg:grid-cols-2">
+      <div data-reveal>
+        <h2 id="day-title" class="section-title">یک روز در کودک ماهر</h2>
+        <p class="mt-5 text-lg text-ink-soft">در کنار برنامه درسی رسمی، دانش‌آموزان هر روز یک جلسه مهارت‌های نرم و یک جلسه کارگاه دارند. کارگاه برای ما فقط سرگرمی نیست؛ جایی است که کودک تجربه می‌کند، و قبل و بعد از آن چند دقیقه درباره حدس و نتیجه‌اش فکر می‌کند.</p>
+        <Pending class="mt-6" label="تأیید شود: برنامه روزانه برای همه پایه‌ها همین است یا متفاوت است؟" />
+      </div>
+      <div>
+        <ul class="flex flex-wrap justify-center gap-3" data-stagger>
+          {workshops.map((w, i) => (
+            <li class:list={['flex items-center gap-2 rounded-full bg-white px-5 py-3 text-lg font-black ring-4 ring-ink shadow-[0_5px_0_#1f1a3d]', i % 2 ? 'rotate-2' : '-rotate-2']}>
+              <Icon name={w.icon} size={22} />{w.name}
+            </li>
+          ))}
+        </ul>
+        <div class="mt-8 flex items-center justify-center gap-3 text-sm font-bold text-ink-soft" data-reveal>
+          <span class="rounded-full bg-sun px-3 py-1 text-ink">حدس</span><Icon name="arrow" size={16} />
+          <span class="rounded-full bg-coral px-3 py-1 text-ink">کارگاه</span><Icon name="arrow" size={16} />
+          <span class="rounded-full bg-sky px-3 py-1 text-ink">نتیجه</span>
+        </div>
+        <p class="mt-6 text-center"><a href="/workshops/" class="font-bold text-ink underline decoration-sun decoration-4 underline-offset-8 hover:decoration-coral">درباره کارگاه‌ها</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why -->
+  <section class="relative overflow-hidden bg-ink py-20 text-white sm:py-24" aria-labelledby="why-title">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="float-a absolute top-10 left-[8%] h-24 w-24 rounded-full border-[10px] border-sun/40" data-parallax="80"></div>
+      <div class="float-b absolute right-[6%] bottom-10 h-16 w-16 rotate-12 rounded-2xl bg-coral/30" data-parallax="120"></div>
+    </div>
+    <div class="container-x relative">
+      <div class="max-w-2xl" data-reveal>
+        <h2 id="why-title" class="section-title">چرا کودک ماهر</h2>
+      </div>
+      <ul class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+        {pillars.map((p, i) => (
+          <li class="spotlight rounded-[var(--radius-blob)] bg-white/[0.06] p-6 ring-1 ring-white/10">
+            <span class:list={['grid h-12 w-12 place-items-center rounded-2xl text-ink', ['bg-sun', 'bg-mint', 'bg-coral', 'bg-sky'][i]]}><Icon name={p.icon} /></span>
+            <h3 class="mt-4 text-xl font-black">{p.t}</h3>
+            <p class="mt-2 text-white/75">{p.d}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <CTA />
+</Base>
