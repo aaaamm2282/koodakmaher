@@ -1,0 +1,152 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/vazirmatn';
+
+@theme {
+  --font-sans: 'Vazirmatn Variable', Vazirmatn, Tahoma, sans-serif;
+  --color-cream: #fff8ee;
+  --color-paper: #ffffff;
+  --color-ink: #1f1a3d;
+  --color-ink-soft: #4a4568;
+  --color-sun: #ffc93c;
+  --color-sun-soft: #fff1c7;
+  --color-coral: #ff6b6b;
+  --color-coral-soft: #ffe1dc;
+  --color-sky: #4d96ff;
+  --color-sky-soft: #dceaff;
+  --color-mint: #2ec4b6;
+  --color-mint-soft: #d4f5f1;
+  --color-grape: #9b5de5;
+  --color-grape-soft: #ece0fb;
+  --radius-blob: 2rem;
+  --shadow-clay: 0 2px 0 rgb(31 26 61 / 0.06), 0 12px 32px -12px rgb(31 26 61 / 0.18);
+  --shadow-pop: 0 6px 0 var(--color-ink);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+    font-feature-settings: 'ss01';
+    line-height: 1.9;
+  }
+  h1, h2, h3 {
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  :focus-visible {
+    outline: 3px solid var(--color-sky);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+  ::selection { background: var(--color-sun); color: var(--color-ink); }
+}
+
+@layer components {
+  .container-x { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
+
+  .btn {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold transition-transform duration-200 select-none;
+  }
+  .btn-primary {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold transition-transform duration-200 select-none bg-ink text-white;
+    box-shadow: 0 4px 0 var(--color-coral);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--color-coral); }
+  .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--color-coral); }
+  .btn-ghost { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold transition duration-200 select-none border-2 border-ink/15 bg-white text-ink hover:border-ink/40; }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-bold text-ink-soft shadow-sm ring-1 ring-ink/5;
+  }
+  .section-title { @apply text-3xl font-black sm:text-4xl md:text-5xl; }
+  .card { @apply rounded-[var(--radius-blob)] bg-white ring-1 ring-ink/5; box-shadow: var(--shadow-clay); }
+
+  /* Shimmer button (21st.dev-style) */
+  .shimmer { position: relative; overflow: hidden; isolation: isolate; }
+  .shimmer::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    animation: shimmer 3.2s ease-in-out infinite;
+    z-index: -1;
+  }
+
+  /* Spotlight card: follows the cursor */
+  .spotlight { position: relative; overflow: hidden; }
+  .spotlight::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.65), transparent 45%);
+    opacity: 0; transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .spotlight:hover::before { opacity: 1; }
+
+  /* Gradient animated text */
+  .text-gradient {
+    background: linear-gradient(90deg, var(--color-coral), var(--color-grape), var(--color-sky), var(--color-mint), var(--color-coral));
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+    animation: gradient-pan 8s linear infinite;
+  }
+
+  /* Wiggly underline */
+  .squiggle { position: relative; white-space: nowrap; }
+  .squiggle svg { position: absolute; inset-inline: 0; bottom: -0.35em; width: 100%; height: 0.5em; }
+  .squiggle path { stroke-dasharray: 400; stroke-dashoffset: 400; animation: draw 1.4s 0.6s var(--ease-bounce) forwards; }
+
+  .marquee { mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+  .marquee-track { animation: marquee 40s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+
+  .float-a { animation: float 7s ease-in-out infinite; }
+  .float-b { animation: float 9s ease-in-out -3s infinite; }
+  .float-c { animation: float 11s ease-in-out -5s infinite; }
+  .spin-slow { animation: spin 24s linear infinite; }
+}
+
+/* Reveal: hidden only when JS is running, so content is never lost without JS */
+.js [data-reveal] { opacity: 0; transform: translateY(28px); }
+.js [data-reveal='scale'] { transform: scale(0.92); }
+.js [data-stagger] > * { opacity: 0; }
+
+/* Rainbow arcs draw themselves in */
+.rainbow path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-arc 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.rainbow path:nth-child(2) { animation-delay: 0.15s; }
+.rainbow path:nth-child(3) { animation-delay: 0.3s; }
+@keyframes draw-arc { to { stroke-dashoffset: 0; } }
+
+/* Hero words pop in with pure CSS so the LCP text paints without waiting for JS */
+.hero-word {
+  animation: word-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 100ms);
+}
+@keyframes word-in { from { opacity: 0; transform: translateY(24px); filter: blur(8px); } }
+
+@keyframes shimmer { 60%, 100% { transform: translateX(120%); } }
+@keyframes gradient-pan { to { background-position: 300% 0; } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes marquee { to { transform: translateX(50%); } }
+@keyframes float {
+  /* individual transform props, so scroll-driven transforms from JS can compose with it */
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  50% { translate: 0 -18px; rotate: 6deg; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .js [data-reveal], .js [data-stagger] > * { opacity: 1; transform: none; }
+}

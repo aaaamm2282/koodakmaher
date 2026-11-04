@@ -1,0 +1,221 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Icon from '../components/Icon.astro';
+import RegisterForm from '../components/RegisterForm.astro';
+import { site, stats, programs, features, schedule, testimonials, faqs } from '../data/site';
+import { posts } from '../data/posts';
+
+const colorMap: Record<string, { bg: string; soft: string; text: string }> = {
+  sun: { bg: 'bg-sun', soft: 'bg-sun-soft', text: 'text-ink' },
+  sky: { bg: 'bg-sky', soft: 'bg-sky-soft', text: 'text-sky' },
+  mint: { bg: 'bg-mint', soft: 'bg-mint-soft', text: 'text-mint' },
+  coral: { bg: 'bg-coral', soft: 'bg-coral-soft', text: 'text-coral' },
+  grape: { bg: 'bg-grape', soft: 'bg-grape-soft', text: 'text-grape' },
+};
+
+const origin = new URL('/', Astro.site).href;
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'دوره‌های کودکستان کودک ماهر',
+    itemListElement: programs.map((p, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: {
+        '@type': 'Course',
+        name: `${p.title} (${p.age})`,
+        description: p.text,
+        inLanguage: 'fa',
+        provider: { '@id': `${origin}#org` },
+      },
+    })),
+  },
+];
+---
+<Base schema={schema}>
+  <Hero />
+
+  <!-- Stats (Number ticker) -->
+  <section aria-label="کودک ماهر در یک نگاه" class="container-x -mt-6">
+    <dl class="card grid grid-cols-2 gap-y-8 px-6 py-8 md:grid-cols-4" data-reveal>
+      {stats.map((s) => (
+        <div class="flex flex-col text-center">
+          <dt class="order-2 text-sm font-bold text-ink-soft">{s.label}</dt>
+          <dd class="text-4xl font-black sm:text-5xl"><span data-count={s.value}>{s.value.toLocaleString('fa-IR')}</span><span class="text-coral">{s.suffix}</span></dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <!-- Programs: Bento grid -->
+  <section id="programs" class="container-x scroll-mt-24 py-24" aria-labelledby="programs-title">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <p class="eyebrow"><Icon name="sparkle" size={16} class="text-coral" />دوره‌ها و برنامه‌ها</p>
+      <h2 id="programs-title" class="section-title mt-4">هر روز، یک مهارت تازه</h2>
+      <p class="mt-4 text-lg text-ink-soft">برنامه‌ی آموزشی کودکستان کودک ماهر بر پایه‌ی «یادگیری از راه بازی» طراحی شده و همه‌ی جنبه‌های رشد کودک را در بر می‌گیرد.</p>
+    </div>
+    <ul class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+      {programs.map((p) => {
+        const c = colorMap[p.color];
+        return (
+          <li class:list={['spotlight card group p-7 transition-shadow hover:shadow-xl', 'big' in p && p.big && 'lg:row-span-2 lg:flex lg:flex-col', p.slug === 'life-skills' && 'lg:col-span-3', c.soft]} data-tilt>
+            <span class:list={['grid h-14 w-14 place-items-center rounded-2xl text-white shadow-[0_4px_0_#1f1a3d] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110', c.bg]}>
+              <Icon name={p.icon} size={28} />
+            </span>
+            <h3 class="mt-5 text-2xl font-black">{p.title}</h3>
+            <p class="mt-1 text-sm font-bold text-ink-soft">سن: {p.age}</p>
+            <p class="mt-3 text-ink-soft">{p.text}</p>
+            {'big' in p && p.big && (
+              <ul class="mt-auto space-y-2 pt-6 text-sm font-bold">
+                {['بازی‌های حسی و حرکتی', 'قصه‌گویی و نمایش', 'موسیقی و ریتم', 'مهارت‌های اجتماعی و هیجانی'].map((t) => (
+                  <li class="flex items-center gap-2"><span class="grid h-6 w-6 place-items-center rounded-full bg-white"><Icon name="check" size={14} /></span>{t}</li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  </section>
+
+  <!-- Why us -->
+  <section id="why" class="relative scroll-mt-24 overflow-hidden bg-ink py-24 text-white" aria-labelledby="why-title">
+    <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div class="float-a absolute top-10 left-[8%] h-24 w-24 rounded-full border-[10px] border-sun/40" data-parallax="80"></div>
+      <div class="float-b absolute right-[6%] bottom-10 h-16 w-16 rotate-12 rounded-2xl bg-coral/30" data-parallax="120"></div>
+      <div class="float-c absolute top-1/2 left-1/2 h-10 w-10 rounded-full bg-mint/30" data-parallax="60"></div>
+    </div>
+    <div class="container-x relative grid items-center gap-12 lg:grid-cols-2">
+      <div data-reveal>
+        <p class="eyebrow !bg-white/10 !text-sun !ring-white/10">چرا کودک ماهر؟</p>
+        <h2 id="why-title" class="section-title mt-4">چون کودکی فقط یک بار اتفاق می‌افتد</h2>
+        <p class="mt-5 text-lg text-white/75">ما به جای حفظ کردن، روی «توانستن» تمرکز می‌کنیم. کودک در کودک ماهر یاد می‌گیرد سؤال بپرسد، با دیگران همکاری کند، احساساتش را بشناسد و با اعتمادبه‌نفس وارد مدرسه شود.</p>
+        <a href="#register" class="btn mt-8 bg-sun text-ink shadow-[0_4px_0_#ff6b6b] hover:-translate-y-0.5" data-magnetic>رزرو بازدید از کودکستان</a>
+      </div>
+      <ul class="grid gap-4 sm:grid-cols-2" data-stagger>
+        {features.map((f, i) => (
+          <li class="spotlight rounded-[var(--radius-blob)] bg-white/[0.06] p-6 ring-1 ring-white/10 backdrop-blur">
+            <span class:list={['grid h-12 w-12 place-items-center rounded-2xl text-ink', ['bg-sun', 'bg-mint', 'bg-coral', 'bg-sky'][i % 4]]}><Icon name={f.icon} /></span>
+            <h3 class="mt-4 text-xl font-black">{f.title}</h3>
+            <p class="mt-2 text-white/70">{f.text}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- A day at Koodak Maher: scroll-drawn timeline -->
+  <section id="day" class="container-x scroll-mt-24 py-24" aria-labelledby="day-title">
+    <div class="mx-auto max-w-2xl text-center" data-reveal>
+      <p class="eyebrow"><Icon name="clock" size={16} class="text-sky" />برنامه‌ی روزانه</p>
+      <h2 id="day-title" class="section-title mt-4">یک روز در کودک ماهر</h2>
+      <p class="mt-4 text-lg text-ink-soft">روزی منظم و پیش‌بینی‌پذیر به کودک احساس امنیت می‌دهد. نمونه‌ی برنامه‌ی صبح ما:</p>
+    </div>
+    <ol class="relative mx-auto mt-14 max-w-3xl">
+      <span class="absolute top-2 bottom-2 right-[1.4rem] w-1 rounded-full bg-ink/10 md:right-1/2 md:translate-x-1/2" aria-hidden="true"></span>
+      <span class="absolute top-2 bottom-2 right-[1.4rem] w-1 origin-top rounded-full bg-gradient-to-b from-sun via-coral to-sky md:right-1/2 md:translate-x-1/2" data-timeline-line aria-hidden="true"></span>
+      {schedule.map((s, i) => (
+        <li class:list={['relative mb-10 pr-16 last:mb-0 md:w-1/2 md:pr-0', i % 2 === 0 ? 'md:pl-12' : 'md:mr-auto md:pr-12']} data-reveal>
+          <span class:list={['absolute top-0 right-0 grid h-12 w-12 place-items-center rounded-full bg-white text-sm font-black ring-4 ring-cream shadow-clay', i % 2 === 0 ? 'md:right-auto md:-left-6' : 'md:-right-6']}>{s.time}</span>
+          <div class="card p-5">
+            <h3 class="text-lg font-black">{s.title}</h3>
+            <p class="mt-1 text-ink-soft">{s.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <!-- Testimonials marquee -->
+  <section class="py-16" aria-labelledby="voices-title">
+    <div class="container-x text-center" data-reveal>
+      <h2 id="voices-title" class="section-title">والدین چه می‌گویند؟</h2>
+    </div>
+    <div class="marquee mt-10 overflow-hidden" dir="rtl">
+      <ul class="marquee-track flex w-max gap-5 py-4">
+        {[...testimonials, ...testimonials].map((t, i) => (
+          <li class="card w-[300px] shrink-0 p-6 sm:w-[360px]" aria-hidden={i >= testimonials.length ? 'true' : undefined}>
+            <Icon name="quote" class="text-sun" size={28} />
+            <p class="mt-3 text-ink">{t.text}</p>
+            <p class="mt-4 text-sm font-bold text-ink-soft">— {t.name}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Parents' guide teaser (content hub for SEO/GEO) -->
+  <section class="container-x py-16" aria-labelledby="guide-title">
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <div>
+        <p class="eyebrow"><Icon name="pencil" size={16} class="text-grape" />راهنمای والدین</p>
+        <h2 id="guide-title" class="section-title mt-4">پاسخ پرسش‌های شما درباره‌ی کودکستان</h2>
+      </div>
+      <a href="/blog/" class="btn-ghost">همه‌ی مقاله‌ها</a>
+    </div>
+    <ul class="mt-10 grid gap-5 md:grid-cols-3" data-stagger>
+      {posts.map((p, i) => (
+        <li>
+          <a href={`/blog/${p.slug}/`} class="spotlight card group flex h-full flex-col p-6 transition hover:-translate-y-1">
+            <span class:list={['mb-5 block h-32 rounded-2xl', ['bg-sun-soft', 'bg-sky-soft', 'bg-mint-soft'][i % 3]]} aria-hidden="true">
+              <span class="flex h-full items-center justify-center text-5xl font-black text-ink/15">{(i + 1).toLocaleString('fa-IR')}</span>
+            </span>
+            <h3 class="text-xl font-black group-hover:text-coral">{p.title}</h3>
+            <p class="mt-2 text-ink-soft">{p.description}</p>
+            <span class="mt-auto flex items-center gap-1 pt-4 text-sm font-bold text-sky">بیشتر بخوانید <Icon name="arrow" size={16} /></span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- FAQ (FAQPage schema) -->
+  <section id="faq" class="container-x scroll-mt-24 py-24" aria-labelledby="faq-title">
+    <div class="grid gap-12 lg:grid-cols-[1fr_1.5fr]">
+      <div data-reveal>
+        <p class="eyebrow">سؤالات متداول</p>
+        <h2 id="faq-title" class="section-title mt-4">هر چه باید درباره‌ی کودک ماهر بدانید</h2>
+        <p class="mt-4 text-lg text-ink-soft">پاسخ سؤالتان را پیدا نکردید؟ با ما تماس بگیرید.</p>
+        <a href={`tel:${site.phone}`} class="btn-ghost mt-6"><Icon name="phone" size={20} /><span dir="ltr">{site.phoneDisplay}</span></a>
+      </div>
+      <div class="space-y-3" data-stagger>
+        {faqs.map((f, i) => (
+          <details class="card group overflow-hidden" open={i === 0}>
+            <summary class="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-lg font-bold [&::-webkit-details-marker]:hidden">
+              <h3>{f.q}</h3>
+              <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-sun-soft transition-transform duration-300 group-open:rotate-45"><Icon name="plus" size={18} /></span>
+            </summary>
+            <p class="px-5 pb-5 text-ink-soft">{f.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Register CTA -->
+  <section id="register" class="container-x scroll-mt-24" aria-labelledby="register-title">
+    <div class="relative overflow-hidden rounded-[2.5rem] bg-sun p-6 sm:p-10 md:p-14" data-reveal="scale">
+      <div class="pointer-events-none absolute -top-16 -left-16 h-56 w-56 rounded-full bg-coral/30 spin-slow" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute -bottom-20 left-1/3 h-48 w-48 rounded-full border-[16px] border-white/40" aria-hidden="true"></div>
+      <div class="relative grid gap-10 lg:grid-cols-2">
+        <div>
+          <h2 id="register-title" class="section-title">بیایید از نزدیک آشنا شویم</h2>
+          <p class="mt-4 text-lg text-ink/80">فرم را پر کنید تا همکاران ما برای هماهنگی بازدید رایگان و جلسه‌ی آشنایی با کودک با شما تماس بگیرند.</p>
+          <ul class="mt-6 space-y-3 font-bold">
+            <li class="flex items-center gap-3"><span class="grid h-10 w-10 place-items-center rounded-full bg-white"><Icon name="phone" size={18} /></span><a href={`tel:${site.phone}`} dir="ltr">{site.phoneDisplay}</a></li>
+            <li class="flex items-center gap-3"><span class="grid h-10 w-10 place-items-center rounded-full bg-white"><Icon name="clock" size={18} /></span>{site.hours}</li>
+            <li class="flex items-center gap-3"><span class="grid h-10 w-10 place-items-center rounded-full bg-white"><Icon name="pin" size={18} /></span>{site.address.city}، {site.address.street}</li>
+          </ul>
+        </div>
+        <RegisterForm />
+      </div>
+    </div>
+  </section>
+</Base>

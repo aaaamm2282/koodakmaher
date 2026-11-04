@@ -1,0 +1,11 @@
+{
+  "name": "کودکستان کودک ماهر",
+  "short_name": "کودک ماهر",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff8ee",
+  "theme_color": "#ffc93c",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
