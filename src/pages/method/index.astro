@@ -1,0 +1,82 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Section from '../../components/Section.astro';
+import Pending from '../../components/Pending.astro';
+import Icon from '../../components/Icon.astro';
+import CycleSteps from '../../components/CycleSteps.astro';
+import CTA from '../../components/CTA.astro';
+
+const crumbs = [{ label: 'متد کودک ماهر' }];
+const cycleItems = [
+  { title: 'پیش‌بینی', text: 'قبل از کار، کودک حدس می‌زند. «فکر می‌کنم این کار چقدر طول بکشد؟ از آن خوشم می‌آید؟ کجایش برایم سخت است؟»' },
+  { title: 'تجربه', text: 'کار واقعی انجام می‌دهد؛ در کارگاه، در کلاس، در یک مسئولیت واقعی در مدرسه یا در گفت‌وگو با یک فرد شاغل.' },
+  { title: 'بازبینی', text: 'حدسش را با نتیجه مقایسه می‌کند. فاصله بین حدس و واقعیت شکست نیست؛ ماده خام شناخت خود است.' },
+];
+const pillars = [
+  { t: 'دانش', d: 'شناخت خود، رشته‌ها، شغل‌ها و دنیای پیرامون', c: 'bg-sun' },
+  { t: 'مهارت', d: 'توانایی انجام کار: تصمیم‌گیری، حل مسئله، همکاری، ساختن', c: 'bg-coral' },
+  { t: 'نگرش', d: 'نگاه و انگیزه کودک به یادگیری، به خود و به دیگران', c: 'bg-sky' },
+  { t: 'ارزش و منش', d: 'ارزش‌هایی که کودک به آن باور دارد و رفتاری که از آن در او پایدار می‌شود', c: 'bg-mint' },
+];
+const principles = [
+  { t: 'مسئله واقعی، واحد اصلی یادگیری است.', d: 'به‌جای تمرین‌های فرضی، بچه‌ها روی کارهای واقعی کار می‌کنند.' },
+  { t: 'مسئولیت تدریجی:', d: 'هر سال کمی بیشتر از کارهای واقعی به خود دانش‌آموز سپرده می‌شود.' },
+  { t: 'معلم همراه است، نه فقط مدرس:', d: 'معلم بیشتر می‌پرسد تا جواب بدهد.' },
+  { t: 'بی‌نمره و بی‌مقایسه:', d: 'فرم‌های مشاهده رفتار را ثبت می‌کنند، نه صفت. بچه‌ها با هم مقایسه نمی‌شوند.' },
+  { t: 'بدون برچسب استعداد:', d: 'علاقه به یک کارگاه، دلیل کافی برای گفتن «استعدادش این است» نیست.' },
+];
+---
+<Base title="متد کودک ماهر: پیش‌بینی، تجربه، بازبینی" description="روشی برای اینکه کودک خودش را با تجربه بشناسد و مسیر تحصیلش را آگاهانه انتخاب کند." crumbs={crumbs}>
+  <PageHero title="متد کودک ماهر: پیش‌بینی، تجربه، بازبینی" subtitle="روشی برای اینکه کودک خودش را با شاهد بشناسد، نه با حدس دیگران." eyebrow="متد" crumbs={crumbs} />
+
+  <Section id="goal" title="هدف متد">
+    <p class="mt-4 max-w-3xl text-lg text-ink-soft" data-reveal>هدف نهایی متد این است که نوجوان در دو نقطه، انتخابی آگاهانه داشته باشد:</p>
+    <div class="mt-8 grid gap-5 md:grid-cols-2" data-stagger>
+      <div class="card flex gap-5 p-7"><span class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-coral text-3xl font-black text-white ring-4 ring-ink">۱۵</span><div><h3 class="text-xl font-black">۱۵ سالگی (پایه نهم)</h3><p class="mt-1 text-ink-soft">اولین انتخاب رشته تحصیلی.</p></div></div>
+      <div class="card flex gap-5 p-7"><span class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-grape text-3xl font-black text-white ring-4 ring-ink">۱۸</span><div><h3 class="text-xl font-black">۱۸ سالگی</h3><p class="mt-1 text-ink-soft">بازنگری و انتخاب نهایی برای دانشگاه یا ورود به کار.</p></div></div>
+    </div>
+    <div class="mt-8 max-w-3xl space-y-4 text-lg text-ink-soft" data-reveal>
+      <p>بین ۱۵ تا ۱۸ سالگی، نوجوان خودش، شخصیتش و دنیای کار آینده را دوباره واکاوی می‌کند تا انتخاب دوم بر پایه شناخت بیشتری باشد.</p>
+      <p>«انتخاب آگاهانه» برای ما یعنی دانش‌آموز بتواند بگوید چه گزینه‌هایی را واقعاً امتحان کرده، چه چیزی درباره خودش فهمیده و چرا این مسیر را انتخاب کرده است. معیار اصلی ما این است که انتخاب برای خود دانش‌آموز معنا داشته باشد؛ بعد برای خانواده و جامعه.</p>
+    </div>
+  </Section>
+
+  <Section id="cycle" title="هسته متد: یک چرخه ساده">
+    <div class="mt-14"><CycleSteps items={cycleItems} /></div>
+    <p class="card mt-12 max-w-4xl p-6 text-lg text-ink-soft" data-reveal>انتخاب رشته هم در اصل یک پیش‌بینی درباره خود است: «فکر می‌کنم در این رشته موفق و راضی خواهم بود.» کودکی که سال‌ها حدس زدن و سنجیدن حدسش را تمرین کرده، در ۱۵ سالگی این پیش‌بینی بزرگ را دقیق‌تر انجام می‌دهد. <strong class="text-ink">این فرضیه اصلی ماست و با پرونده رشد بچه‌ها آن را می‌سنجیم.</strong></p>
+  </Section>
+
+  <Section id="pillars" title="چهار رکن رشد">
+    <ul class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+      {pillars.map((p) => (
+        <li class="spotlight card p-6"><span class:list={['block h-3 w-14 rounded-full', p.c]}></span><h3 class="mt-4 text-xl font-black">{p.t}</h3><p class="mt-2 text-ink-soft">{p.d}</p></li>
+      ))}
+    </ul>
+    <p class="mt-8 max-w-3xl text-lg text-ink-soft" data-reveal>وقتی این چهار با هم در حل یک مسئله واقعی به کار می‌روند، «شایستگی» ساخته می‌شود. منش کودک را نمره نمی‌دهیم؛ فقط با مشاهده طولانی و گفت‌وگو آن را دنبال می‌کنیم.</p>
+  </Section>
+
+  <Section id="principles" title="اصول اجرا">
+    <ul class="mt-10 space-y-3" data-stagger>
+      {principles.map((p) => (
+        <li class="card flex gap-4 p-5"><span class="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-mint text-white"><Icon name="check" size={18} /></span><p class="text-lg"><strong>{p.t}</strong> <span class="text-ink-soft">{p.d}</span></p></li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section id="roots" title="ریشه‌ها و آنچه سهم ماست">
+    <div class="mt-6 grid gap-6 lg:grid-cols-2" data-stagger>
+      <div class="card p-7 text-lg text-ink-soft">ایده پیش‌بینی، تجربه و بازبینی در آموزش سابقه دارد؛ مثلاً در الگوی «برنامه‌ریزی، انجام، مرور» در آموزش پیش‌دبستانی، الگوی «پیش‌بینی، مشاهده، توضیح» در آموزش علوم، و چرخه یادگیری تجربی کولب. ما از این پشتوانه استفاده می‌کنیم.</div>
+      <div class="card bg-sun-soft p-7 text-lg">آنچه کودک ماهر به آن اضافه می‌کند این است که این چرخه را به ستون فقرات پیوسته‌ای از ۳ تا ۱۸ سالگی تبدیل کرده، آن را به هدف مشخص انتخاب آگاهانه در ۱۵ و ۱۸ سالگی گره زده، و «خطای پیش‌بینی درباره خود» را سال‌به‌سال در پرونده رشد هر کودک ثبت می‌کند.</div>
+    </div>
+  </Section>
+
+  <Section id="status" title="وضعیت فعلی متد">
+    <div class="card mt-6 max-w-4xl border-r-8 border-grape p-7 text-lg" data-reveal>
+      <p>متد کودک ماهر در حال اجرای آزمایشی و بهبود است. اجرای منظم آن در همه مقطع‌ها از <Pending inline label="تاریخ شروع (مثلاً ۱ آذر ۱۴۰۵) — تأیید شود" /> آغاز می‌شود. نتایج را با پرونده رشد بچه‌ها دنبال می‌کنیم و هر سال گزارشش را با خانواده‌ها در میان می‌گذاریم.</p>
+    </div>
+    <p class="mt-8" data-reveal><a href="/path/" class="btn-ghost">مسیر رشد ۳ تا ۱۸ سال<Icon name="arrow" size={18} /></a></p>
+  </Section>
+
+  <CTA />
+</Base>

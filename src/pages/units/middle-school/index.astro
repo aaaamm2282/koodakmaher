@@ -1,0 +1,44 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PageHero from '../../../components/PageHero.astro';
+import InfoList from '../../../components/InfoList.astro';
+import CTA from '../../../components/CTA.astro';
+import Icon from '../../../components/Icon.astro';
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'متوسطه اول پسرانه' }];
+const file = ['تجربه‌هایی که دانش‌آموز واقعاً داشته', 'حدس‌هایش درباره خودش و مقایسه آن‌ها با نتیجه', 'مقایسه دست‌کم سه گزینه رشته یا مسیر', 'دلیل انتخاب، به زبان خود دانش‌آموز'];
+const grades = [
+  { g: 'هفتم', d: 'تجربه و بازتاب', c: 'bg-sun' },
+  { g: 'هشتم', d: 'مقایسه دو مسیر', c: 'bg-coral' },
+  { g: 'نهم', d: 'انتخاب موقت برای ۱۵ سالگی، در هماهنگی با مشاور مدرسه و فرایند رسمی هدایت تحصیلی', c: 'bg-grape' },
+];
+---
+<Base title="متوسطه اول پسرانه کودک ماهر" description="مسئله‌های واقعی و پرونده انتخاب برای انتخاب رشته آگاهانه در پایه نهم." crumbs={crumbs}>
+  <PageHero title="متوسطه اول؛ آماده شدن برای اولین انتخاب بزرگ" eyebrow="متوسطه اول پسرانه" icon="compass" crumbs={crumbs} />
+  <section class="container-x pb-10">
+    <div class="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+      <div class="space-y-10">
+        <p class="text-lg leading-loose" data-reveal>پایه‌های هفتم تا نهم آخرین سال‌ها پیش از انتخاب رشته در ۱۵ سالگی است. در این دوره، دانش‌آموزان در چرخه‌های شش تا هشت هفته‌ای روی یک مسئله واقعی کار می‌کنند: پیش‌بینی می‌کنند، کار را انجام می‌دهند، با افراد شاغل گفت‌وگو می‌کنند و نتیجه را بازبینی می‌کنند. حاصل این چرخه‌ها «پرونده انتخاب» هر دانش‌آموز است.</p>
+        <div class="card p-7" data-reveal>
+          <h2 class="flex items-center gap-2 text-2xl font-black"><Icon name="folder" size={26} class="text-coral" />پرونده انتخاب شامل:</h2>
+          <ul class="mt-4 space-y-3" data-stagger>{file.map((f) => <li class="flex gap-3"><Icon name="check" size={20} class="mt-1 shrink-0 text-mint" />{f}</li>)}</ul>
+        </div>
+        <div data-reveal>
+          <h2 class="text-2xl font-black">پایه‌به‌پایه</h2>
+          <ol class="mt-5 grid gap-4 md:grid-cols-3" data-stagger>
+            {grades.map((g) => <li class="card p-5"><span class:list={['inline-block rounded-full px-3 py-1 text-sm font-black', g.c, g.c === 'bg-sun' ? 'text-ink' : 'text-white']}>پایه {g.g}</span><p class="mt-3 text-ink-soft">{g.d}</p></li>)}
+          </ol>
+        </div>
+        <div class="card flex gap-4 border-r-8 border-sky p-6" data-reveal>
+          <Icon name="shield" size={26} class="shrink-0 text-sky" />
+          <p><strong>یک نکته شفاف:</strong> <span class="text-ink-soft">پرونده انتخاب جایگزین فرایند رسمی هدایت تحصیلی نیست؛ کنار آن و برای آگاهانه‌تر کردن تصمیم است.</span></p>
+        </div>
+      </div>
+      <InfoList items={[
+        { label: 'ساعت کار', pending: 'تکمیل شود' },
+        { label: 'ظرفیت کلاس', pending: 'تکمیل شود' },
+        { label: 'شهریه', pending: 'تکمیل شود' },
+      ]} />
+    </div>
+  </section>
+  <CTA />
+</Base>

@@ -1,10 +1,10 @@
 ---
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
-import { nav, site } from '../data/site';
-const year = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).format(new Date());
+import Pending from './Pending.astro';
+import { footerLinks, site } from '../data/site';
 ---
-<footer class="relative mt-24 overflow-hidden bg-ink text-white">
+<footer class="relative mt-16 overflow-hidden bg-ink text-white">
   <svg class="absolute inset-x-0 top-0 h-10 w-full text-cream" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true">
     <path fill="currentColor" d="M0 0h1440v12c-120 18-240 28-360 20S840 6 720 10 480 34 360 34 120 22 0 12Z" />
   </svg>
@@ -14,29 +14,32 @@ const year = new Intl.DateTimeFormat('fa-IR-u-ca-persian', { year: 'numeric' }).
         <Logo class="h-12 w-12" />
         <span class="text-xl font-black">{site.name}</span>
       </a>
-      <p class="mt-4 max-w-md text-white/70">{site.description}</p>
-      <div class="mt-5 flex gap-2">
-        <a href={site.social.instagram} class="grid h-11 w-11 place-items-center rounded-full bg-white/10 transition hover:bg-coral" aria-label="اینستاگرام" rel="noopener" target="_blank"><Icon name="instagram" size={20} /></a>
-        <a href={site.social.telegram} class="grid h-11 w-11 place-items-center rounded-full bg-white/10 transition hover:bg-sky" aria-label="تلگرام" rel="noopener" target="_blank"><Icon name="send" size={20} /></a>
-      </div>
+      <p class="mt-3 text-lg font-bold text-sun">{site.slogan}</p>
+      <p class="mt-3 max-w-md text-white/70">{site.mission}</p>
+      {site.social.length > 0 && (
+        <ul class="mt-5 flex gap-2">
+          {site.social.map((s) => <li><a href={s.href} class="grid h-11 min-w-11 place-items-center rounded-full bg-white/10 px-3 transition hover:bg-coral" rel="noopener" target="_blank">{s.label}</a></li>)}
+        </ul>
+      )}
     </div>
-    <nav aria-label="پیوندهای پایین صفحه">
-      <h2 class="mb-3 font-bold text-sun">دسترسی سریع</h2>
+    <nav aria-label="پیوندهای سریع">
+      <h2 class="mb-3 font-bold text-sun">لینک‌های سریع</h2>
       <ul class="space-y-2 text-white/75">
-        {nav.map((i) => <li><a class="hover:text-white" href={i.href}>{i.label}</a></li>)}
-        <li><a class="hover:text-white" href={site.oldSite} rel="noopener">{site.parent}</a></li>
+        {footerLinks.map((i) => <li><a class="hover:text-white" href={i.href}>{i.label}</a></li>)}
       </ul>
     </nav>
-    <address class="not-italic">
-      <h2 class="mb-3 font-bold text-sun">تماس با ما</h2>
+    <div>
+      <h2 class="mb-3 font-bold text-sun">تماس</h2>
       <ul class="space-y-3 text-white/75">
-        <li class="flex gap-2"><Icon name="phone" size={20} class="mt-1 shrink-0" /><a href={`tel:${site.phone}`} dir="ltr">{site.phoneDisplay}</a></li>
-        <li class="flex gap-2"><Icon name="pin" size={20} class="mt-1 shrink-0" />{site.address.city}، {site.address.street}</li>
-        <li class="flex gap-2"><Icon name="clock" size={20} class="mt-1 shrink-0" />{site.hours}</li>
+        <li class="flex gap-2"><Icon name="phone" size={20} class="mt-1 shrink-0" />{site.phone ? <a href={`tel:${site.phone}`} dir="ltr">{site.phone}</a> : <Pending inline label="تلفن اصلی" class="!bg-white/10 !text-white/80" />}</li>
+        <li class="flex gap-2"><Icon name="pin" size={20} class="mt-1 shrink-0" />{site.address ?? <Pending inline label="نشانی اصلی" class="!bg-white/10 !text-white/80" />}</li>
+        <li class="flex gap-2"><Icon name="shield" size={20} class="mt-1 shrink-0" /><Pending inline label="نماد اعتماد و مجوزها" class="!bg-white/10 !text-white/80" /></li>
       </ul>
-    </address>
+    </div>
   </div>
   <div class="border-t border-white/10">
-    <p class="container-x py-5 text-center text-sm text-white/55">© {year} {site.name} — بخشی از {site.parent}</p>
+    <p class="container-x py-5 text-center text-sm text-white/55">
+      © <Pending inline label="سال" class="!border-white/20 !bg-white/5 !text-white/60" /> {site.name}
+    </p>
   </div>
 </footer>

@@ -1,0 +1,25 @@
+---
+import Icon from './Icon.astro';
+import Pending from './Pending.astro';
+import { units, colorMap } from '../data/site';
+---
+<ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
+  {units.map((u) => {
+    const c = colorMap[u.color];
+    return (
+      <li>
+        <a href={`/units/${u.slug}/`} class:list={['spotlight card group relative flex h-full flex-col p-7 transition-shadow hover:shadow-xl', c.soft]} data-tilt>
+          <div class="flex items-start justify-between gap-3">
+            <span class:list={['grid h-14 w-14 place-items-center rounded-2xl text-white shadow-[0_4px_0_#1f1a3d] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110', c.bg, u.color === 'sun' && '!text-ink']}>
+              <Icon name={u.icon} size={28} />
+            </span>
+            {u.soon && <span class="rounded-full bg-grape px-3 py-1 text-xs font-black text-white">به‌زودی</span>}
+          </div>
+          <h3 class="mt-5 text-2xl font-black">{u.name}</h3>
+          <div class="mt-3 text-ink-soft">{u.short ?? <Pending inline label={u.shortPending} />}</div>
+          <span class="mt-auto flex items-center gap-1 pt-5 text-sm font-bold text-ink">آشنایی بیشتر <Icon name="arrow" size={16} class="transition-transform group-hover:-translate-x-1" /></span>
+        </a>
+      </li>
+    );
+  })}
+</ul>

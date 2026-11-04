@@ -1,0 +1,53 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CTA from '../../components/CTA.astro';
+import Icon from '../../components/Icon.astro';
+
+const crumbs = [{ label: 'مسیر رشد ۳ تا ۱۸ سال' }];
+const stages = [
+  { age: '۳ تا ۵', stage: 'کودکستان', focus: 'بازی، کنجکاوی، عادت حدس زدن', form: '«حدس و امتحان» با اشیا و بازی، بدون نوشتن. حدس کودک را تصحیح نمی‌کنیم.', href: '/units/kindergarten/', c: 'bg-sun' },
+  { age: '۶ تا ۸', stage: 'دبستان (دوره اول)', focus: 'شناخت کارها و نقش‌ها', form: 'کارت حدس ساده و چرخش نقش‌ها در کلاس', href: '/units/primary/', c: 'bg-sky' },
+  { age: '۹ تا ۱۱', stage: 'دبستان (دوره دوم)', focus: 'تجربه‌های متنوع، باز نگه داشتن گزینه‌ها', form: 'دفتر پیش‌بینی ساده و کارگاه‌های گوناگون', href: '/units/primary/', c: 'bg-sky' },
+  { age: '۱۲ تا ۱۴', stage: 'متوسطه اول', focus: 'مسئله واقعی و مقایسه مسیرها', form: 'چرخه‌های شش تا هشت هفته‌ای مسئله واقعی و «پرونده انتخاب»', href: '/units/middle-school/', c: 'bg-coral' },
+  { age: '۱۵', stage: 'پایه نهم', focus: 'اولین انتخاب آگاهانه', form: 'انتخاب رشته بر پایه پرونده انتخاب', milestone: true, c: 'bg-coral' },
+  { age: '۱۵ تا ۱۸', stage: 'متوسطه دوم (در دست برنامه‌ریزی)', focus: 'واکاوی خود و دنیای آینده', form: 'آزمودن رشته و کار در مقیاس واقعی‌تر', href: '/units/high-school/', c: 'bg-grape', soon: true },
+  { age: '۱۸', stage: 'پایان مسیر', focus: 'انتخاب نهایی', form: 'تصمیم برای دانشگاه یا ورود به کار', milestone: true, c: 'bg-grape' },
+];
+---
+<Base title="مسیر رشد ۳ تا ۱۸ سال · کودک ماهر" description="یک مسیر پیوسته از کودکستان تا انتخاب رشته در ۱۵ و ۱۸ سالگی." crumbs={crumbs}>
+  <PageHero title="یک مسیر پیوسته، نه چند برنامه جدا" subtitle="چرخه پیش‌بینی، تجربه، بازبینی در همه سنین یکی است؛ فقط شکلش با سن کودک عوض می‌شود." eyebrow="مسیر رشد ۳ تا ۱۸ سال" icon="flag" crumbs={crumbs} />
+
+  <section class="container-x pb-10" aria-label="مراحل مسیر رشد">
+    <ol class="relative mx-auto max-w-4xl">
+      <span class="absolute top-2 bottom-2 right-[2.2rem] w-1.5 rounded-full bg-ink/10" aria-hidden="true"></span>
+      <span class="absolute top-2 bottom-2 right-[2.2rem] w-1.5 origin-top rounded-full bg-gradient-to-b from-sun via-coral to-grape" data-timeline-line aria-hidden="true"></span>
+      {stages.map((s) => (
+        <li class="relative mb-8 pr-24 last:mb-0" data-reveal>
+          <span class:list={['absolute top-0 right-0 grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full text-center text-sm leading-tight font-black ring-4 ring-cream', s.c, s.c === 'bg-sun' ? 'text-ink' : 'text-white', s.milestone && 'ring-ink']}>
+            <span>{s.age}<br /><span class="text-[0.7rem] font-bold opacity-80">سال</span></span>
+          </span>
+          <div class:list={['card p-6', s.milestone && '!bg-ink text-white']}>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-xl font-black">{s.stage}</h2>
+              {s.soon && <span class="rounded-full bg-grape px-2.5 py-0.5 text-xs font-black text-white">به‌زودی</span>}
+              {s.milestone && <span class="rounded-full bg-sun px-2.5 py-0.5 text-xs font-black text-ink">نقطه انتخاب</span>}
+            </div>
+            <p class:list={['mt-2 font-bold', s.milestone ? 'text-sun' : 'text-ink']}>{s.focus}</p>
+            <p class:list={['mt-1', s.milestone ? 'text-white/75' : 'text-ink-soft']}><span class="font-bold">شکل چرخه: </span>{s.form}</p>
+            {s.href && <a href={s.href} class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-sky hover:underline">صفحه واحد<Icon name="arrow" size={14} /></a>}
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="container-x py-10" aria-labelledby="early-title">
+    <div class="card mx-auto max-w-4xl bg-mint-soft p-7 sm:p-9" data-reveal>
+      <h2 id="early-title" class="text-2xl font-black">یک نکته مهم برای سال‌های اول</h2>
+      <p class="mt-3 text-lg text-ink-soft">تا حدود ۱۲ سالگی هدف ما «انتخاب» نیست؛ هدف این است که نقشه آنچه کودک ممکن است بشود وسیع بماند. کودکان در سال‌های اول، گزینه‌های زیادی را زود و بی‌آنکه امتحانشان کنند کنار می‌گذارند. ما می‌خواهیم قبل از کنار گذاشتن، تجربه کنند.</p>
+    </div>
+  </section>
+
+  <CTA />
+</Base>

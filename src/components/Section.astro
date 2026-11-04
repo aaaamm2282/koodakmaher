@@ -1,0 +1,15 @@
+---
+interface Props { id?: string; title?: string; eyebrow?: string; intro?: string; class?: string; center?: boolean }
+const { id, title, eyebrow, intro, class: cls = '', center = false } = Astro.props;
+const hid = id ? `${id}-title` : undefined;
+---
+<section id={id} class:list={['container-x scroll-mt-24 py-14 sm:py-20', cls]} aria-labelledby={title ? hid : undefined}>
+  {(title || eyebrow) && (
+    <div class:list={['max-w-3xl', center && 'mx-auto text-center']} data-reveal>
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      {title && <h2 id={hid} class="section-title mt-4">{title}</h2>}
+      {intro && <p class="mt-4 text-lg text-ink-soft">{intro}</p>}
+    </div>
+  )}
+  <slot />
+</section>

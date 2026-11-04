@@ -1,0 +1,52 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import FormShell from '../../components/FormShell.astro';
+import Field from '../../components/Field.astro';
+import Icon from '../../components/Icon.astro';
+import { site } from '../../data/site';
+const crumbs = [{ label: 'تماس با ما' }];
+// Fill in each unit's address, phone and hours here once confirmed.
+const contacts: { unit: string; address: string | null; phone: string | null; hours: string | null }[] = [
+  { unit: 'کودکستان', address: null, phone: null, hours: null },
+  { unit: 'دبستان', address: null, phone: null, hours: null },
+  { unit: 'متوسطه اول', address: null, phone: null, hours: null },
+  { unit: 'آموزشگاه زبان', address: null, phone: null, hours: null },
+  { unit: 'آموزشگاه فنی‌وحرفه‌ای', address: null, phone: null, hours: null },
+];
+---
+<Base title="تماس با ما · کودک ماهر" description="نشانی، تلفن و ساعت پاسخگویی واحدهای مؤسسه آموزشی کودک ماهر مانا." crumbs={crumbs}>
+  <PageHero title="تماس با ما" eyebrow="تماس" icon="phone" crumbs={crumbs} />
+  <section class="container-x pb-10">
+    <ul class="grid gap-4 md:grid-cols-2 lg:grid-cols-3" data-stagger>
+      {contacts.map((c) => (
+        <li class="card p-6">
+          <h2 class="text-xl font-black">{c.unit}</h2>
+          <dl class="mt-4 space-y-3 text-sm">
+            <div class="flex gap-2"><dt><Icon name="pin" size={18} /><span class="sr-only">نشانی</span></dt><dd>{c.address ?? <Pending inline label="نشانی" />}</dd></div>
+            <div class="flex gap-2"><dt><Icon name="phone" size={18} /><span class="sr-only">تلفن</span></dt><dd>{c.phone ? <a href={`tel:${c.phone}`} dir="ltr">{c.phone}</a> : <Pending inline label="تلفن" />}</dd></div>
+            <div class="flex gap-2"><dt><Icon name="clock" size={18} /><span class="sr-only">ساعت پاسخگویی</span></dt><dd>{c.hours ?? <Pending inline label="ساعت پاسخگویی" />}</dd></div>
+          </dl>
+        </li>
+      ))}
+      <li class="card p-6">
+        <h2 class="text-xl font-black">شبکه‌های اجتماعی و نقشه</h2>
+        <div class="mt-4 space-y-3 text-sm">
+          <div>{site.social.length ? site.social.map((s) => <a href={s.href} class="ml-3 font-bold underline">{s.label}</a>) : <Pending inline label="نشانی صفحه‌های رسمی" />}</div>
+          <div>{site.mapUrl ? <a href={site.mapUrl} class="font-bold underline">موقعیت روی نقشه</a> : <Pending inline label="لینک موقعیت روی نقشه" />}</div>
+        </div>
+      </li>
+    </ul>
+  </section>
+  <section class="container-x pb-16">
+    <div class="mx-auto max-w-2xl">
+      <FormShell id="contact-form" title="فرم تماس" submit="ارسال پیام">
+        <Field label="نام" name="name" required autocomplete="name" />
+        <Field label="شماره تماس یا ایمیل" name="contact" required />
+        <Field label="واحد مرتبط" name="unit" type="select" required full options={['کودکستان', 'دبستان', 'متوسطه اول', 'متوسطه دوم', 'آموزشگاه زبان', 'آموزشگاه فنی‌وحرفه‌ای', 'عمومی']} />
+        <Field label="پیام" name="message" type="textarea" required full />
+      </FormShell>
+    </div>
+  </section>
+</Base>

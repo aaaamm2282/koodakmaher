@@ -1,0 +1,65 @@
+---
+import Icon from './Icon.astro';
+// Forms are appearance-only for now: the institute will choose where submissions go.
+// No endpoint, key or secret lives in the code. When a destination is chosen, pass it as `action`.
+interface Props { title?: string; submit: string; action?: string; id: string }
+const { title, submit, action = '', id } = Astro.props;
+---
+<form id={id} class="rounded-[2rem] bg-white p-6 shadow-[0_8px_0_#1f1a3d] ring-4 ring-ink sm:p-8" method="post" action={action || undefined} data-form data-action={action} novalidate>
+  {title && <h2 class="mb-5 text-2xl font-black">{title}</h2>}
+  <div class="grid gap-5 sm:grid-cols-2" data-fields>
+    <slot />
+  </div>
+  <p class="mt-4 text-sm text-ink-soft"><span class="text-coral">*</span> پر کردن این موارد لازم است.</p>
+  <p class="form-error mt-3 hidden rounded-xl bg-coral-soft p-3 text-sm font-bold text-ink" role="alert"></p>
+  <button type="submit" class="btn-primary shimmer mt-5 w-full text-lg">{submit}<Icon name="send" size={20} /></button>
+  <div class="form-notice mt-4 hidden rounded-2xl border-2 border-dashed border-sun bg-sun-soft/60 p-4 text-center" role="status" aria-live="polite">
+    <p class="font-black">فرم درست پر شده است.</p>
+    <p class="mt-1 text-sm text-ink-soft">ارسال فرم‌ها هنوز راه‌اندازی نشده، پس اطلاعات شما فرستاده نشد. به‌زودی این امکان فعال می‌شود.</p>
+  </div>
+</form>
+
+<script>
+  import { animate } from 'motion';
+  const fa = '۰۱۲۳۴۵۶۷۸۹';
+  document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
+    const err = form.querySelector<HTMLElement>('.form-error')!;
+    const notice = form.querySelector<HTMLElement>('.form-notice')!;
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      form.querySelectorAll<HTMLInputElement>('input[type=tel]').forEach((i) => (i.value = i.value.replace(/[۰-۹]/g, (d) => String(fa.indexOf(d)))));
+      let msg = '';
+      form.querySelectorAll<HTMLElement>('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+      form.querySelectorAll<HTMLTextAreaElement>('textarea[data-maxwords]').forEach((t) => {
+        const max = Number(t.dataset.maxwords);
+        const words = t.value.trim().split(/\s+/).filter(Boolean).length;
+        t.setCustomValidity(words > max ? `حداکثر ${max.toLocaleString('fa-IR')} کلمه` : '');
+      });
+      const bad = [...form.querySelectorAll<HTMLInputElement>('input,select,textarea')].filter((el) => !el.checkValidity());
+      if (bad.length) {
+        bad.forEach((el) => el.setAttribute('aria-invalid', 'true'));
+        msg = bad[0].validationMessage && bad[0].validity.customError ? bad[0].validationMessage : 'لطفاً موارد ستاره‌دار را کامل کنید.';
+        err.textContent = msg;
+        err.classList.remove('hidden');
+        bad[0].focus();
+        animate(form, { x: [0, -10, 10, -6, 6, 0] }, { duration: 0.4 });
+        return;
+      }
+      err.classList.add('hidden');
+      const action = form.dataset.action;
+      if (action) {
+        try {
+          const res = await fetch(action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
+          if (!res.ok) throw new Error();
+          notice.innerHTML = '<p class="font-black">درخواست شما ثبت شد.</p><p class="mt-1 text-sm">همکاران ما با شما تماس می‌گیرند.</p>';
+        } catch {
+          err.textContent = 'ارسال انجام نشد. لطفاً دوباره تلاش کنید.';
+          err.classList.remove('hidden');
+          return;
+        }
+      }
+      notice.classList.remove('hidden');
+      animate(notice, { opacity: [0, 1], scale: [0.9, 1] }, { type: 'spring', stiffness: 300, damping: 18 });
+    });
+  });
+</script>

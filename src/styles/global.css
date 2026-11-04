@@ -118,9 +118,9 @@
 .js [data-stagger] > * { opacity: 0; }
 
 /* Rainbow arcs draw themselves in */
-.rainbow path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-arc 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
-.rainbow path:nth-child(2) { animation-delay: 0.15s; }
-.rainbow path:nth-child(3) { animation-delay: 0.3s; }
+.rainbow path, .cycle-arrows path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-arc 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.rainbow path:nth-child(2), .cycle-arrows path:nth-child(2) { animation-delay: 0.15s; }
+.rainbow path:nth-child(3), .cycle-arrows path:nth-child(3) { animation-delay: 0.3s; }
 @keyframes draw-arc { to { stroke-dashoffset: 0; } }
 
 /* Hero words pop in with pure CSS so the LCP text paints without waiting for JS */

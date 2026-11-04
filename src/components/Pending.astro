@@ -1,0 +1,16 @@
+---
+// Visible "در حال تکمیل" box for content the institute has not provided yet ({{ }} in docs/content-brief.md).
+// Never replace this with a guess; fill the real value in the page or src/data/site.ts instead.
+interface Props { label?: string; inline?: boolean; class?: string }
+const { label, inline = false, class: cls = '' } = Astro.props;
+---
+{inline ? (
+  <span class:list={['inline-flex flex-wrap items-center gap-1.5 rounded-lg border-2 border-dashed border-sun bg-sun-soft/70 px-2 py-0.5 align-middle text-sm font-bold text-ink-soft', cls]} data-pending>
+    <span class="rounded bg-sun px-1.5 text-xs text-ink">در حال تکمیل</span>{label}
+  </span>
+) : (
+  <div class:list={['flex items-start gap-3 rounded-2xl border-2 border-dashed border-sun bg-sun-soft/60 p-4 text-ink-soft', cls]} data-pending role="note">
+    <span class="shrink-0 rounded-full bg-sun px-3 py-0.5 text-xs font-black text-ink">در حال تکمیل</span>
+    {label && <span class="text-sm font-bold">{label}</span>}
+  </div>
+)}

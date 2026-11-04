@@ -1,0 +1,26 @@
+---
+import Icon from './Icon.astro';
+import { cycle, colorMap } from '../data/site';
+interface Props { items?: { title: string; text: string }[] }
+const { items } = Astro.props;
+const steps = cycle.map((c, i) => ({ ...c, ...(items?.[i] ?? {}) }));
+---
+<ol class="relative grid gap-6 md:grid-cols-3" data-stagger>
+  {steps.map((s, i) => {
+    const c = colorMap[s.color];
+    return (
+      <li class="card relative p-7 pt-9">
+        <span class="absolute -top-4 right-6 rounded-full bg-ink px-3 py-1 text-sm font-black text-white">قدم {(i + 1).toLocaleString('fa-IR')}</span>
+        <span class:list={['grid h-16 w-16 place-items-center rounded-2xl ring-4 ring-ink shadow-[0_5px_0_#1f1a3d]', c.bg, s.color === 'sun' ? 'text-ink' : 'text-white']}><Icon name={s.icon} size={30} /></span>
+        <h3 class="mt-5 text-2xl font-black">{s.title}</h3>
+        <p class="mt-2 text-ink-soft">{s.text}</p>
+        {i < steps.length - 1 && (
+          <span class="absolute top-1/2 -left-6 z-10 hidden h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-sun ring-4 ring-cream md:grid" aria-hidden="true"><Icon name="arrow" size={18} /></span>
+        )}
+        {i === steps.length - 1 && (
+          <span class="absolute -bottom-4 left-6 hidden items-center gap-1 rounded-full bg-sky-soft px-3 py-1 text-xs font-bold text-ink md:flex" aria-hidden="true"><Icon name="refresh" size={14} />و دوباره از نو</span>
+        )}
+      </li>
+    );
+  })}
+</ol>

@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+interface Props { title: string; subtitle?: string; eyebrow?: string; crumbs?: { href?: string; label: string }[]; icon?: string; badge?: string }
+const { title, subtitle, eyebrow, crumbs = [], icon = 'sparkle', badge } = Astro.props;
+---
+<section class="relative isolate overflow-hidden pt-8 pb-14 sm:pt-12 sm:pb-20">
+  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
+    <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-sky-soft blur-3xl"></div>
+    <div class="absolute -right-20 top-10 h-72 w-72 rounded-full bg-sun-soft blur-3xl"></div>
+    <div class="float-a absolute top-16 left-[8%] hidden h-16 w-16 rounded-2xl bg-coral/80 ring-4 ring-ink shadow-[0_6px_0_#1f1a3d] md:block" data-parallax="90"></div>
+    <div class="float-b absolute bottom-8 left-[22%] hidden h-10 w-10 rounded-full bg-mint ring-4 ring-ink md:block" data-parallax="140"></div>
+    <div class="float-c absolute top-24 left-[30%] hidden h-8 w-8 rotate-12 rounded-lg bg-grape ring-4 ring-ink lg:block" data-parallax="60"></div>
+  </div>
+  <div class="container-x">
+    {crumbs.length > 0 && (
+      <nav aria-label="مسیر صفحه" class="text-sm text-ink-soft">
+        <ol class="flex flex-wrap items-center gap-1.5">
+          <li><a href="/" class="hover:text-ink">خانه</a></li>
+          {crumbs.map((c) => (
+            <li class="flex items-center gap-1.5"><span aria-hidden="true">/</span>{c.href ? <a href={c.href} class="hover:text-ink">{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <div class="mt-6 max-w-3xl">
+      {(eyebrow || badge) && (
+        <p class="hero-word flex flex-wrap gap-2" style="--i:0">
+          {eyebrow && <span class="eyebrow"><Icon name={icon} size={16} class="text-coral" />{eyebrow}</span>}
+          {badge && <span class="eyebrow !bg-grape !text-white"><Icon name="hourglass" size={16} />{badge}</span>}
+        </p>
+      )}
+      <h1 class="hero-word mt-4 text-3xl font-black sm:text-4xl md:text-5xl" style="--i:1">{title}</h1>
+      {subtitle && <p class="hero-word mt-5 text-lg text-ink-soft sm:text-xl" style="--i:2">{subtitle}</p>}
+      <slot />
+    </div>
+  </div>
+</section>

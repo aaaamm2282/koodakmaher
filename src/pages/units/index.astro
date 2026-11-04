@@ -1,0 +1,12 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import UnitCards from '../../components/UnitCards.astro';
+import CTA from '../../components/CTA.astro';
+const crumbs = [{ label: 'واحدها' }];
+---
+<Base title="واحدهای کودک ماهر مانا" description="کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، متوسطه دوم (در دست برنامه‌ریزی)، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای." crumbs={crumbs}>
+  <PageHero title="واحدهای ما" eyebrow="واحدها" icon="blocks" crumbs={crumbs} />
+  <section class="container-x pb-10"><UnitCards /></section>
+  <CTA />
+</Base>

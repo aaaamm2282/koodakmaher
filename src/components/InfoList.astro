@@ -1,0 +1,18 @@
+---
+import Pending from './Pending.astro';
+import Icon from './Icon.astro';
+interface Props { title?: string; items: { label: string; value?: string; pending?: string }[] }
+const { title = 'اطلاعات ثبت‌نام', items } = Astro.props;
+---
+<aside class="card h-fit p-6 lg:sticky lg:top-24" data-reveal>
+  <h2 class="text-xl font-black">{title}</h2>
+  <dl class="mt-4 space-y-4">
+    {items.map((i) => (
+      <div>
+        <dt class="text-sm font-bold text-ink-soft">{i.label}</dt>
+        <dd class="mt-1">{i.value && <span>{i.value} </span>}{i.pending && <Pending inline label={i.pending} />}</dd>
+      </div>
+    ))}
+  </dl>
+  <a href="/register/" class="btn-primary shimmer mt-6 w-full">پیش‌ثبت‌نام<Icon name="arrow" size={18} /></a>
+</aside>

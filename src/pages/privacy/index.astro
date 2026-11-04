@@ -1,0 +1,19 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import { site } from '../../data/site';
+const crumbs = [{ label: 'حریم خصوصی' }];
+---
+<Base title="حریم خصوصی · کودک ماهر" description="نحوه نگه‌داری و استفاده از اطلاعات فرم‌ها و پرونده رشد دانش‌آموزان در کودک ماهر مانا." crumbs={crumbs}>
+  <PageHero title="حریم خصوصی" eyebrow="حریم خصوصی" icon="shield" crumbs={crumbs} />
+  <section class="container-x pb-16">
+    <div class="card mx-auto max-w-3xl space-y-5 p-7 text-lg leading-loose sm:p-10" data-reveal>
+      <Pending label="این متن پیش از انتشار باید توسط مشاور حقوقی بررسی شود." />
+      <p>اطلاعاتی که در فرم‌های این سایت وارد می‌کنید فقط برای پاسخ دادن به شما و فرایند ثبت‌نام استفاده می‌شود و در اختیار هیچ شخص یا سازمان دیگری قرار نمی‌گیرد.</p>
+      <p>اطلاعات و پرونده رشد دانش‌آموزان فقط با رضایت خانواده نگه داشته می‌شود و فقط کادر آموزشی مرتبط به آن دسترسی دارد.</p>
+      <p>تصویر هیچ دانش‌آموزی بدون رضایت کتبی خانواده در سایت یا شبکه‌های اجتماعی منتشر نمی‌شود.</p>
+      <p>برای پرسش یا درخواست حذف اطلاعات با {site.privacyContact ?? <Pending inline label="راه ارتباطی" />} تماس بگیرید.</p>
+    </div>
+  </section>
+</Base>
