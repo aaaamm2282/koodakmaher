@@ -42,6 +42,7 @@ for (const file of htmlFiles) {
   const rel = path.relative(path.dirname(file), out).split(path.sep).join('/');
   const prefix = rel ? rel + '/' : '';
 
+  html = html.replace(/<link rel="preload"[^>]*>/g, () => ''); // fonts are inlined as data URIs offline
   html = html.replace(/<link rel="stylesheet" href="([^"]+)">/g, (_, h) => `<style>${inlineCss(h)}</style>`);
 
   const scripts = [...html.matchAll(/<script type="module" src="([^"]+)"><\/script>/g)];

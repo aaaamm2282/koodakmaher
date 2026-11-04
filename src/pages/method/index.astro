@@ -33,7 +33,7 @@ const principles = [
   <Section id="goal" title="هدف متد">
     <p class="mt-4 max-w-3xl text-lg text-ink-soft" data-reveal>هدف نهایی متد این است که نوجوان در دو نقطه، انتخابی آگاهانه داشته باشد:</p>
     <div class="mt-8 grid gap-5 md:grid-cols-2" data-stagger>
-      <div class="card flex gap-5 p-7"><span class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-coral text-3xl font-black text-white ring-4 ring-ink">۱۵</span><div><h3 class="text-xl font-black">۱۵ سالگی (پایه نهم)</h3><p class="mt-1 text-ink-soft">اولین انتخاب رشته تحصیلی.</p></div></div>
+      <div class="card flex gap-5 p-7"><span class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-coral text-3xl font-black text-ink ring-4 ring-ink">۱۵</span><div><h3 class="text-xl font-black">۱۵ سالگی (پایه نهم)</h3><p class="mt-1 text-ink-soft">اولین انتخاب رشته تحصیلی.</p></div></div>
       <div class="card flex gap-5 p-7"><span class="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-grape text-3xl font-black text-white ring-4 ring-ink">۱۸</span><div><h3 class="text-xl font-black">۱۸ سالگی</h3><p class="mt-1 text-ink-soft">بازنگری و انتخاب نهایی برای دانشگاه یا ورود به کار.</p></div></div>
     </div>
     <div class="mt-8 max-w-3xl space-y-4 text-lg text-ink-soft" data-reveal>
@@ -59,7 +59,7 @@ const principles = [
   <Section id="principles" title="اصول اجرا">
     <ul class="mt-10 space-y-3" data-stagger>
       {principles.map((p) => (
-        <li class="card flex gap-4 p-5"><span class="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-mint text-white"><Icon name="check" size={18} /></span><p class="text-lg"><strong>{p.t}</strong> <span class="text-ink-soft">{p.d}</span></p></li>
+        <li class="card flex gap-4 p-5"><span class="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-mint text-ink"><Icon name="check" size={18} /></span><p class="text-lg"><strong>{p.t}</strong> <span class="text-ink-soft">{p.d}</span></p></li>
       ))}
     </ul>
   </Section>

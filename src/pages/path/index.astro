@@ -24,7 +24,7 @@ const stages = [
       <span class="absolute top-2 bottom-2 right-[2.2rem] w-1.5 origin-top rounded-full bg-gradient-to-b from-sun via-coral to-grape" data-timeline-line aria-hidden="true"></span>
       {stages.map((s) => (
         <li class="relative mb-8 pr-24 last:mb-0" data-reveal>
-          <span class:list={['absolute top-0 right-0 grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full text-center text-sm leading-tight font-black ring-4 ring-cream', s.c, s.c === 'bg-sun' ? 'text-ink' : 'text-white', s.milestone && 'ring-ink']}>
+          <span class:list={['absolute top-0 right-0 grid h-[4.5rem] w-[4.5rem] place-items-center rounded-full text-center text-sm leading-tight font-black ring-4 ring-cream', s.c, s.c === 'bg-grape' ? 'text-white' : 'text-ink', s.milestone && 'ring-ink']}>
             <span>{s.age}<br /><span class="text-[0.7rem] font-bold opacity-80">سال</span></span>
           </span>
           <div class:list={['card p-6', s.milestone && '!bg-ink text-white']}>
@@ -35,7 +35,7 @@ const stages = [
             </div>
             <p class:list={['mt-2 font-bold', s.milestone ? 'text-sun' : 'text-ink']}>{s.focus}</p>
             <p class:list={['mt-1', s.milestone ? 'text-white/75' : 'text-ink-soft']}><span class="font-bold">شکل چرخه: </span>{s.form}</p>
-            {s.href && <a href={s.href} class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-sky hover:underline">صفحه واحد<Icon name="arrow" size={14} /></a>}
+            {s.href && <a href={s.href} class="mt-3 inline-flex items-center gap-1 text-sm font-bold text-ink underline decoration-sky decoration-2 underline-offset-4 hover:decoration-coral">صفحه واحد<Icon name="arrow" size={14} /></a>}
           </div>
         </li>
       ))}

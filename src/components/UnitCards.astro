@@ -10,7 +10,7 @@ import { units, colorMap } from '../data/site';
       <li>
         <a href={`/units/${u.slug}/`} class:list={['spotlight card group relative flex h-full flex-col p-7 transition-shadow hover:shadow-xl', c.soft]} data-tilt>
           <div class="flex items-start justify-between gap-3">
-            <span class:list={['grid h-14 w-14 place-items-center rounded-2xl text-white shadow-[0_4px_0_#1f1a3d] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110', c.bg, u.color === 'sun' && '!text-ink']}>
+            <span class:list={['grid h-14 w-14 place-items-center rounded-2xl text-ink ring-2 ring-ink shadow-[0_4px_0_#1f1a3d] transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110', c.bg]}>
               <Icon name={u.icon} size={28} />
             </span>
             {u.soon && <span class="rounded-full bg-grape px-3 py-1 text-xs font-black text-white">به‌زودی</span>}

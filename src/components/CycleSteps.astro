@@ -11,7 +11,7 @@ const steps = cycle.map((c, i) => ({ ...c, ...(items?.[i] ?? {}) }));
     return (
       <li class="card relative p-7 pt-9">
         <span class="absolute -top-4 right-6 rounded-full bg-ink px-3 py-1 text-sm font-black text-white">قدم {(i + 1).toLocaleString('fa-IR')}</span>
-        <span class:list={['grid h-16 w-16 place-items-center rounded-2xl ring-4 ring-ink shadow-[0_5px_0_#1f1a3d]', c.bg, s.color === 'sun' ? 'text-ink' : 'text-white']}><Icon name={s.icon} size={30} /></span>
+        <span class:list={['grid h-16 w-16 place-items-center rounded-2xl ring-4 ring-ink shadow-[0_5px_0_#1f1a3d]', c.bg, 'text-ink']}><Icon name={s.icon} size={30} /></span>
         <h3 class="mt-5 text-2xl font-black">{s.title}</h3>
         <p class="mt-2 text-ink-soft">{s.text}</p>
         {i < steps.length - 1 && (

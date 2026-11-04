@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import vazirArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { site, units } from '../data/site';
@@ -83,6 +84,7 @@ const allSchema = [orgSchema, websiteSchema, ...crumbSchema, ...schema];
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
     <meta name="theme-color" content="#fff8ee" />
+    <link rel="preload" href={vazirArabic} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />

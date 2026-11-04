@@ -17,10 +17,13 @@ const id = `f-${name}-${Math.random().toString(36).slice(2, 7)}`;
 const base = 'mt-1.5 block w-full min-h-12 rounded-2xl border-2 border-ink/10 bg-white px-4 text-base text-ink outline-none transition focus:border-ink placeholder:text-ink/40 aria-[invalid=true]:border-coral';
 ---
 {type === 'checkbox' ? (
-  <label class:list={['flex cursor-pointer items-start gap-3 font-bold', full && 'sm:col-span-2']} for={id}>
-    <input id={id} type="checkbox" name={name} required={required} class="peer mt-1 h-6 w-6 shrink-0 cursor-pointer accent-ink" />
-    <span>{label}{required && <span class="text-coral" aria-hidden="true"> *</span>}</span>
-  </label>
+  <div class:list={[full && 'sm:col-span-2']}>
+    <label class="flex cursor-pointer items-start gap-3 font-bold" for={id}>
+      <input id={id} type="checkbox" name={name} required={required} class="peer mt-1 h-6 w-6 shrink-0 cursor-pointer accent-ink" />
+      <span>{label}{required && <span class="text-coral" aria-hidden="true"> *</span>}</span>
+    </label>
+    <p id={`${id}-err`} class="field-error mt-1 hidden text-sm font-bold text-[#c2362f]" aria-live="polite"></p>
+  </div>
 ) : (
   <div class:list={[full && 'sm:col-span-2']}>
     <label for={id} class="block font-bold">
@@ -33,14 +36,17 @@ const base = 'mt-1.5 block w-full min-h-12 rounded-2xl border-2 border-ink/10 bg
         {options.map((o) => <option>{o}</option>)}
       </select>
     ) : type === 'textarea' ? (
-      <textarea id={id} name={name} required={required} rows="4" placeholder={placeholder} class={base + ' py-3'} data-maxwords={maxwords}></textarea>
+      <textarea id={id} name={name} required={required} rows="4" placeholder={placeholder} class={base + ' py-3'} data-maxwords={maxwords} aria-describedby={hint ? `${id}-hint` : undefined}></textarea>
     ) : type === 'file' ? (
       <input id={id} name={name} type="file" required={required} accept={accept} class={base + ' py-2.5 file:ml-3 file:rounded-full file:border-0 file:bg-sun-soft file:px-4 file:py-1.5 file:font-bold file:text-ink'} />
     ) : (
-      <input id={id} name={name} type={type} required={required} placeholder={placeholder} autocomplete={autocomplete} class={base}
+      <input id={id} name={name} type={type} required={required} placeholder={placeholder} autocomplete={autocomplete ?? 'off'} class={base}
+        spellcheck={type === 'tel' || type === 'email' ? 'false' : undefined}
+        aria-describedby={hint ? `${id}-hint` : undefined}
         dir={type === 'tel' || type === 'email' ? 'ltr' : undefined}
         inputmode={type === 'tel' ? 'tel' : undefined} />
     )}
-    {hint && <p class="mt-1 text-sm text-ink-soft">{hint}</p>}
+    {hint && <p id={`${id}-hint`} class="mt-1 text-sm text-ink-soft">{hint}</p>}
+    <p id={`${id}-err`} class="field-error mt-1 hidden text-sm font-bold text-[#c2362f]" aria-live="polite"></p>
   </div>
 )}

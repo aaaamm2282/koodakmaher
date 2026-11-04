@@ -15,19 +15,26 @@
   --color-sky-soft: #dceaff;
   --color-mint: #2ec4b6;
   --color-mint-soft: #d4f5f1;
-  --color-grape: #9b5de5;
+  --color-grape: #8247e5;
   --color-grape-soft: #ece0fb;
   --radius-blob: 2rem;
   --shadow-clay: 0 2px 0 rgb(31 26 61 / 0.06), 0 12px 32px -12px rgb(31 26 61 / 0.18);
   --shadow-pop: 0 6px 0 var(--color-ink);
   --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Motion tokens (Emil Kowalski standards): strong ease-out for UI, ease-in-out for on-screen movement */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
   }
+  a, button, summary, label, select, input[type='checkbox'], input[type='file'] { touch-action: manipulation; }
+  a, button, summary, select, [role='button'], label[for] { cursor: pointer; }
   body {
     @apply bg-cream text-ink font-sans antialiased;
     font-feature-settings: 'ss01';
@@ -49,16 +56,18 @@
 @layer components {
   .container-x { @apply mx-auto w-full max-w-6xl px-4 sm:px-6; }
 
-  .btn {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold transition-transform duration-200 select-none;
+  .btn, .btn-primary, .btn-ghost {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold select-none;
+    transition: transform 160ms var(--ease-out), translate 160ms var(--ease-out), box-shadow 160ms var(--ease-out), border-color 200ms ease, background-color 200ms ease;
   }
-  .btn-primary {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold transition-transform duration-200 select-none bg-ink text-white;
-    box-shadow: 0 4px 0 var(--color-coral);
+  .btn-primary { @apply bg-ink text-white; box-shadow: 0 4px 0 var(--color-coral); }
+  .btn-ghost { @apply border-2 border-ink/15 bg-white text-ink; }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover { box-shadow: 0 6px 0 var(--color-coral); translate: 0 -2px; }
+    .btn-ghost:hover { border-color: rgb(31 26 61 / 0.4); }
   }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--color-coral); }
-  .btn-primary:active { transform: translateY(2px); box-shadow: 0 2px 0 var(--color-coral); }
-  .btn-ghost { @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-6 font-bold transition duration-200 select-none border-2 border-ink/15 bg-white text-ink hover:border-ink/40; }
+  .btn:active, .btn-primary:active, .btn-ghost:active { transform: scale(0.97); }
+  .btn-primary:active { box-shadow: 0 2px 0 var(--color-coral); }
 
   .eyebrow {
     @apply inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-sm font-bold text-ink-soft shadow-sm ring-1 ring-ink/5;
@@ -83,28 +92,15 @@
     content: '';
     position: absolute; inset: 0;
     background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(255 255 255 / 0.65), transparent 45%);
-    opacity: 0; transition: opacity 0.3s;
+    opacity: 0; transition: opacity 200ms ease;
     pointer-events: none;
   }
-  .spotlight:hover::before { opacity: 1; }
-
-  /* Gradient animated text */
-  .text-gradient {
-    background: linear-gradient(90deg, var(--color-coral), var(--color-grape), var(--color-sky), var(--color-mint), var(--color-coral));
-    background-size: 300% 100%;
-    -webkit-background-clip: text; background-clip: text;
-    color: transparent;
-    animation: gradient-pan 8s linear infinite;
-  }
+  @media (hover: hover) and (pointer: fine) { .spotlight:hover::before { opacity: 1; } }
 
   /* Wiggly underline */
   .squiggle { position: relative; white-space: nowrap; }
   .squiggle svg { position: absolute; inset-inline: 0; bottom: -0.35em; width: 100%; height: 0.5em; }
   .squiggle path { stroke-dasharray: 400; stroke-dashoffset: 400; animation: draw 1.4s 0.6s var(--ease-bounce) forwards; }
-
-  .marquee { mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
-  .marquee-track { animation: marquee 40s linear infinite; }
-  .marquee:hover .marquee-track { animation-play-state: paused; }
 
   .float-a { animation: float 7s ease-in-out infinite; }
   .float-b { animation: float 9s ease-in-out -3s infinite; }
@@ -118,22 +114,20 @@
 .js [data-stagger] > * { opacity: 0; }
 
 /* Rainbow arcs draw themselves in */
-.rainbow path, .cycle-arrows path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-arc 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+.rainbow path, .cycle-arrows path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw-arc 1.6s var(--ease-out) forwards; }
 .rainbow path:nth-child(2), .cycle-arrows path:nth-child(2) { animation-delay: 0.15s; }
 .rainbow path:nth-child(3), .cycle-arrows path:nth-child(3) { animation-delay: 0.3s; }
 @keyframes draw-arc { to { stroke-dashoffset: 0; } }
 
 /* Hero words pop in with pure CSS so the LCP text paints without waiting for JS */
 .hero-word {
-  animation: word-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: word-in 0.7s var(--ease-out) both;
   animation-delay: calc(var(--i, 0) * 70ms + 100ms);
 }
 @keyframes word-in { from { opacity: 0; transform: translateY(24px); filter: blur(8px); } }
 
 @keyframes shimmer { 60%, 100% { transform: translateX(120%); } }
-@keyframes gradient-pan { to { background-position: 300% 0; } }
 @keyframes draw { to { stroke-dashoffset: 0; } }
-@keyframes marquee { to { transform: translateX(50%); } }
 @keyframes float {
   /* individual transform props, so scroll-driven transforms from JS can compose with it */
   0%, 100% { translate: 0 0; rotate: 0deg; }
@@ -141,12 +135,13 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* Reduced motion = fewer and gentler, not zero: stop loops and movement, keep short opacity fades. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-  .js [data-reveal], .js [data-stagger] > * { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+  .float-a, .float-b, .float-c, .spin-slow, .shimmer::after { animation: none !important; }
+  .hero-word { animation: fade-in 0.3s ease both; animation-delay: 0s; }
+  .rainbow path, .cycle-arrows path, .squiggle path { animation: none; stroke-dashoffset: 0; }
+  .js [data-reveal], .js [data-stagger] > * { transform: none; }
+  .btn:active, .btn-primary:active, .btn-ghost:active { transform: none; }
 }
+@keyframes fade-in { from { opacity: 0; } }

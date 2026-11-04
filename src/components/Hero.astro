@@ -1,7 +1,6 @@
 ---
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
-import { site } from '../data/site';
 const words1 = 'یادگیری برای زندگی،'.split(' ');
 ---
 <section class="relative isolate overflow-hidden pt-8 pb-20 sm:pt-14 md:pb-28" aria-labelledby="hero-title">
@@ -17,11 +16,10 @@ const words1 = 'یادگیری برای زندگی،'.split(' ');
 
   <div class="container-x grid items-center gap-14 lg:grid-cols-[1.1fr_1fr]">
     <div>
-      <p class="hero-word" style="--i:0"><span class="eyebrow">{site.name}</span></p>
-      <h1 id="hero-title" class="mt-6 text-4xl font-black sm:text-5xl lg:text-6xl">
+            <h1 id="hero-title" class="text-4xl font-black sm:text-5xl lg:text-6xl">
         {words1.map((w, i) => <span class="hero-word inline-block" style={`--i:${i + 1}`}>{w}&nbsp;</span>)}
         <br />
-        <span class="hero-word squiggle text-gradient inline-block" style="--i:4">
+        <span class="hero-word squiggle text-grape inline-block" style="--i:4">
           نه برای امتحان
           <svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 14 Q 40 2 75 12 T 150 12 T 225 12 T 297 8" fill="none" stroke="#ffc93c" stroke-width="7" stroke-linecap="round" /></svg>
         </span>
@@ -58,12 +56,12 @@ const words1 = 'یادگیری برای زندگی،'.split(' ');
         <div class="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-black ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]"><span class="grid h-9 w-9 place-items-center rounded-xl bg-sun"><Icon name="sparkle" size={20} /></span>پیش‌بینی</div>
       </div>
       <div class="float-b absolute right-[-2%] bottom-[16%]" data-parallax="110">
-        <div class="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-black ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]"><span class="grid h-9 w-9 place-items-center rounded-xl bg-coral text-white"><Icon name="hand" size={20} /></span>تجربه</div>
+        <div class="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-black ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]"><span class="grid h-9 w-9 place-items-center rounded-xl bg-coral text-ink"><Icon name="hand" size={20} /></span>تجربه</div>
       </div>
       <div class="float-c absolute bottom-[16%] left-[-2%]" data-parallax="90">
-        <div class="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-black ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]"><span class="grid h-9 w-9 place-items-center rounded-xl bg-sky text-white"><Icon name="refresh" size={20} /></span>بازبینی</div>
+        <div class="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 font-black ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]"><span class="grid h-9 w-9 place-items-center rounded-xl bg-sky text-ink"><Icon name="refresh" size={20} /></span>بازبینی</div>
       </div>
-      <div class="float-b absolute top-[18%] left-[4%] hidden sm:grid h-14 w-14 place-items-center rounded-2xl bg-mint text-xl font-black text-white ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]" data-parallax="130">۳</div>
+      <div class="float-b absolute top-[18%] left-[4%] hidden sm:grid h-14 w-14 place-items-center rounded-2xl bg-mint text-xl font-black text-ink ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]" data-parallax="130">۳</div>
       <div class="float-a absolute top-[18%] right-[4%] hidden sm:grid h-14 w-14 place-items-center rounded-2xl bg-grape text-xl font-black text-white ring-4 ring-ink shadow-[0_6px_0_#1f1a3d]" data-parallax="150">۱۸</div>
     </div>
   </div>

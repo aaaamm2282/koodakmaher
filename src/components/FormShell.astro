@@ -28,21 +28,29 @@ const { title, submit, action = '', id } = Astro.props;
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       form.querySelectorAll<HTMLInputElement>('input[type=tel]').forEach((i) => (i.value = i.value.replace(/[۰-۹]/g, (d) => String(fa.indexOf(d)))));
-      let msg = '';
       form.querySelectorAll<HTMLElement>('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+      form.querySelectorAll<HTMLElement>('.field-error').forEach((p) => { p.textContent = ''; p.classList.add('hidden'); });
       form.querySelectorAll<HTMLTextAreaElement>('textarea[data-maxwords]').forEach((t) => {
         const max = Number(t.dataset.maxwords);
         const words = t.value.trim().split(/\s+/).filter(Boolean).length;
-        t.setCustomValidity(words > max ? `حداکثر ${max.toLocaleString('fa-IR')} کلمه` : '');
+        t.setCustomValidity(words > max ? `متن بیش از ${max.toLocaleString('fa-IR')} کلمه است؛ کوتاه‌ترش کنید.` : '');
       });
       const bad = [...form.querySelectorAll<HTMLInputElement>('input,select,textarea')].filter((el) => !el.checkValidity());
       if (bad.length) {
-        bad.forEach((el) => el.setAttribute('aria-invalid', 'true'));
-        msg = bad[0].validationMessage && bad[0].validity.customError ? bad[0].validationMessage : 'لطفاً موارد ستاره‌دار را کامل کنید.';
-        err.textContent = msg;
+        // Errors sit next to each field (Vercel Web Interface Guidelines); focus the first one.
+        bad.forEach((el) => {
+          el.setAttribute('aria-invalid', 'true');
+          const p = document.getElementById(`${el.id}-err`);
+          const text = el.validity.customError ? el.validationMessage
+            : el.validity.valueMissing ? (el.type === 'checkbox' ? 'برای ادامه، این گزینه را تأیید کنید.' : 'این مورد را پر کنید.')
+            : el.validity.typeMismatch || el.validity.patternMismatch ? 'قالب واردشده درست نیست؛ دوباره بررسی کنید.'
+            : 'این مورد را بررسی کنید.';
+          if (p) { p.textContent = text; p.classList.remove('hidden'); el.setAttribute('aria-describedby', [el.getAttribute('aria-describedby'), p.id].filter(Boolean).join(' ')); }
+        });
+        err.textContent = `${bad.length.toLocaleString('fa-IR')} مورد نیاز به اصلاح دارد.`;
         err.classList.remove('hidden');
         bad[0].focus();
-        animate(form, { x: [0, -10, 10, -6, 6, 0] }, { duration: 0.4 });
+        animate(form, { x: [0, -8, 8, -4, 4, 0] }, { duration: 0.35 });
         return;
       }
       err.classList.add('hidden');

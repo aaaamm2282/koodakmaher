@@ -1,7 +1,9 @@
 import { animate, inView, scroll, stagger } from 'motion';
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const spring = { type: 'spring', stiffness: 260, damping: 22 } as const;
+// Apple-style spring, subtle bounce (0.1-0.3) per Emil Kowalski's standards
+const spring = { type: 'spring', duration: 0.5, bounce: 0.2 } as const;
+const easeOut = [0.23, 1, 0.32, 1] as const;
 
 // 1) Scroll progress bar (RTL: grows from the right)
 const progress = document.getElementById('progress');
@@ -10,26 +12,19 @@ if (progress && !reduce) {
 }
 
 if (reduce) {
-  document.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
-    el.textContent = toFa(Number(el.dataset.count));
-  });
+  // Gentle variant: opacity-only fades, no movement, no parallax or tilt.
+  inView('[data-reveal]', (el) => { animate(el, { opacity: 1 }, { duration: 0.3 }); });
+  inView('[data-stagger]', (group) => { animate(group.querySelectorAll(':scope > *'), { opacity: 1 }, { duration: 0.3 }); });
 } else {
   // 2) Reveal on scroll; groups stagger their children
   inView('[data-reveal]', (el) => {
     const isScale = (el as HTMLElement).dataset.reveal === 'scale';
-    animate(el, isScale ? { opacity: 1, scale: 1 } : { opacity: 1, y: 0 }, { duration: 0.7, ease: [0.22, 1, 0.36, 1] });
+    animate(el, isScale ? { opacity: 1, scale: 1 } : { opacity: 1, y: 0 }, { duration: 0.6, ease: easeOut });
   }, { margin: '0px 0px -10% 0px' });
 
   inView('[data-stagger]', (group) => {
-    animate(group.querySelectorAll(':scope > *'), { opacity: [0, 1], y: [30, 0] }, { delay: stagger(0.08), ...spring });
+    animate(group.querySelectorAll(':scope > *'), { opacity: [0, 1], y: [30, 0] }, { delay: stagger(0.06), ...spring });
   }, { margin: '0px 0px -10% 0px' });
-
-  // 4) Number ticker
-  inView('[data-count]', (el) => {
-    const node = el as HTMLElement;
-    const target = Number(node.dataset.count);
-    animate(0, target, { duration: 1.8, ease: [0.16, 1, 0.3, 1], onUpdate: (v) => (node.textContent = toFa(Math.round(v))) });
-  });
 
   // 5) Parallax floating shapes driven by scroll
   document.querySelectorAll<HTMLElement>('[data-parallax]').forEach((el) => {
@@ -65,8 +60,4 @@ if (reduce) {
     });
     btn.addEventListener('pointerleave', () => animate(btn, { x: 0, y: 0 }, spring));
   });
-}
-
-function toFa(n: number) {
-  return n.toLocaleString('fa-IR');
 }
