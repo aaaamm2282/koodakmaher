@@ -8,6 +8,7 @@
 npm install
 npm run dev      # http://localhost:4321
 npm run build    # خروجی در dist/
+npm run offline  # نسخه‌ی آفلاین در offline/ (index.html را مستقیم در مرورگر باز کنید)
 ```
 
 ## تنظیمات
