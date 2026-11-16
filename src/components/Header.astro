@@ -8,7 +8,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <header id="site-header" class="sticky top-0 z-50 border-b border-transparent bg-paper/95 transition-[border-color] duration-200 data-[scrolled=true]:border-line">
   <div class="container-x flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
     <a href="/" class="flex items-center gap-3" aria-label={`${site.name} - خانه`}>
-      <Logo class="h-9 w-9 shrink-0" />
+      <Logo class="h-10 w-10 shrink-0" />
       <span class="flex flex-col leading-tight">
         <span class="font-serif text-[1.0625rem] font-semibold">{site.brand}</span>
         <span class="text-xs text-ink-mute">مؤسسه آموزشی کودک ماهر مانا</span>
@@ -37,7 +37,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
           </li>
         ) : (
           <li>
-            <a href={item.href} class:list={['relative block px-3 py-2 text-[0.9375rem] transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium after:absolute after:inset-x-3 after:-bottom-[0.95rem] after:h-0.5 after:bg-accent' : 'text-ink-soft']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+            <a href={item.href} class:list={['relative block px-3 py-2 text-[0.9375rem] transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium after:absolute after:inset-x-3 after:-bottom-[0.95rem] after:h-0.5 after:bg-gold' : 'text-ink-soft after:absolute after:inset-x-3 after:bottom-0.5 after:h-px after:origin-right after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:after:scale-x-100']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
           </li>
         ))}
       </ul>

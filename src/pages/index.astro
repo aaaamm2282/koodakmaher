@@ -3,7 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import Icon from '../components/Icon.astro';
 import Section from '../components/Section.astro';
-import CycleSteps from '../components/CycleSteps.astro';
+import CycleOrbit from '../components/CycleOrbit.astro';
 import UnitCards from '../components/UnitCards.astro';
 import CTA from '../components/CTA.astro';
 import { units, workshops } from '../data/site';
@@ -20,7 +20,7 @@ const places = units.filter((u) => u.address);
   <Hero />
 
   <!-- 01 The problem -->
-  <Section id="problem" kicker="۰۱ · مسئله">
+  <Section id="problem" kicker="۰۱ — مسئله">
     <div class="mt-4 grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
       <h2 id="problem-title" class="section-title" data-reveal>انتخاب آگاهانه یک مهارت است؛ باید از کودکی تمرین شود.</h2>
       <div class="space-y-5" data-reveal>
@@ -31,18 +31,35 @@ const places = units.filter((u) => u.address);
   </Section>
 
   <!-- 02 The method -->
-  <Section id="steps" kicker="۰۲ · متد کودک ماهر" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" tone="white">
-    <div class="mt-12"><CycleSteps /></div>
+  <Section id="steps" kicker="۰۲ — متد کودک ماهر" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" tone="white">
+    <div class="mt-12"><CycleOrbit /></div>
     <p class="mt-6" data-reveal><a href="/method/" class="link inline-flex items-center gap-1">بیشتر درباره متد<Icon name="arrow" size={16} /></a></p>
   </Section>
 
   <!-- 03 Units -->
-  <Section id="units" kicker="۰۳ · واحدها" title="از کودکستان تا آموزشگاه">
+  <Section id="units" kicker="۰۳ — واحدها" title="از کودکستان تا آموزشگاه">
     <div class="mt-10"><UnitCards /></div>
   </Section>
 
+  <!-- Workshops marquee -->
+  <a href="/workshops/" class="marquee block overflow-hidden bg-accent py-5 text-white" aria-label="کارگاه‌های مهارتی: خلاقیت، کار با چوب، نقاشی خلاق، هوش مصنوعی، الکترونیک و مهارت‌های نرم">
+    <div class="marquee-track" aria-hidden="true">
+      {[0, 1].map(() => (
+        <ul class="flex shrink-0 items-center">
+          {[...workshops, ...workshops].map((w) => (
+            <li class="flex items-center gap-3 px-8 font-serif text-xl sm:text-2xl">
+              <Icon name={w.icon} size={22} class="text-gold" />{w.n}
+              {w.age && <span class="font-sans text-sm text-white/60">{w.age}</span>}
+              <span class="mr-8 h-1.5 w-1.5 rounded-full bg-gold/60"></span>
+            </li>
+          ))}
+        </ul>
+      ))}
+    </div>
+  </a>
+
   <!-- 04 A day -->
-  <Section id="day" kicker="۰۴ · یک روز در کودک ماهر" tone="sand">
+  <Section id="day" kicker="۰۴ — یک روز در کودک ماهر" tone="sand">
     <div class="mt-4 grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
       <div data-reveal>
         <h2 id="day-title" class="section-title">درس رسمی، یک جلسه مهارت، یک کارگاه</h2>
@@ -67,7 +84,7 @@ const places = units.filter((u) => u.address);
   </Section>
 
   <!-- 05 Why -->
-  <Section id="why" kicker="۰۵ · چرا کودک ماهر" title="آنچه ما را متفاوت می‌کند">
+  <Section id="why" kicker="۰۵ — چرا کودک ماهر" title="آنچه ما را متفاوت می‌کند">
     <ul class="mt-12 grid gap-x-12 sm:grid-cols-2" data-stagger>
       {pillars.map((p) => (
         <li class="border-t border-line py-7">
@@ -79,10 +96,10 @@ const places = units.filter((u) => u.address);
   </Section>
 
   <!-- 06 Places -->
-  <Section id="places" kicker="۰۶ · مراکز ما" title="برای بازدید به ما سر بزنید" tone="white">
+  <Section id="places" kicker="۰۶ — مراکز ما" title="برای بازدید به ما سر بزنید" tone="white">
     <ul class="mt-10 grid gap-5 md:grid-cols-3" data-stagger>
       {places.map((u) => (
-        <li class="card flex flex-col p-6">
+        <li class="card lift flex flex-col p-6">
           <h3 class="text-xl">{u.officialName ?? u.name}</h3>
           <p class="mt-1 text-sm text-ink-mute">{u.name}</p>
           <dl class="mt-5 space-y-2.5 text-[0.95rem]">

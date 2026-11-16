@@ -15,6 +15,8 @@ export const GET: APIRoute = ({ site: base }) => {
 
 > ${site.slogan}. ${site.mission}
 
+نام‌های دیگر: ${site.brand}، کودک ماهر مانا، ماهر مانا (Maher Mana)
+
 بنیان‌گذار: ${site.founder}
 ${facts.length ? '\n' + facts.join('\n') + '\n' : ''}
 ## متد کودک ماهر: پیش‌بینی، تجربه، بازبینی

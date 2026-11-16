@@ -1,9 +1,11 @@
 ---
+import Logo from './Logo.astro';
 interface Props { title: string; subtitle?: string; kicker?: string; crumbs?: { href?: string; label: string }[]; badge?: string }
 const { title, subtitle, kicker, crumbs = [], badge } = Astro.props;
 ---
-<section class="border-b border-line">
-  <div class="container-x pt-8 pb-12 sm:pt-10 sm:pb-16">
+<section class="relative overflow-hidden border-b border-line">
+  <Logo variant="mark" class="page-logo pointer-events-none absolute top-1/2 left-[4%] hidden w-72 -translate-y-1/2 text-accent/[0.06] lg:block" />
+  <div class="container-x relative pt-8 pb-12 sm:pt-10 sm:pb-16">
     {crumbs.length > 0 && (
       <nav aria-label="مسیر صفحه" class="text-sm text-ink-mute">
         <ol class="flex flex-wrap items-center gap-2">

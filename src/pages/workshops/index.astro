@@ -12,7 +12,7 @@ const crumbs = [{ label: 'کارگاه‌ها' }];
   <section class="container-x py-14 sm:py-20">
     <ul class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
       {workshops.map((w) => (
-        <li class="card overflow-hidden">
+        <li class="card lift overflow-hidden">
           <div class="relative grid aspect-[16/10] place-items-center border-b border-line bg-sand text-ink/20" role="img" aria-label={`جای تصویر کارگاه ${w.n}`}>
             <Icon name={w.icon} size={44} />
             <span class="absolute bottom-3 left-3 text-xs text-ink-mute">جای تصویر</span>
