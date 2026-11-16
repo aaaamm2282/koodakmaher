@@ -1,9 +1,10 @@
 ---
 import '../styles/global.css';
 import vazirArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
+import naskhArabic from '@fontsource-variable/noto-naskh-arabic/files/noto-naskh-arabic-arabic-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { site, units } from '../data/site';
+import { site, social, units } from '../data/site';
 
 interface Props {
   /** Full <title>, exactly as in section 5 of the content brief */
@@ -44,12 +45,19 @@ const orgSchema: Record<string, unknown> = {
   logo: new URL('/favicon.svg', Astro.site).href,
   image: ogImage,
   founder: { '@type': 'Person', name: site.founder },
-  department: units.filter((u) => !u.soon).map((u) => ({ '@type': 'EducationalOrganization', name: `${u.name} کودک ماهر`, url: new URL(`/units/${u.slug}/`, Astro.site).href })),
+  department: units.filter((u) => !u.soon).map((u) => ({
+    '@type': 'EducationalOrganization',
+    name: u.officialName ?? `${u.name} کودک ماهر`,
+    url: new URL(`/units/${u.slug}/`, Astro.site).href,
+    ...(u.address && { address: { '@type': 'PostalAddress', streetAddress: u.address, ...(site.city && { addressLocality: site.city }), addressCountry: 'IR' } }),
+    ...(u.phone && { telephone: u.phone.tel }),
+    ...(u.mapUrl && { hasMap: u.mapUrl }),
+  })),
 };
 if (site.phone) orgSchema.telephone = site.phone;
 if (site.address || site.city) orgSchema.address = { '@type': 'PostalAddress', ...(site.address && { streetAddress: site.address }), ...(site.city && { addressLocality: site.city }), addressCountry: 'IR' };
-if (site.foundingYear) orgSchema.foundingDate = site.foundingYear;
-if (site.social.length) orgSchema.sameAs = site.social.map((s) => s.href);
+// foundingYear is a Persian (Hijri Shamsi) year, which schema.org foundingDate (ISO 8601) can't express; it stays in visible text only.
+if (social.length) orgSchema.sameAs = social.map((s) => s.href);
 
 const websiteSchema = {
   '@context': 'https://schema.org',
@@ -83,8 +91,9 @@ const allSchema = [orgSchema, websiteSchema, ...crumbSchema, ...schema];
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
-    <meta name="theme-color" content="#fff8ee" />
+    <meta name="theme-color" content="#fbf9f5" />
     <link rel="preload" href={vazirArabic} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={naskhArabic} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
@@ -107,8 +116,7 @@ const allSchema = [orgSchema, websiteSchema, ...crumbSchema, ...schema];
     <script is:inline>document.documentElement.classList.add('js');</script>
   </head>
   <body class="overflow-x-hidden">
-    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-full focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
-    <div id="progress" class="fixed inset-x-0 top-0 z-[60] h-1 origin-right scale-x-0 bg-gradient-to-l from-coral via-sun to-mint" aria-hidden="true"></div>
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
     <Header />
     <main id="main">
       <slot />

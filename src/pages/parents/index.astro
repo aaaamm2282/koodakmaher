@@ -2,46 +2,49 @@
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Section from '../../components/Section.astro';
-import Pending from '../../components/Pending.astro';
-import Icon from '../../components/Icon.astro';
 import CTA from '../../components/CTA.astro';
 const crumbs = [{ label: 'برای والدین' }];
 const home = [
-  { t: 'به‌جای «امروز چه یاد گرفتی؟» بپرسید: «امروز چه حدسی زدی؟ درست درآمد؟»', icon: 'chat' },
-  { t: 'وقتی حدسش غلط بود، آن را شکست نبینید. بپرسید: «حالا چه چیزی درباره خودت فهمیدی؟»', icon: 'heart' },
-  { t: 'به او برچسب نزنید («تو ریاضی‌ات ضعیف است»، «تو هنرمندی»). بگذارید خودش با تجربه کشف کند.', icon: 'tag' },
-  { t: 'کارهای واقعی خانه را به اندازه سنش به او بسپارید.', icon: 'hand' },
+  'به‌جای «امروز چه یاد گرفتی؟» بپرسید: «امروز چه حدسی زدی؟ درست درآمد؟»',
+  'وقتی حدسش غلط بود، آن را شکست نبینید. بپرسید: «حالا چه چیزی درباره خودت فهمیدی؟»',
+  'به او برچسب نزنید («تو ریاضی‌ات ضعیف است»، «تو هنرمندی»). بگذارید خودش با تجربه کشف کند.',
+  'کارهای واقعی خانه را به اندازه سنش به او بسپارید.',
+];
+const reports = [
+  { t: 'کارنامه ماهانه', d: 'هر ماه' },
+  { t: 'جلسه دیدار با اولیا', d: 'ماهانه، گاهی دوماهه' },
+  { t: 'دیدار خصوصی با معلم', d: 'هر هفته' },
+  { t: 'کارنامه ترم', d: 'ترم اول در بهمن، ترم دوم در خرداد' },
 ];
 ---
-<Base title="برای والدین · کودک ماهر" description="پرونده رشد چیست، در خانه چه کنیم، و آنچه کودک ماهر وعده می‌دهد و وعده نمی‌دهد." crumbs={crumbs}>
-  <PageHero title="شما بخشی از مسیرید" eyebrow="برای والدین" icon="heart" crumbs={crumbs} />
+<Base title="برای والدین · کودک ماهر" description="پرونده رشد چیست، در خانه چه کنیم، چطور در جریان پیشرفت فرزندمان باشیم، و آنچه کودک ماهر وعده می‌دهد و وعده نمی‌دهد." crumbs={crumbs}>
+  <PageHero title="شما بخشی از مسیرید" kicker="برای والدین" crumbs={crumbs} />
 
-  <Section id="file" title="پرونده رشد چیست؟">
-    <div class="card mt-6 grid gap-6 p-7 md:grid-cols-[auto_1fr]" data-reveal>
-      <span class="grid h-16 w-16 place-items-center rounded-2xl bg-coral text-ink ring-4 ring-ink"><Icon name="folder" size={30} /></span>
-      <p class="text-lg leading-loose text-ink-soft">برای هر کودک یک پرونده رشد ساده نگه داشته می‌شود: آرزوها و علاقه‌هایش در سال‌های مختلف، حدس‌هایش درباره خودش و نتیجه آن‌ها، و تجربه‌هایی که داشته. این پرونده برای مقایسه کودک با دیگران نیست؛ برای این است که خود کودک، شما و ما مسیرش را ببینیم. پرونده رشد با رضایت خانواده نگه داشته می‌شود و فقط در اختیار شما و کادر آموزشی است.</p>
-    </div>
+  <Section id="file" kicker="پرونده رشد" title="پرونده رشد چیست؟">
+    <p class="mt-6 max-w-3xl font-serif text-[1.1875rem] leading-[2.05]" data-reveal>برای هر کودک یک پرونده رشد ساده نگه داشته می‌شود: آرزوها و علاقه‌هایش در سال‌های مختلف، حدس‌هایش درباره خودش و نتیجه آن‌ها، و تجربه‌هایی که داشته. این پرونده برای مقایسه کودک با دیگران نیست؛ برای این است که خود کودک، شما و ما مسیرش را ببینیم. پرونده رشد با رضایت خانواده نگه داشته می‌شود و فقط در اختیار شما و کادر آموزشی است.</p>
   </Section>
 
-  <Section id="home" title="در خانه چه کنیم؟">
-    <ul class="mt-8 grid gap-4 md:grid-cols-2" data-stagger>
-      {home.map((h) => <li class="spotlight card flex gap-4 p-6"><span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sun"><Icon name={h.icon} size={22} /></span><p class="text-lg">{h.t}</p></li>)}
-    </ul>
+  <Section id="home" kicker="در خانه" title="در خانه چه کنیم؟" tone="white">
+    <ol class="mt-10 grid gap-x-12 md:grid-cols-2" data-stagger>
+      {home.map((h, i) => <li class="flex gap-5 border-t border-line py-6"><span class="num text-xl text-saffron">{(i + 1).toLocaleString('fa-IR')}</span><p class="text-[1.0625rem]">{h}</p></li>)}
+    </ol>
   </Section>
 
-  <Section id="progress" title="چطور در جریان پیشرفت فرزندمان هستیم؟">
-    <Pending class="mt-6" label="نحوه و دفعات گزارش: مثلاً جلسه بازخورد ماهانه/فصلی، کارنامه توصیفی، پیام‌رسان رسمی مدرسه" />
+  <Section id="progress" kicker="گزارش" title="چطور در جریان پیشرفت فرزندمان هستیم؟">
+    <dl class="mt-10 grid gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+      {reports.map((r) => <div class="bg-surface p-6"><dt class="font-serif text-xl font-semibold">{r.t}</dt><dd class="mt-2 text-ink-soft">{r.d}</dd></div>)}
+    </dl>
   </Section>
 
-  <Section id="promise" title="آنچه ما وعده می‌دهیم و آنچه وعده نمی‌دهیم">
-    <div class="mt-8 grid gap-5 md:grid-cols-2" data-stagger>
-      <div class="card border-t-8 border-mint p-7">
-        <h3 class="flex items-center gap-2 text-xl font-black"><Icon name="check" class="text-mint" />وعده می‌دهیم</h3>
-        <p class="mt-3 text-lg text-ink-soft">فرزندتان کارهای متنوع را واقعاً تجربه کند، شاهدهای انتخابش ثبت شود و در انتخاب رشته تنها نماند.</p>
+  <Section id="promise" kicker="شفافیت" title="آنچه ما وعده می‌دهیم و آنچه وعده نمی‌دهیم" tone="sand">
+    <div class="mt-10 grid gap-10 md:grid-cols-2" data-stagger>
+      <div class="border-t-2 border-accent pt-5">
+        <h3 class="text-xl">وعده می‌دهیم</h3>
+        <p class="lead mt-3">فرزندتان کارهای متنوع را واقعاً تجربه کند، شاهدهای انتخابش ثبت شود و در انتخاب رشته تنها نماند.</p>
       </div>
-      <div class="card border-t-8 border-coral p-7">
-        <h3 class="flex items-center gap-2 text-xl font-black"><Icon name="x" class="text-coral" />وعده نمی‌دهیم</h3>
-        <p class="mt-3 text-lg text-ink-soft">تضمین رشته یا شغل خاص، یا اینکه این روش جای تلاش خود کودک و تصمیم خانواده را بگیرد.</p>
+      <div class="border-t-2 border-ink/40 pt-5">
+        <h3 class="text-xl">وعده نمی‌دهیم</h3>
+        <p class="lead mt-3">تضمین رشته یا شغل خاص، یا اینکه این روش جای تلاش خود کودک و تصمیم خانواده را بگیرد.</p>
       </div>
     </div>
   </Section>

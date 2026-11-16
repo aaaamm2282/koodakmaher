@@ -1,18 +1,21 @@
 ---
 import Pending from './Pending.astro';
 import Icon from './Icon.astro';
-interface Props { title?: string; items: { label: string; value?: string; pending?: string }[] }
+interface Props { title?: string; items: { label: string; value?: string; href?: string; pending?: string; ltr?: boolean }[] }
 const { title = 'اطلاعات ثبت‌نام', items } = Astro.props;
 ---
 <aside class="card h-fit p-6 lg:sticky lg:top-24" data-reveal>
-  <h2 class="text-xl font-black">{title}</h2>
-  <dl class="mt-4 space-y-4">
+  <h2 class="font-sans text-base font-semibold">{title}</h2>
+  <dl class="mt-2 divide-y divide-line">
     {items.map((i) => (
-      <div>
-        <dt class="text-sm font-bold text-ink-soft">{i.label}</dt>
-        <dd class="mt-1">{i.value && <span>{i.value} </span>}{i.pending && <Pending inline label={i.pending} />}</dd>
+      <div class="py-3.5">
+        <dt class="text-sm text-ink-mute">{i.label}</dt>
+        <dd class="mt-1 text-[0.95rem]">
+          {i.value && (i.href ? <a href={i.href} class="link" dir={i.ltr ? 'ltr' : undefined} target={i.href.startsWith('http') ? '_blank' : undefined} rel={i.href.startsWith('http') ? 'noopener' : undefined}>{i.value}</a> : <span>{i.value}</span>)}
+          {i.pending && <> <Pending inline label={i.pending} /></>}
+        </dd>
       </div>
     ))}
   </dl>
-  <a href="/register/" class="btn-primary shimmer mt-6 w-full">پیش‌ثبت‌نام<Icon name="arrow" size={18} /></a>
+  <a href="/register/" class="btn-primary mt-4 w-full">پیش‌ثبت‌نام و مشاوره<Icon name="arrow" size={18} /></a>
 </aside>

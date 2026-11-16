@@ -1,5 +1,5 @@
 /**
- * اطلاعات پایه‌ی مؤسسه. منبع: docs/content-brief.md
+ * اطلاعات پایه‌ی مؤسسه. منبع: docs/content-brief.md و پاسخ‌های مؤسسه (۱۴۰۵/۰۸/۲۴).
  *
  * قاعده: هر مقداری که هنوز معلوم نیست `null` است. در صفحه به‌جای آن کادر
  * «در حال تکمیل» نشان داده می‌شود و در داده‌ی ساختاریافته (JSON-LD) و متاها
@@ -14,17 +14,28 @@ export const site = {
     'ما به کودک و نوجوان کمک می‌کنیم خودش را بشناسد، با تجربه واقعی یاد بگیرد و در ۱۵ و ۱۸ سالگی مسیر تحصیل و کارش را آگاهانه انتخاب کند.',
   founder: 'مهدی ملکی',
 
-  city: null as string | null, // {{شهر}}
+  city: null as string | null, // {{شهر}} — پیش‌شماره‌ها ۰۵۱ است ولی شهر هنوز تأیید نشده
   phone: null as string | null, // {{تلفن اصلی}}
   address: null as string | null, // {{نشانی اصلی}}
-  foundingYear: null as string | null, // {{سال تأسیس}}
-  social: [] as { label: string; href: string }[], // {{نشانی صفحه‌های رسمی}}
-  mapUrl: null as string | null, // {{لینک موقعیت روی نقشه}}
+  foundingYear: '۱۳۹۹' as string | null,
+  mapUrl: null as string | null, // نقشه‌ی هر واحد جداگانه در units آمده است
   privacyContact: null as string | null, // {{راه ارتباطی}}
 
   /** نشانی سایت قبلی (برای ارجاع در اسکیما) */
   oldSite: 'https://mahermana.com/',
 };
+
+export type Social = { label: string; handle: string; href: string; note?: string };
+
+export const social: Social[] = [
+  { label: 'اینستاگرام کودکستان و دبستان', handle: '@koodakmaher', href: 'https://instagram.com/koodakmaher' },
+  { label: 'اینستاگرام دبیرستان', handle: '@mahermana_highschool', href: 'https://instagram.com/mahermana_highschool' },
+  { label: 'اینستاگرام آموزشگاه زبان', handle: '@mahermana.language', href: 'https://instagram.com/mahermana.language' },
+  { label: 'اینستاگرام آموزشگاه فنی‌وحرفه‌ای', handle: '@maheremana', href: 'https://instagram.com/maheremana' },
+  { label: 'تلگرام', handle: '@koodakmaheremana', href: 'https://t.me/koodakmaheremana' },
+  { label: 'ایتا', handle: '@koodakmaheremana', href: 'https://eitaa.com/koodakmaheremana' },
+  { label: 'شاد مؤسسه', handle: 'کانال شاد', href: 'https://shad.ir/joinc/JIFGBH0LPBZTOAHHTYMANAHJLBKIHWOI' },
+];
 
 export const nav = [
   { href: '/', label: 'خانه' },
@@ -37,8 +48,9 @@ export const nav = [
 ];
 
 export const footerLinks = [
+  { href: '/about/', label: 'درباره ما' },
   { href: '/method/', label: 'متد کودک ماهر' },
-  { href: '/units/', label: 'واحدها' },
+  { href: '/path/', label: 'مسیر رشد ۳ تا ۱۸ سال' },
   { href: '/register/', label: 'پیش‌ثبت‌نام' },
   { href: '/faq/', label: 'پرسش‌های پرتکرار' },
   { href: '/careers/', label: 'همکاری با ما' },
@@ -48,46 +60,118 @@ export const footerLinks = [
 export type Unit = {
   slug: string;
   name: string;
+  /** نام رسمی واحد، اگر با نام کوتاه فرق دارد */
+  officialName?: string;
   short: string | null; // جمله‌ی کوتاه کارت؛ null یعنی هنوز تکمیل نشده
   shortPending?: string;
+  ages: string | null;
   icon: string;
-  color: 'sun' | 'sky' | 'mint' | 'coral' | 'grape';
   soon?: boolean;
+  manager: string | null;
+  address: string | null;
+  phone: { display: string; tel: string; note?: string } | null;
+  hours: string | null;
+  mapUrl: string | null;
+  instagram: string | null;
 };
 
 export const units: Unit[] = [
-  { slug: 'kindergarten', name: 'کودکستان', short: 'بازی، حدس زدن و امتحان کردن؛ اولین قدم‌های شناخت خود.', icon: 'blocks', color: 'sun' },
-  { slug: 'primary', name: 'دبستان مهارت‌محور', short: 'درس‌های رسمی، همراه با جلسه روزانه مهارت‌های نرم و کارگاه.', icon: 'pencil', color: 'sky' },
-  { slug: 'middle-school', name: 'متوسطه اول پسرانه', short: 'مسئله‌های واقعی و پرونده انتخاب برای تصمیم ۱۵ سالگی.', icon: 'compass', color: 'coral' },
-  { slug: 'high-school', name: 'متوسطه دوم', short: 'در دست برنامه‌ریزی؛ برای واکاوی ۱۵ تا ۱۸ سالگی.', icon: 'flag', color: 'grape', soon: true },
-  { slug: 'language', name: 'آموزشگاه زبان', short: null, shortPending: 'یک جمله درباره رویکرد و سطوح آموزشگاه زبان', icon: 'chat', color: 'mint' },
-  { slug: 'vocational', name: 'آموزشگاه آزاد فنی‌وحرفه‌ای', short: null, shortPending: 'یک جمله درباره دوره‌ها و مخاطبان', icon: 'wrench', color: 'sun' },
+  {
+    slug: 'kindergarten', name: 'کودکستان', officialName: 'کودکستان کودک ماهر',
+    short: 'بازی، حدس زدن و امتحان کردن؛ اولین قدم‌های شناخت خود.', ages: '۳ تا ۶ سال', icon: 'blocks',
+    manager: 'فرزانه استادی پارسا', address: 'بلوار فردوسی، فرامرز عباسی ۳۲',
+    phone: { display: '۰۵۱-۳۶۰۶۱۶۸۱', tel: '05136061681' },
+    hours: '۷:۳۰ تا ۱۴ (آموزش ۸:۳۰ تا ۱۳)', mapUrl: 'https://nshn.ir/bevb1OvqpJFOCL', instagram: '@koodakmaher',
+  },
+  {
+    slug: 'primary', name: 'دبستان مهارت‌محور', officialName: 'پیش‌دبستانی و دبستان پسرانه غیردولتی کودک ماهر',
+    short: 'درس‌های رسمی، همراه با جلسه روزانه مهارت‌های نرم و کارگاه.', ages: 'پیش‌دبستانی و پایه اول تا ششم، پسرانه', icon: 'pencil',
+    manager: 'خانم محبوبه خوش‌خوی', address: 'بلوار فردوسی، خیابان مهدی ۱۰',
+    phone: { display: '۳۷۶۲۷۷۲۰', tel: '37627720', note: 'مدیریت' },
+    hours: 'در مدرسه ۷ تا ۱۴:۳۰، کلاس‌ها ۸ تا ۱۳:۴۵', mapUrl: 'https://nshn.ir/0c7b14kd5JFnNL', instagram: '@koodakmaher',
+  },
+  {
+    slug: 'middle-school', name: 'متوسطه اول پسرانه', officialName: 'دبیرستان ماهر مانا',
+    short: 'مسئله‌های واقعی و پرونده انتخاب برای تصمیم ۱۵ سالگی.', ages: 'پایه هفتم تا نهم، پسرانه', icon: 'compass',
+    manager: 'آقای تقی‌زادگان', address: 'میدان استقلال، نبش آزادی ۲۷', phone: null,
+    hours: '۷ تا ۱۴:۱۰، شنبه تا چهارشنبه', mapUrl: 'https://nshn.ir/24sb1Mdf5JFLBT', instagram: '@mahermana_highschool',
+  },
+  {
+    slug: 'high-school', name: 'متوسطه دوم', short: 'در دست برنامه‌ریزی؛ برای واکاوی ۱۵ تا ۱۸ سالگی.', ages: 'پایه دهم تا دوازدهم', icon: 'flag', soon: true,
+    manager: null, address: null, phone: null, hours: null, mapUrl: null, instagram: null,
+  },
+  {
+    slug: 'language', name: 'آموزشگاه زبان',
+    short: 'انگلیسی، فرانسه، ترکی استانبولی، عربی و آلمانی؛ برای خردسالان، نوجوانان و بزرگسالان.', ages: '۳ تا ۶ سال، نوجوانان دبیرستانی، بزرگسالان', icon: 'chat',
+    manager: 'خانم حسینی', address: null, phone: null, hours: null, mapUrl: null, instagram: '@mahermana.language',
+  },
+  {
+    slug: 'vocational', name: 'آموزشگاه آزاد فنی‌وحرفه‌ای', short: null, shortPending: 'یک جمله درباره دوره‌ها و مخاطبان', ages: null, icon: 'wrench',
+    manager: 'خانم امامیون', address: null, phone: null, hours: null, mapUrl: null, instagram: '@maheremana',
+  },
 ];
 
 export const cycle = [
-  { title: 'پیش‌بینی', text: 'قبل از هر تجربه، کودک حدس می‌زند چه پیش می‌آید و خودش در آن چطور خواهد بود.', icon: 'sparkle', color: 'sun' },
-  { title: 'تجربه', text: 'کار واقعی انجام می‌دهد: ساختن، پرسیدن، آزمودن، مسئولیت گرفتن.', icon: 'hand', color: 'coral' },
-  { title: 'بازبینی', text: 'حدسش را با آنچه واقعاً شد مقایسه می‌کند و از فاصله آن دو، خودش را بهتر می‌شناسد.', icon: 'refresh', color: 'sky' },
+  { title: 'پیش‌بینی', text: 'قبل از هر تجربه، کودک حدس می‌زند چه پیش می‌آید و خودش در آن چطور خواهد بود.' },
+  { title: 'تجربه', text: 'کار واقعی انجام می‌دهد: ساختن، پرسیدن، آزمودن، مسئولیت گرفتن.' },
+  { title: 'بازبینی', text: 'حدسش را با آنچه واقعاً شد مقایسه می‌کند و از فاصله آن دو، خودش را بهتر می‌شناسد.' },
 ] as const;
 
-export const colorMap = {
-  sun: { bg: 'bg-sun', soft: 'bg-sun-soft', text: 'text-ink' },
-  sky: { bg: 'bg-sky', soft: 'bg-sky-soft', text: 'text-sky' },
-  mint: { bg: 'bg-mint', soft: 'bg-mint-soft', text: 'text-mint' },
-  coral: { bg: 'bg-coral', soft: 'bg-coral-soft', text: 'text-coral' },
-  grape: { bg: 'bg-grape', soft: 'bg-grape-soft', text: 'text-grape' },
-} as const;
+export const workshops = [
+  { n: 'خلاقیت', d: 'ایده دادن، ساختن و آزمودن ایده‌ها.', icon: 'bulb', age: 'از ۴ سال' },
+  { n: 'کار با چوب', d: 'طراحی و ساختن اشیای واقعی با رعایت ایمنی.', icon: 'hammer', age: 'از ۴ سال' },
+  { n: 'نقاشی خلاق', d: 'بیان آزاد، رنگ و فرم.', icon: 'palette', age: 'از ۴ سال' },
+  { n: 'هوش مصنوعی', d: 'آشنایی با اینکه هوش مصنوعی چطور کار می‌کند و استفاده درست و مسئولانه از آن.', icon: 'cpu', age: 'از ۷ سال' },
+  { n: 'الکترونیک', d: 'مدارهای ساده و ساختن وسایل کوچک.', icon: 'zap', age: 'از ۱۰ سال' },
+  { n: 'مهارت‌های نرم', d: 'تصمیم‌گیری، همکاری، گفت‌وگو و مسئولیت‌پذیری؛ جلسه روزانه در همه مراکز.', icon: 'users', age: null },
+];
 
-/** پرسش‌های پرتکرار. `pending` یعنی پاسخ (یا بخشی از آن) هنوز تأیید یا تکمیل نشده و در اسکیمای FAQ نمی‌آید. */
+export const registerSteps = [
+  { t: 'پیش‌ثبت‌نام', d: 'اطلاعات اولیه را در فرم همین صفحه ثبت می‌کنید.' },
+  { t: 'وقت مصاحبه', d: 'همکاران ما تماس می‌گیرند و برای جلسه مصاحبه و آشنایی وقت می‌دهند.' },
+  { t: 'ثبت‌نام نهایی', d: 'مدارک را تحویل می‌دهید و پیش‌پرداخت شهریه را واریز می‌کنید.' },
+];
+
+export const documents: { unit: string; items: string[]; pending?: string }[] = [
+  {
+    unit: 'کودکستان',
+    items: ['فتوکپی شناسنامه کودک', 'فتوکپی شناسنامه و کارت ملی پدر و مادر', 'فتوکپی کارت واکسیناسیون', '۶ قطعه عکس ۳×۴'],
+  },
+  {
+    unit: 'دبستان',
+    items: [
+      '۶ قطعه عکس دانش‌آموز',
+      'اصل و فتوکپی کارت ملی و همه صفحه‌های شناسنامه والدین',
+      'فتوکپی صفحه اول شناسنامه دانش‌آموز',
+      'ورودی پایه اول: فرم سنجش و گواهی سلامت بهداشت',
+      'سایر پایه‌ها: پرونده سال گذشته (سنجش لازم نیست)',
+    ],
+  },
+  {
+    unit: 'متوسطه اول',
+    items: [
+      'عکس دانش‌آموز',
+      'اصل و فتوکپی کارت ملی و همه صفحه‌های شناسنامه والدین',
+      'فتوکپی صفحه اول شناسنامه دانش‌آموز',
+      'پرونده سال گذشته',
+      'سنجش',
+    ],
+    pending: 'تعداد قطعه‌های عکس',
+  },
+];
+
+/** پرسش‌های پرتکرار. `pending` یعنی پاسخ (یا بخشی از آن) هنوز تکمیل نشده و در اسکیمای FAQ نمی‌آید. */
 export const faqs: { q: string; a?: string; pending?: string }[] = [
-  { q: 'آیا برنامه درسی رسمی آموزش‌وپرورش اجرا می‌شود؟', a: 'بله. برنامه رسمی کامل اجرا می‌شود و جلسه‌های مهارت و کارگاه در کنار آن است.', pending: 'تأیید شود' },
+  { q: 'آیا برنامه درسی رسمی آموزش‌وپرورش اجرا می‌شود؟', a: 'بله. برنامه رسمی کامل اجرا می‌شود و جلسه‌های مهارت و کارگاه در کنار آن است.' },
   { q: 'متد کودک ماهر جای درس خواندن را نمی‌گیرد؟', a: 'نه. هدف ما این است که کودک هم درس را خوب یاد بگیرد و هم خودش را بشناسد. بسیاری از مهارت‌هایی که تمرین می‌شود، مثل برنامه‌ریزی و سنجیدن حدس، به درس خواندن هم کمک می‌کند.' },
   { q: 'آیا به بچه‌ها نمره مهارت یا اخلاق داده می‌شود؟', a: 'نه. مهارت‌ها با توصیف رفتار و شاهد ثبت می‌شوند و منش کودک را نمره نمی‌دهیم. بچه‌ها با هم مقایسه نمی‌شوند.' },
   { q: 'شما استعداد فرزندم را تشخیص می‌دهید؟', a: 'ما به کودک برچسب استعداد نمی‌زنیم. کمکش می‌کنیم کارهای مختلف را امتحان کند و خودش با شاهد بفهمد در چه کاری علاقه و توان بیشتری دارد.' },
-  { q: 'اگر فرزندم از وسط سال یا از پایه بالاتر وارد شود چه؟', a: 'مسیر از هر سنی قابل شروع است.', pending: 'نحوه همراه کردن دانش‌آموز تازه‌وارد — تأیید شود' },
+  { q: 'اگر فرزندم از وسط سال یا از پایه بالاتر وارد شود چه؟', a: 'مسیر از هر سنی قابل شروع است. در تابستان ۱۵ جلسه آموزشی «مرور پایه» برگزار می‌شود؛ در این جلسه‌ها دانش‌آموز با معلم و شیوه آموزش ما آشنا می‌شود و سطح علمی‌اش تا حدودی مشخص می‌شود.' },
   { q: 'آیا تضمین می‌کنید فرزندم رشته درست را انتخاب کند؟', a: 'نه، و هیچ روشی نمی‌تواند چنین تضمینی بدهد. انتخاب رشته به عوامل زیادی مثل کنکور، قوانین هدایت تحصیلی و بازار کار هم وابسته است. آنچه ما انجام می‌دهیم این است که انتخاب فرزندتان بر پایه تجربه و شناخت واقعی باشد.' },
   { q: 'متد شما از کجا آمده؟', a: 'متد کودک ماهر بر پایه تجربه سال‌ها آموزش مهارتی و پژوهش‌های شناخته‌شده در آموزش تجربی ساخته شده و در حال اجرای آزمایشی و بهبود است. توضیح بیشتر در صفحه «متد کودک ماهر» آمده است.' },
-  { q: 'شهریه چقدر است و امکان پرداخت اقساطی هست؟', pending: 'تکمیل شود' },
+  { q: 'چطور در جریان پیشرفت فرزندمان هستیم؟', a: 'کارنامه ماهانه می‌گیرید و جلسه دیدار با اولیا ماهانه (گاهی دوماهه) برگزار می‌شود. معلم‌ها هر هفته وقت دیدار خصوصی با والدین دارند. کارنامه ترم اول در بهمن و کارنامه ترم دوم در خرداد ارائه می‌شود.' },
+  { q: 'شهریه چقدر است و امکان پرداخت اقساطی هست؟', a: 'شهریه دبستان در جلسه مشاوره اعلام می‌شود و امکان پرداخت اقساطی وجود دارد. شهریه کودکستان در صفحه کودکستان آمده است.', pending: 'شهریه متوسطه اول، آموزشگاه زبان و فنی‌وحرفه‌ای' },
+  { q: 'برنامه ناهار و پذیرایی دارید؟', a: 'برنامه ناهار نداریم. برای مناسبت‌ها، جشن‌ها و مراسم‌ها برنامه پذیرایی اجرا می‌شود.' },
+  { q: 'کارگاه‌ها برای کودکانی که دانش‌آموز شما نیستند هم برگزار می‌شود؟', a: 'بله. کودکان بیرون از مؤسسه هم می‌توانند در نوبت عصر در کارگاه‌ها شرکت کنند.' },
   { q: 'سرویس رفت‌وآمد دارید؟', pending: 'تکمیل شود' },
-  { q: 'برنامه پذیرایی/ناهار؟', pending: 'تکمیل شود' },
 ];

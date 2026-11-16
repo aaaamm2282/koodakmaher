@@ -1,0 +1,20 @@
+---
+// Address / phone / hours / map / manager of one unit. Missing values show the pending marker.
+import Icon from './Icon.astro';
+import Pending from './Pending.astro';
+import type { Unit } from '../data/site';
+interface Props { unit: Unit }
+const { unit: u } = Astro.props;
+const ig = u.instagram ? `https://instagram.com/${u.instagram.slice(1)}` : null;
+---
+<section class="card p-6 sm:p-7" aria-labelledby={`contact-${u.slug}`} data-reveal>
+  <h2 id={`contact-${u.slug}`} class="text-2xl">نشانی و تماس</h2>
+  {u.officialName && <p class="mt-1 text-sm text-ink-mute">{u.officialName}</p>}
+  <dl class="mt-5 grid gap-x-8 gap-y-4 text-[0.95rem] sm:grid-cols-2">
+    <div class="flex gap-3"><dt><Icon name="pin" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">نشانی</span></dt><dd>{u.address ?? <Pending inline label="نشانی" />}{u.mapUrl && <a href={u.mapUrl} target="_blank" rel="noopener" class="link mt-1 block text-sm">مسیریابی در نشان</a>}</dd></div>
+    <div class="flex gap-3"><dt><Icon name="phone" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">تلفن</span></dt><dd>{u.phone ? <><a href={`tel:${u.phone.tel}`} class="num" dir="ltr">{u.phone.display}</a>{u.phone.note && <span class="text-ink-mute"> ({u.phone.note})</span>}</> : <Pending inline label="تلفن" />}</dd></div>
+    <div class="flex gap-3"><dt><Icon name="clock" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">ساعت</span></dt><dd>{u.hours ?? <Pending inline label="ساعت کار" />}</dd></div>
+    <div class="flex gap-3"><dt><Icon name="users" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">مدیر</span></dt><dd>{u.manager ? <>مدیر: {u.manager}</> : <Pending inline label="مدیر واحد" />}</dd></div>
+    {ig && <div class="flex gap-3"><dt><Icon name="instagram" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">اینستاگرام</span></dt><dd><a href={ig} target="_blank" rel="noopener" class="link" dir="ltr">{u.instagram}</a></dd></div>}
+  </dl>
+</section>

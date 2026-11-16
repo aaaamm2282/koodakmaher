@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { site, units, cycle, faqs } from '../data/site';
+import { site, units, cycle, faqs, social, workshops } from '../data/site';
 
 // llms.txt: a plain-text summary that AI assistants can read and cite (GEO).
 // Only confirmed content is included; unknown values (null) are left out.
@@ -20,10 +20,20 @@ ${facts.length ? '\n' + facts.join('\n') + '\n' : ''}
 ## متد کودک ماهر: پیش‌بینی، تجربه، بازبینی
 ${cycle.map((c) => `- ${c.title}: ${c.text}`).join('\n')}
 
-هدف: انتخاب آگاهانه رشته در ۱۵ سالگی (پایه نهم) و انتخاب نهایی در ۱۸ سالگی. متد در حال اجرای آزمایشی و بهبود است.
+هدف: انتخاب آگاهانه رشته در ۱۵ سالگی (پایه نهم) و انتخاب نهایی در ۱۸ سالگی. متد در حال اجرای آزمایشی و بهبود است و اجرای منظم آن در همه مقطع‌ها از ۱ آذر ۱۴۰۵ آغاز می‌شود.
 
 ## واحدها
-${units.map((x) => `- [${x.name}](${u(`/units/${x.slug}/`)})${x.short ? `: ${x.short}` : ''}`).join('\n')}
+${units.map((x) => {
+  const bits = [x.officialName && `نام رسمی: ${x.officialName}`, x.ages && `سن/پایه: ${x.ages}`, x.address && `نشانی: ${x.address}`, x.phone && `تلفن: ${x.phone.display}`, x.hours && `ساعت: ${x.hours}`, x.manager && `مدیر: ${x.manager}`].filter(Boolean);
+  return `- [${x.name}](${u(`/units/${x.slug}/`)})${x.soon ? ' (در دست برنامه‌ریزی)' : ''}${x.short ? `: ${x.short}` : ''}${bits.length ? `\n  ${bits.join(' · ')}` : ''}`;
+}).join('\n')}
+
+## کارگاه‌ها
+${workshops.map((w) => `- ${w.n}${w.age ? ` (${w.age})` : ''}: ${w.d}`).join('\n')}
+کودکان بیرون از مؤسسه هم می‌توانند در نوبت عصر در کارگاه‌ها شرکت کنند.
+
+## شبکه‌های اجتماعی
+${social.map((s) => `- ${s.label}: ${s.href}`).join('\n')}
 
 ## پرسش‌های پرتکرار
 ${faqs.filter((f) => f.a && !f.pending).map((f) => `### ${f.q}\n${f.a}`).join('\n\n')}

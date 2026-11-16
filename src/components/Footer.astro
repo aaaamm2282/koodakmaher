@@ -2,44 +2,53 @@
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 import Pending from './Pending.astro';
-import { footerLinks, site } from '../data/site';
+import { footerLinks, site, social, units } from '../data/site';
+const places = units.filter((u) => u.address);
 ---
-<footer class="relative mt-16 overflow-hidden bg-ink text-white">
-  <svg class="absolute inset-x-0 top-0 h-10 w-full text-cream" viewBox="0 0 1440 40" preserveAspectRatio="none" aria-hidden="true">
-    <path fill="currentColor" d="M0 0h1440v12c-120 18-240 28-360 20S840 6 720 10 480 34 360 34 120 22 0 12Z" />
-  </svg>
-  <div class="container-x grid gap-10 pt-20 pb-10 md:grid-cols-4">
-    <div class="md:col-span-2">
-      <a href="/" class="flex items-center gap-3">
-        <Logo class="h-12 w-12" />
-        <span class="text-xl font-black">{site.name}</span>
+<footer class="bg-forest text-white/80">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-12">
+    <div class="md:col-span-4">
+      <a href="/" class="flex items-center gap-3 text-white">
+        <Logo class="h-10 w-10" light />
+        <span class="font-serif text-lg font-semibold">{site.name}</span>
       </a>
-      <p class="mt-3 text-lg font-bold text-sun">{site.slogan}</p>
-      <p class="mt-3 max-w-md text-white/70">{site.mission}</p>
-      {site.social.length > 0 && (
-        <ul class="mt-5 flex gap-2">
-          {site.social.map((s) => <li><a href={s.href} class="grid h-11 min-w-11 place-items-center rounded-full bg-white/10 px-3 transition hover:bg-coral" rel="noopener" target="_blank">{s.label}</a></li>)}
-        </ul>
-      )}
+      <p class="mt-5 font-serif text-lg text-white">{site.slogan}</p>
+      <p class="mt-3 max-w-sm text-sm leading-7 text-white/65">{site.mission}</p>
     </div>
-    <nav aria-label="پیوندهای سریع">
-      <h2 class="mb-3 font-bold text-sun">لینک‌های سریع</h2>
-      <ul class="space-y-2 text-white/75">
-        {footerLinks.map((i) => <li><a class="hover:text-white" href={i.href}>{i.label}</a></li>)}
+
+    <div class="md:col-span-5">
+      <h2 class="font-sans text-sm font-medium text-white">نشانی مراکز</h2>
+      <ul class="mt-4 space-y-4 text-sm leading-7">
+        {places.map((u) => (
+          <li>
+            <a href={`/units/${u.slug}/`} class="font-medium text-white hover:underline">{u.name}</a>
+            <p class="text-white/65">{u.address}</p>
+            {u.phone && <a href={`tel:${u.phone.tel}`} class="num text-white/80 hover:text-white" dir="ltr">{u.phone.display}</a>}
+          </li>
+        ))}
       </ul>
-    </nav>
-    <div>
-      <h2 class="mb-3 font-bold text-sun">تماس</h2>
-      <ul class="space-y-3 text-white/75">
-        <li class="flex gap-2"><Icon name="phone" size={20} class="mt-1 shrink-0" />{site.phone ? <a href={`tel:${site.phone}`} dir="ltr">{site.phone}</a> : <Pending inline label="تلفن اصلی" class="!bg-white/10 !text-white/80" />}</li>
-        <li class="flex gap-2"><Icon name="pin" size={20} class="mt-1 shrink-0" />{site.address ?? <Pending inline label="نشانی اصلی" class="!bg-white/10 !text-white/80" />}</li>
-        <li class="flex gap-2"><Icon name="shield" size={20} class="mt-1 shrink-0" /><Pending inline label="نماد اعتماد و مجوزها" class="!bg-white/10 !text-white/80" /></li>
-      </ul>
+    </div>
+
+    <div class="grid grid-cols-2 gap-8 md:col-span-3 md:grid-cols-1">
+      <nav aria-label="پیوندهای سریع">
+        <h2 class="font-sans text-sm font-medium text-white">دسترسی سریع</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          {footerLinks.map((i) => <li><a class="hover:text-white" href={i.href}>{i.label}</a></li>)}
+        </ul>
+      </nav>
+      <div>
+        <h2 class="font-sans text-sm font-medium text-white">ما را دنبال کنید</h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          {social.slice(4).map((s) => <li><a href={s.href} class="hover:text-white" rel="noopener" target="_blank">{s.label}</a></li>)}
+          <li><a href="/contact/#social" class="hover:text-white">صفحه‌های اینستاگرام</a></li>
+        </ul>
+      </div>
     </div>
   </div>
   <div class="border-t border-white/10">
-    <p class="container-x py-5 text-center text-sm text-white/55">
-      © <Pending inline label="سال" class="!border-white/20 !bg-white/5 !text-white/60" /> {site.name}
-    </p>
+    <div class="container-x flex flex-col gap-3 py-5 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between">
+      <p>© {site.name}، از سال <span class="num">{site.foundingYear}</span></p>
+      <p class="flex items-center gap-2"><Icon name="shield" size={16} /><Pending inline label="نماد اعتماد و مجوزها" tone="dark" /></p>
+    </div>
   </div>
 </footer>

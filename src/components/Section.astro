@@ -1,15 +1,17 @@
 ---
-interface Props { id?: string; title?: string; eyebrow?: string; intro?: string; class?: string; center?: boolean }
-const { id, title, eyebrow, intro, class: cls = '', center = false } = Astro.props;
+interface Props { id?: string; title?: string; kicker?: string; intro?: string; class?: string; tone?: 'paper' | 'sand' | 'white' }
+const { id, title, kicker, intro, class: cls = '', tone = 'paper' } = Astro.props;
 const hid = id ? `${id}-title` : undefined;
 ---
-<section id={id} class:list={['container-x scroll-mt-24 py-14 sm:py-20', cls]} aria-labelledby={title ? hid : undefined}>
-  {(title || eyebrow) && (
-    <div class:list={['max-w-3xl', center && 'mx-auto text-center']} data-reveal>
-      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
-      {title && <h2 id={hid} class="section-title mt-4">{title}</h2>}
-      {intro && <p class="mt-4 text-lg text-ink-soft">{intro}</p>}
-    </div>
-  )}
-  <slot />
+<section id={id} class:list={['scroll-mt-24', tone === 'sand' && 'bg-sand', tone === 'white' && 'border-y border-line bg-surface']} aria-labelledby={title ? hid : undefined}>
+  <div class:list={['container-x py-16 sm:py-24', cls]}>
+    {(title || kicker) && (
+      <div class="max-w-2xl" data-reveal>
+        {kicker && <p class="kicker">{kicker}</p>}
+        {title && <h2 id={hid} class="section-title mt-3">{title}</h2>}
+        {intro && <p class="lead mt-4">{intro}</p>}
+      </div>
+    )}
+    <slot />
+  </div>
 </section>

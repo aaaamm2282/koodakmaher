@@ -5,30 +5,30 @@ import { nav, site, units } from '../data/site';
 const path = Astro.url.pathname;
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
-<header id="site-header" class="sticky top-0 z-50 transition-[background-color,box-shadow] duration-300 data-[scrolled=true]:bg-cream/85 data-[scrolled=true]:shadow-[0_1px_0_rgb(31_26_61/0.08)] data-[scrolled=true]:backdrop-blur-md">
-  <div class="container-x flex h-18 items-center justify-between gap-4 py-3">
-    <a href="/" class="flex items-center gap-2.5" aria-label={`${site.name} - خانه`}>
-      <Logo class="h-11 w-11" />
+<header id="site-header" class="sticky top-0 z-50 border-b border-transparent bg-paper/95 transition-[border-color] duration-200 data-[scrolled=true]:border-line">
+  <div class="container-x flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
+    <a href="/" class="flex items-center gap-3" aria-label={`${site.name} - خانه`}>
+      <Logo class="h-9 w-9 shrink-0" />
       <span class="flex flex-col leading-tight">
-        <span class="text-lg font-black">{site.brand}</span>
-        <span class="text-xs font-medium text-ink-soft">مؤسسه آموزشی کودک ماهر مانا</span>
+        <span class="font-serif text-[1.0625rem] font-semibold">{site.brand}</span>
+        <span class="text-xs text-ink-mute">مؤسسه آموزشی کودک ماهر مانا</span>
       </span>
     </a>
 
     <nav aria-label="منوی اصلی" class="hidden xl:block">
-      <ul class="flex items-center gap-0.5 rounded-full bg-white/70 p-1.5 ring-1 ring-ink/5 backdrop-blur">
+      <ul class="flex items-center gap-1">
         {nav.map((item) => item.children ? (
           <li class="group relative">
-            <a href={item.href} class:list={['flex items-center gap-1 rounded-full px-3.5 py-2 text-sm font-bold transition-colors hover:bg-sun-soft hover:text-ink', isActive(item.href) ? 'bg-sun-soft text-ink' : 'text-ink-soft']} aria-haspopup="true">
-              {item.label}<Icon name="chevron" size={16} class="transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+            <a href={item.href} class:list={['flex items-center gap-1 px-3 py-2 text-[0.9375rem] transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft']} aria-haspopup="true">
+              {item.label}<Icon name="chevron" size={15} class="transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
             </a>
-            <div class="invisible absolute top-full right-0 pt-3 opacity-0 transition-[opacity,visibility] duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-              <ul class="card w-72 translate-y-2 p-2 transition-transform duration-200 group-hover:translate-y-0 group-focus-within:translate-y-0">
+            <div class="invisible absolute top-full right-0 pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <ul class="w-72 rounded-xl border border-line bg-surface p-1.5 shadow-soft">
                 {units.map((u) => (
                   <li>
-                    <a href={`/units/${u.slug}/`} class="flex items-center justify-between gap-2 rounded-xl px-3 py-2.5 text-sm font-bold hover:bg-sun-soft">
-                      {u.name}
-                      {u.soon && <span class="rounded-full bg-grape-soft px-2 py-0.5 text-xs text-grape">به‌زودی</span>}
+                    <a href={`/units/${u.slug}/`} class="flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-[0.9375rem] hover:bg-sand">
+                      <span>{u.name}</span>
+                      {u.soon ? <span class="text-xs text-ink-mute">به‌زودی</span> : u.ages && <span class="truncate text-xs text-ink-mute">{u.ages.split('،')[0]}</span>}
                     </a>
                   </li>
                 ))}
@@ -37,49 +37,49 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
           </li>
         ) : (
           <li>
-            <a href={item.href} class:list={['block rounded-full px-3.5 py-2 text-sm font-bold transition-colors hover:bg-sun-soft hover:text-ink', isActive(item.href) ? 'bg-sun-soft text-ink' : 'text-ink-soft']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+            <a href={item.href} class:list={['relative block px-3 py-2 text-[0.9375rem] transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium after:absolute after:inset-x-3 after:-bottom-[0.95rem] after:h-0.5 after:bg-accent' : 'text-ink-soft']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
           </li>
         ))}
       </ul>
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="/register/" class="btn-primary shimmer hidden !min-h-11 !px-5 text-sm sm:inline-flex">پیش‌ثبت‌نام</a>
-      <button id="menu-btn" type="button" class="grid h-11 w-11 place-items-center rounded-full bg-white ring-1 ring-ink/10 xl:hidden" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-menu">
-        <Icon name="menu" />
+      <a href="/register/" class="btn-primary hidden !min-h-10 !px-4 text-sm sm:inline-flex">پیش‌ثبت‌نام و مشاوره</a>
+      <button id="menu-btn" type="button" class="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface xl:hidden" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-menu">
+        <Icon name="menu" size={22} />
       </button>
     </div>
   </div>
 
-  <div id="mobile-menu" class="pointer-events-none fixed inset-0 z-50 opacity-0 transition-opacity duration-300 xl:hidden data-[open=true]:pointer-events-auto data-[open=true]:opacity-100" data-open="false">
-    <div class="absolute inset-0 bg-ink/40 backdrop-blur-sm" data-close></div>
-    <nav aria-label="منوی موبایل" class="absolute inset-x-3 top-3 max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain rounded-[2rem] bg-cream p-5 shadow-2xl">
-      <div class="mb-3 flex items-center justify-between">
-        <span class="font-black">منو</span>
-        <button type="button" class="grid h-11 w-11 place-items-center rounded-full bg-white ring-1 ring-ink/10" aria-label="بستن منو" data-close>
-          <Icon name="close" />
+  <div id="mobile-menu" class="pointer-events-none fixed inset-0 z-50 opacity-0 transition-opacity duration-200 xl:hidden data-[open=true]:pointer-events-auto data-[open=true]:opacity-100" data-open="false">
+    <div class="absolute inset-0 bg-ink/30" data-close></div>
+    <nav aria-label="منوی موبایل" class="absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-paper p-5 shadow-soft">
+      <div class="mb-4 flex items-center justify-between">
+        <span class="font-serif text-lg font-semibold">منو</span>
+        <button type="button" class="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface" aria-label="بستن منو" data-close>
+          <Icon name="close" size={22} />
         </button>
       </div>
-      <ul class="space-y-0.5">
+      <ul class="divide-y divide-line border-y border-line">
         {nav.map((item) => (
           <li>
-            <a href={item.href} class="block rounded-2xl px-4 py-2.5 text-lg font-bold hover:bg-sun-soft" data-close>{item.label}</a>
+            <a href={item.href} class:list={['block py-3 text-[1.0625rem]', isActive(item.href) && 'font-medium text-accent']} data-close>{item.label}</a>
             {item.children && (
-              <ul class="mr-4 border-r-2 border-ink/10 pr-2">
-                {units.map((u) => <li><a href={`/units/${u.slug}/`} class="block rounded-xl px-3 py-2 text-ink-soft hover:bg-sun-soft" data-close>{u.name}{u.soon && ' (به‌زودی)'}</a></li>)}
+              <ul class="mb-3 space-y-0.5 border-r border-line pr-3">
+                {units.map((u) => <li><a href={`/units/${u.slug}/`} class="block py-1.5 text-ink-soft" data-close>{u.name}{u.soon && ' (به‌زودی)'}</a></li>)}
               </ul>
             )}
           </li>
         ))}
       </ul>
-      <a href="/register/" class="btn-primary mt-4 w-full" data-close>پیش‌ثبت‌نام و مشاوره</a>
+      <a href="/register/" class="btn-primary mt-5 w-full" data-close>پیش‌ثبت‌نام و مشاوره</a>
     </nav>
   </div>
 </header>
 
 <script>
   const header = document.getElementById('site-header')!;
-  const onScroll = () => (header.dataset.scrolled = String(window.scrollY > 12));
+  const onScroll = () => (header.dataset.scrolled = String(window.scrollY > 8));
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
 
@@ -89,8 +89,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     menu.dataset.open = String(open);
     btn.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
+    if (!open && menu.contains(document.activeElement)) btn.focus();
   };
   btn.addEventListener('click', () => setOpen(true));
   menu.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => setOpen(false)));
-  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && menu.dataset.open === 'true' && setOpen(false));
 </script>

@@ -1,32 +1,26 @@
 ---
-import Icon from './Icon.astro';
-interface Props { title: string; subtitle?: string; eyebrow?: string; crumbs?: { href?: string; label: string }[]; icon?: string; badge?: string }
-const { title, subtitle, eyebrow, crumbs = [], icon = 'sparkle', badge } = Astro.props;
+interface Props { title: string; subtitle?: string; kicker?: string; crumbs?: { href?: string; label: string }[]; badge?: string }
+const { title, subtitle, kicker, crumbs = [], badge } = Astro.props;
 ---
-<section class="relative isolate overflow-hidden pt-8 pb-14 sm:pt-12 sm:pb-20">
-  <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
-    <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-sky-soft blur-3xl"></div>
-    <div class="absolute -right-20 top-10 h-72 w-72 rounded-full bg-sun-soft blur-3xl"></div>
-    <div class="float-a absolute top-16 left-[8%] hidden h-16 w-16 rounded-2xl bg-coral/80 ring-4 ring-ink shadow-[0_6px_0_#1f1a3d] md:block" data-parallax="90"></div>
-    <div class="float-b absolute bottom-8 left-[22%] hidden h-10 w-10 rounded-full bg-mint ring-4 ring-ink md:block" data-parallax="140"></div>
-  </div>
-  <div class="container-x">
+<section class="border-b border-line">
+  <div class="container-x pt-8 pb-12 sm:pt-10 sm:pb-16">
     {crumbs.length > 0 && (
-      <nav aria-label="مسیر صفحه" class="text-sm text-ink-soft">
-        <ol class="flex flex-wrap items-center gap-1.5">
+      <nav aria-label="مسیر صفحه" class="text-sm text-ink-mute">
+        <ol class="flex flex-wrap items-center gap-2">
           <li><a href="/" class="hover:text-ink">خانه</a></li>
           {crumbs.map((c) => (
-            <li class="flex items-center gap-1.5"><span aria-hidden="true">/</span>{c.href ? <a href={c.href} class="hover:text-ink">{c.label}</a> : <span aria-current="page">{c.label}</span>}</li>
+            <li class="flex items-center gap-2"><span aria-hidden="true" class="text-line-strong">/</span>{c.href ? <a href={c.href} class="hover:text-ink">{c.label}</a> : <span aria-current="page" class="text-ink-soft">{c.label}</span>}</li>
           ))}
         </ol>
       </nav>
     )}
-    <div class="mt-6 max-w-3xl">
-      {badge && (
-        <p class="hero-word" style="--i:0"><span class="eyebrow !bg-grape !text-white"><Icon name="hourglass" size={16} />{badge}</span></p>
-      )}
-      <h1 class="hero-word mt-4 text-3xl font-black sm:text-4xl md:text-5xl" style="--i:1">{title}</h1>
-      {subtitle && <p class="hero-word mt-5 text-lg text-ink-soft sm:text-xl" style="--i:2">{subtitle}</p>}
+    <div class="mt-10 max-w-3xl">
+      <div class="rise flex flex-wrap items-center gap-3" style="--i:0">
+        {kicker && <p class="kicker">{kicker}</p>}
+        {badge && <span class="rounded-md border border-saffron/30 bg-saffron-soft px-2 py-0.5 text-xs font-medium text-saffron">{badge}</span>}
+      </div>
+      <h1 class="rise mt-4 text-[2rem] sm:text-[2.5rem] md:text-[3rem]" style="--i:1; line-height:1.35">{title}</h1>
+      {subtitle && <p class="rise lead mt-5" style="--i:2">{subtitle}</p>}
       <slot />
     </div>
   </div>

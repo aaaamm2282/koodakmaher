@@ -7,13 +7,13 @@ import Field from '../../../components/Field.astro';
 const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'متوسطه دوم' }];
 ---
 <Base title="متوسطه دوم کودک ماهر (به‌زودی)" description="راه‌اندازی متوسطه دوم کودک ماهر برای ادامه مسیر از ۱۵ تا ۱۸ سالگی در دست برنامه‌ریزی است." crumbs={crumbs}>
-  <PageHero title="متوسطه دوم؛ از انتخاب اول تا انتخاب نهایی" eyebrow="متوسطه دوم" badge="به‌زودی" icon="flag" crumbs={crumbs} />
-  <section class="container-x pb-16">
-    <div class="grid gap-10 lg:grid-cols-2">
-      <div class="space-y-6" data-reveal>
-        <p class="text-lg leading-loose">برای ادامه مسیر از ۱۵ تا ۱۸ سالگی، راه‌اندازی متوسطه دوم در دست برنامه‌ریزی است. در این دوره نوجوان انتخاب اولش را در عمل می‌آزماید، خود و دنیای کار را دوباره واکاوی می‌کند و برای انتخاب نهایی در ۱۸ سالگی آماده می‌شود.</p>
-        <div><h2 class="text-lg font-black">وضعیت</h2><Pending class="mt-2" label="زمان احتمالی شروع، رشته‌ها و وضعیت مجوز" /></div>
-        <p class="rounded-2xl bg-grape-soft p-4 font-bold">این واحد هنوز ثبت‌نام ندارد. اگر می‌خواهید وقتی ثبت‌نام آغاز شد خبردار شوید، فرم کنار را پر کنید.</p>
+  <PageHero title="متوسطه دوم؛ از انتخاب اول تا انتخاب نهایی" kicker="متوسطه دوم" badge="به‌زودی" crumbs={crumbs} />
+  <section class="container-x py-14 sm:py-20">
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="space-y-8" data-reveal>
+        <p class="font-serif text-[1.25rem] leading-[2]">برای ادامه مسیر از ۱۵ تا ۱۸ سالگی، راه‌اندازی متوسطه دوم در دست برنامه‌ریزی است. در این دوره نوجوان انتخاب اولش را در عمل می‌آزماید، خود و دنیای کار را دوباره واکاوی می‌کند و برای انتخاب نهایی در ۱۸ سالگی آماده می‌شود.</p>
+        <div><h2 class="font-sans text-base font-semibold">وضعیت</h2><Pending class="mt-3" label="زمان احتمالی شروع، رشته‌ها و وضعیت مجوز" /></div>
+        <p class="border-r-2 border-saffron pr-5 text-ink-soft">این واحد هنوز ثبت‌نام ندارد. اگر می‌خواهید وقتی ثبت‌نام آغاز شد خبردار شوید، فرم «خبرم کنید» را پر کنید.</p>
       </div>
       <FormShell id="notify-form" title="خبرم کنید" submit="خبرم کنید">
         <Field label="نام والد" name="parent" required autocomplete="name" />

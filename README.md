@@ -19,6 +19,14 @@ npm run offline  # نسخه‌ی آفلاین در offline/ (index.html را م�
 - فرم‌ها فعلاً فقط ظاهر دارند. وقتی مقصد ارسال معلوم شد، آن را به‌صورت `action` به `FormShell` بدهید.
 - `SITE_URL`: دامنه‌ی نهایی (پیش‌فرض `https://mahermana.com`)، برای canonical و sitemap.
 
+## سیستم طراحی
+
+- زمینه کاغذی `#fbf9f5`، متن `#17201c`، یک رنگ تأکیدی سبز `#1e5b47`؛ زعفرانی فقط برای شماره‌ها و برچسب «در حال تکمیل».
+- عنوان‌ها با Noto Naskh Arabic، متن با Vazirmatn؛ وزن‌ها فقط ۴۰۰ / ۵۰۰ / ۶۰۰.
+- جداکننده‌ها خط یک‌پیکسلی‌اند، نه سایه و رنگ‌های پررنگ. توکن‌ها در `src/styles/global.css`.
+- حرکت: فقط ظاهر شدن نرم هنگام اسکرول و کشیده شدن خط مسیر ۳ تا ۱۸ سالگی؛ با «کاهش حرکت» فقط محو شدن می‌ماند.
+- لوگوی فعلی موقت است (`src/components/Logo.astro` و `public/favicon.svg`).
+
 ## سئو و جئو
 
 گزارش کامل در [docs/seo-geo-audit.md](docs/seo-geo-audit.md). خروجی‌های مرتبط: `/sitemap-index.xml`، `/robots.txt`، `/llms.txt` و JSON-LD در همه‌ی صفحه‌ها.
