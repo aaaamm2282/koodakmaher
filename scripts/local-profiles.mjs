@@ -11,6 +11,7 @@
  * Exits with 1 when a listing text breaks a rule: too long, a link, phone number or price inside a
  * description, or a claim the institute has not confirmed («بهترین», «تضمین», percentages…).
  */
+import '../src/lib/load-env.mjs'; // .env settings, before anything reads process.env
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

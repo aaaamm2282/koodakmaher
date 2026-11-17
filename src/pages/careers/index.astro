@@ -17,12 +17,13 @@ const crumbs = [{ label: 'همکاری با ما' }];
         <h2 class="text-2xl">موقعیت‌های فعلی</h2>
         <Pending class="mt-4" label="فهرست موقعیت‌ها یا «در حال حاضر موقعیت باز نداریم؛ رزومه شما را برای آینده نگه می‌داریم»" />
       </div>
-      <FormShell id="careers-form" title="فرم همکاری" submit="ارسال درخواست همکاری">
+      <FormShell id="careers-form" kind="careers" title="فرم همکاری" submit="ارسال درخواست همکاری"
+        success={{ title: 'درخواست همکاری شما رسید', text: 'همکاران ما رزومه شما را می‌خوانند و اگر موقعیت مناسبی باشد، با شما تماس می‌گیرند.' }}>
         <Field label="نام" name="name" required autocomplete="name" />
         <Field label="شماره تماس" name="phone" type="tel" required autocomplete="tel" />
         <Field label="موقعیت مورد نظر" name="position" required full />
         <Field label="تحصیلات و سابقه کوتاه" name="background" type="textarea" required full />
-        <Field label="بارگذاری رزومه" name="resume" type="file" required full accept=".pdf,.doc,.docx" hint="PDF یا Word" />
+        <Field label="بارگذاری رزومه" name="resume" type="file" required full accept=".pdf,.doc,.docx" acceptLabel="PDF یا Word" maxMb={5} hint="PDF یا Word، حداکثر ۵ مگابایت" />
         <Field label="چرا کودک ماهر؟" name="why" type="textarea" required full maxwords={100} hint="حداکثر ۱۰۰ کلمه" />
       </FormShell>
     </div>

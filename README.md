@@ -16,8 +16,8 @@ npm run offline  # نسخه‌ی آفلاین در offline/ (index.html را م�
 - محتوای سایت از `docs/content-brief.md` آمده است.
 - `src/data/site.ts`: نام، شعار، تلفن، نشانی، واحدها و پرسش‌های پرتکرار. مقدارهای `null` یعنی هنوز تکمیل نشده؛ در صفحه کادر «در حال تکمیل» نشان داده می‌شود.
 - صفحه‌ها در `src/pages/`؛ جاهای خالی با کامپوننت `Pending` مشخص شده‌اند (`grep -rn "Pending" src/pages`).
-- فرم‌ها فعلاً فقط ظاهر دارند. وقتی مقصد ارسال معلوم شد، آن را به‌صورت `action` به `FormShell` بدهید.
-- `SITE_URL`: دامنه‌ی نهایی (پیش‌فرض `https://mahermana.com`)، برای canonical و sitemap.
+- تنظیمات ساخت در فایل `.env` است (نمونه با توضیح: `.env.example`): `SITE_URL` (دامنه‌ی نهایی، پیش‌فرض `https://mahermana.com`)، مقصد فرم‌ها و آمار بازدید.
+- فرم‌ها: تا `PUBLIC_FORM_ENDPOINT` خالی است، فقط خانه‌ها را بررسی می‌کنند و چیزی نمی‌فرستند. گیرنده‌ی PHP برای هاست ایرانی (ذخیره در CSV و خبر در «بله») در `server/` است؛ راهنما: [docs/forms-setup.md](docs/forms-setup.md).
 
 ## سیستم طراحی
 

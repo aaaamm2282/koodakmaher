@@ -32,7 +32,7 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
         </h1>
         <p class="rise lead mt-6 max-w-xl" style="--i:2">از کودکستان تا نوجوانی، کنار فرزندتان هستیم تا خودش را بشناسد، با تجربه واقعی یاد بگیرد و مسیرش را آگاهانه انتخاب کند.</p>
         <div class="rise mt-8 flex flex-wrap gap-3" style="--i:3">
-          <a href="/register/" class="btn-primary">پیش‌ثبت‌نام و مشاوره<Icon name="arrow" size={18} /></a>
+          <a href="/register/" class="btn-primary" data-cta="home-hero">پیش‌ثبت‌نام و مشاوره<Icon name="arrow" size={18} /></a>
           <a href="/method/" class="btn-ghost">متد کودک ماهر چیست؟</a>
         </div>
       </div>
@@ -94,7 +94,7 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
         <div class="relative grid grid-cols-5" role="tablist" aria-label="مراحل مسیر">
           {stops.map((s, i) => (
             <button type="button" role="tab" id={`stop-${i}`} aria-controls="stop-panel" aria-selected={i === 0 ? 'true' : 'false'} tabindex={i === 0 ? 0 : -1}
-              class="path-stop group flex flex-col items-center text-center" style={`--i:${i}`} data-stop={i}>
+              class="path-stop group flex flex-col items-center text-center" style={`--i:${i}`} data-stop={i} data-stage={s.label}>
               <span class:list={['stop-dot grid h-7 w-7 place-items-center rounded-full border-2 border-accent bg-surface transition-[transform,background-color] duration-300', s.milestone && 'stop-milestone']}>
                 <span class="h-2 w-2 rounded-full bg-accent transition-colors duration-300"></span>
               </span>
@@ -119,6 +119,8 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
 </section>
 
 <script>
+  import { track } from '../lib/track';
+
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // Hero video: muted and looping, starts only when there is motion permission and no data saver,
@@ -176,7 +178,7 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
     };
     const stop = () => { interacted = true; if (timer) { clearInterval(timer); timer = undefined; } };
     tabs.forEach((t, i) => {
-      t.addEventListener('click', () => { stop(); select(i); });
+      t.addEventListener('click', () => { stop(); select(i); track('explorer_select', { stage: t.dataset.stage || String(i) }); });
       t.addEventListener('keydown', (e) => {
         // RTL: ArrowLeft moves forward
         const d = e.key === 'ArrowLeft' ? 1 : e.key === 'ArrowRight' ? -1 : 0;

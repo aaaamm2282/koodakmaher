@@ -1,32 +1,148 @@
 ---
+/**
+ * Every form on the site: pre-registration, contact, careers and «خبرم کنید».
+ *
+ * Where submissions go is the PUBLIC_FORM_ENDPOINT setting at build time (docs/forms-setup.md). No
+ * address, key or password lives in the code. Without the setting, the form checks the fields and says
+ * plainly that sending is not set up yet; nothing is sent anywhere.
+ *
+ * Sent with the visitor's fields:
+ *   form            which form (register, contact, careers, notify)
+ *   page            the page the form was sent from
+ *   landing         the first page of the visit, with its address parameters
+ *   referrer        the site the visit came from (origin only), if any
+ *   utm_*           the visit's UTM tags (a map listing, an SMS, Instagram…)
+ *   elapsed_ms      how long the form was open
+ * The visit's start is kept for the tab only (sessionStorage) by Base.astro.
+ *
+ * Spam, without a CAPTCHA: a hidden «website» field people never fill in (filled in: the bot sees the
+ * thank-you screen and nothing is sent), and elapsed_ms, which the server uses to drop forms sent in
+ * under a few seconds (server/form-handler.php).
+ */
 import Icon from './Icon.astro';
-// Forms are appearance-only for now: the institute will choose where submissions go.
-// No endpoint, key or secret lives in the code. When a destination is chosen, pass it as `action`.
-interface Props { title?: string; submit: string; action?: string; id: string; kind?: string }
-const { title, submit, action = '', id, kind = id } = Astro.props;
+
+interface Props {
+  id: string;
+  submit: string;
+  title?: string;
+  /** The form's name in submissions and statistics */
+  kind?: string;
+  /** For statistics, when the form has no unit field (the «خبرم کنید» form is always متوسطه دوم) */
+  unit?: string;
+  /** The thank-you screen after a successful send */
+  success: { title: string; text: string };
+}
+const { id, submit, title, kind = id, unit, success } = Astro.props;
+const endpoint = (import.meta.env.PUBLIC_FORM_ENDPOINT ?? '').trim();
+const meta = ['page', 'landing', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'elapsed_ms'];
 ---
-<form id={id} class="card p-6 shadow-soft sm:p-8" method="post" action={action || undefined} data-form data-kind={kind} data-action={action} novalidate>
-  {title && <h2 class="mb-6 text-2xl">{title}</h2>}
-  <div class="grid gap-5 sm:grid-cols-2" data-fields>
-    <slot />
+<form id={id} class="card p-6 shadow-soft sm:p-8" method="post" action={endpoint || undefined} enctype="multipart/form-data" accept-charset="UTF-8"
+  data-form data-kind={kind} data-unit={unit} data-endpoint={endpoint} data-submit-text={submit} novalidate>
+  <div data-form-body>
+    {title && <h2 class="mb-6 text-2xl">{title}</h2>}
+    <div class="grid gap-5 sm:grid-cols-2">
+      <slot />
+    </div>
+    <input type="hidden" name="form" value={kind} />
+    {meta.map((name) => <input type="hidden" name={name} value="" />)}
+    <div class="hp" aria-hidden="true">
+      <label>این خانه را خالی بگذارید <input type="text" name="website" value="" tabindex="-1" autocomplete="off" /></label>
+    </div>
+    <p class="mt-4 text-sm text-ink-soft"><span class="text-danger">*</span> پر کردن این موارد لازم است.</p>
+    <div class="mt-3 rounded-lg border border-danger/25 bg-danger/5 p-3 text-sm leading-7 text-danger" role="alert" data-form-error hidden></div>
+    {!endpoint && (
+      <noscript>
+        <p class="mt-4 rounded-lg border border-accent/25 bg-accent-soft p-4 text-sm leading-7">ارسال فرم‌ها هنوز راه‌اندازی نشده است. تا آن وقت از صفحه <a href="/contact/" class="link">تماس با مراکز</a> با ما در ارتباط باشید.</p>
+      </noscript>
+    )}
+    <button type="submit" class="btn-primary mt-6 w-full" data-submit>
+      <span data-submit-label>{submit}</span><Icon name="send" size={20} />
+    </button>
+    <div class="mt-4 rounded-lg border border-accent/25 bg-accent-soft p-4 text-center" role="status" data-form-preview hidden>
+      <p class="font-medium">فرم درست پر شده است.</p>
+      <p class="mt-1 text-sm text-ink-soft">ارسال فرم‌ها هنوز راه‌اندازی نشده، پس اطلاعات شما فرستاده نشد. تا آن وقت از صفحه <a href="/contact/" class="link">تماس با مراکز</a> با ما در ارتباط باشید.</p>
+    </div>
   </div>
-  <p class="mt-4 text-sm text-ink-soft"><span class="text-danger">*</span> پر کردن این موارد لازم است.</p>
-  <p class="form-error mt-3 hidden rounded-lg border border-danger/25 bg-danger/5 p-3 text-sm text-danger" role="alert"></p>
-  <button type="submit" class="btn-primary mt-6 w-full">{submit}<Icon name="send" size={20} /></button>
-  <div class="form-notice mt-4 hidden rounded-lg border border-accent/25 bg-accent-soft p-4 text-center" role="status" aria-live="polite">
-    <p class="font-medium">فرم درست پر شده است.</p>
-    <p class="mt-1 text-sm text-ink-soft">ارسال فرم‌ها هنوز راه‌اندازی نشده، پس اطلاعات شما فرستاده نشد. به‌زودی این امکان فعال می‌شود.</p>
-  </div>
+  <div class="py-6 text-center outline-none" tabindex="-1" data-form-done hidden></div>
+  <!-- The thank-you screen waits in a template, so its heading is not part of the page until the form is sent. -->
+  <template data-form-done-template>
+    <span class="mx-auto grid size-14 place-items-center rounded-full bg-accent-soft text-accent"><Icon name="check" size={28} /></span>
+    <h2 class="mt-5 text-2xl">{success.title}</h2>
+    <p class="mx-auto mt-3 max-w-md leading-8 text-ink-soft">{success.text}</p>
+    <a href="/" class="link mt-6 inline-block">بازگشت به صفحه اول</a>
+  </template>
 </form>
 
+<style>
+  /* Off-screen rather than display:none, which some bots skip. */
+  .hp {
+    position: absolute;
+    inset-inline-start: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>
+
 <script>
+  import { track, visitSource } from '../lib/track';
+
   const fa = '۰۱۲۳۴۵۶۷۸۹';
+  const ar = '٠١٢٣٤٥٦٧٨٩';
+  const MB = 1024 * 1024;
+  const TIMEOUT = 20_000;
+  const params = new URLSearchParams(location.search);
+  const motion = (el: HTMLElement) => {
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) el.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.23,1,.32,1)' });
+  };
+
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
-    const err = form.querySelector<HTMLElement>('.form-error')!;
-    const notice = form.querySelector<HTMLElement>('.form-notice')!;
+    const kind = form.dataset.kind ?? form.id;
+    const endpoint = form.dataset.endpoint ?? '';
+    const submitText = form.dataset.submitText ?? '';
+    const body = form.querySelector<HTMLElement>('[data-form-body]')!;
+    const done = form.querySelector<HTMLElement>('[data-form-done]')!;
+    const doneTemplate = form.querySelector<HTMLTemplateElement>('template[data-form-done-template]')!;
+    const err = form.querySelector<HTMLElement>('[data-form-error]')!;
+    const preview = form.querySelector<HTMLElement>('[data-form-preview]')!;
+    const button = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const label = form.querySelector<HTMLElement>('[data-submit-label]')!;
+    const opened = Date.now();
+    let sending = false;
+
+    // ?unit=kindergarten (from a unit page, an old address or a map listing) picks that unit.
+    form.querySelectorAll<HTMLSelectElement>('select[data-param]').forEach((select) => {
+      const want = params.get(select.dataset.param!);
+      const option = want ? [...select.options].find((o) => o.dataset.slug === want) : undefined;
+      if (option) select.value = option.value;
+    });
+
+    const unitOf = () => {
+      const select = form.querySelector<HTMLSelectElement>('select[name="unit"]');
+      return select?.selectedOptions[0]?.dataset.slug || select?.value || form.dataset.unit || undefined;
+    };
+    const setHidden = (name: string, value: string) => {
+      const el = form.elements.namedItem(name);
+      if (el instanceof HTMLInputElement) el.value = value;
+    };
+    /** The error box: our own sentence, the server's (as plain text) if it sent one, and the way to call instead. */
+    const showError = (text: string) => {
+      const link = Object.assign(document.createElement('a'), { href: '/contact/', className: 'link', textContent: 'تماس با مراکز' });
+      err.replaceChildren(`${text} اگر باز هم نشد، از صفحه `, link, ' با ما تماس بگیرید.');
+      err.hidden = false;
+    };
+    const finish = () => {
+      done.replaceChildren(doneTemplate.content.cloneNode(true));
+      body.hidden = true;
+      done.hidden = false;
+      done.focus();
+      motion(done);
+    };
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      form.querySelectorAll<HTMLInputElement>('input[type=tel]').forEach((i) => (i.value = i.value.replace(/[۰-۹]/g, (d) => String(fa.indexOf(d)))));
+      if (sending) return;
+      form.querySelectorAll<HTMLInputElement>('input[type=tel]').forEach((i) => (i.value = i.value.trim().replace(/[۰-۹]/g, (d) => String(fa.indexOf(d))).replace(/[٠-٩]/g, (d) => String(ar.indexOf(d)))));
       form.querySelectorAll<HTMLElement>('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
       form.querySelectorAll<HTMLElement>('.field-error').forEach((p) => { p.textContent = ''; p.classList.add('hidden'); });
       form.querySelectorAll<HTMLTextAreaElement>('textarea[data-maxwords]').forEach((t) => {
@@ -34,7 +150,19 @@ const { title, submit, action = '', id, kind = id } = Astro.props;
         const words = t.value.trim().split(/\s+/).filter(Boolean).length;
         t.setCustomValidity(words > max ? `متن بیش از ${max.toLocaleString('fa-IR')} کلمه است؛ کوتاه‌ترش کنید.` : '');
       });
-      const bad = [...form.querySelectorAll<HTMLInputElement>('input,select,textarea')].filter((el) => !el.checkValidity());
+      // A résumé of the wrong type or too large is caught here, before a long upload the server would refuse.
+      form.querySelectorAll<HTMLInputElement>('input[type=file]').forEach((input) => {
+        const file = input.files?.[0];
+        const types = input.accept.split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
+        const max = Number(input.dataset.maxMb || 0);
+        input.setCustomValidity(
+          file && types.length && !types.some((t) => file.name.toLowerCase().endsWith(t)) ? `این فایل پذیرفته نیست؛ ${input.dataset.acceptLabel ?? types.join('، ')} بفرستید.`
+          : file && max && file.size > max * MB ? `حجم فایل بیش از ${max.toLocaleString('fa-IR')} مگابایت است؛ فایل کوچک‌تری بفرستید.`
+          : '',
+        );
+      });
+      const bad = [...form.querySelectorAll<HTMLInputElement>('[data-form-body] input:not([type=hidden]),[data-form-body] select,[data-form-body] textarea')]
+        .filter((el) => !el.closest('.hp') && !el.checkValidity());
       if (bad.length) {
         // Errors sit next to each field (Vercel Web Interface Guidelines); focus the first one.
         bad.forEach((el) => {
@@ -42,30 +170,68 @@ const { title, submit, action = '', id, kind = id } = Astro.props;
           const p = document.getElementById(`${el.id}-err`);
           const text = el.validity.customError ? el.validationMessage
             : el.validity.valueMissing ? (el.type === 'checkbox' ? 'برای ادامه، این گزینه را تأیید کنید.' : 'این مورد را پر کنید.')
+            : el.validity.patternMismatch && el.type === 'tel' ? 'شماره را فقط با رقم بنویسید.'
             : el.validity.typeMismatch || el.validity.patternMismatch ? 'قالب واردشده درست نیست؛ دوباره بررسی کنید.'
             : 'این مورد را بررسی کنید.';
-          if (p) { p.textContent = text; p.classList.remove('hidden'); el.setAttribute('aria-describedby', [el.getAttribute('aria-describedby'), p.id].filter(Boolean).join(' ')); }
+          if (p) {
+            p.textContent = text;
+            p.classList.remove('hidden');
+            if (!(el.getAttribute('aria-describedby') ?? '').includes(p.id)) el.setAttribute('aria-describedby', [el.getAttribute('aria-describedby'), p.id].filter(Boolean).join(' '));
+          }
         });
         err.textContent = `${bad.length.toLocaleString('fa-IR')} مورد نیاز به اصلاح دارد.`;
-        err.classList.remove('hidden');
+        err.hidden = false;
         bad[0].focus();
-                return;
+        track('form_error', { form: kind, fields: bad.length });
+        return;
       }
-      err.classList.add('hidden');
-      const action = form.dataset.action;
-      if (action) {
-        try {
-          const res = await fetch(action, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } });
-          if (!res.ok) throw new Error();
-          notice.innerHTML = '<p class="font-medium">درخواست شما ثبت شد.</p><p class="mt-1 text-sm">همکاران ما با شما تماس می‌گیرند.</p>';
-        } catch {
-          err.textContent = 'ارسال انجام نشد. لطفاً دوباره تلاش کنید.';
-          err.classList.remove('hidden');
+      err.hidden = true;
+
+      // The hidden field: filled in means a bot. It sees the thank-you screen; nothing is sent.
+      if ((form.elements.namedItem('website') as HTMLInputElement | null)?.value) {
+        finish();
+        return;
+      }
+
+      const src = visitSource();
+      setHidden('page', location.pathname + location.search);
+      ['landing', 'referrer', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach((k) => setHidden(k, src[k] ?? ''));
+      setHidden('elapsed_ms', String(Date.now() - opened));
+
+      if (!endpoint) {
+        preview.hidden = false;
+        motion(preview);
+        track('form_not_sent', { form: kind, unit: unitOf() });
+        return;
+      }
+
+      sending = true;
+      button.disabled = true;
+      button.setAttribute('aria-busy', 'true');
+      label.textContent = 'در حال ارسال…';
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), TIMEOUT);
+      try {
+        const res = await fetch(endpoint, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' }, signal: controller.signal });
+        const data: { ok?: boolean; error?: unknown } = await res.json().catch(() => ({}));
+        if (!res.ok || data.ok === false) {
+          track('form_send_error', { form: kind, status: res.status });
+          showError(typeof data.error === 'string' && data.error ? data.error : 'ارسال انجام نشد و اطلاعاتی که نوشتید در فرم مانده است. چند دقیقه بعد دوباره بفرستید.');
           return;
         }
+        track('generate_lead', { form: kind, unit: unitOf() });
+        finish();
+        form.reset();
+      } catch {
+        track('form_send_error', { form: kind, status: 0 });
+        showError('ارسال انجام نشد و اطلاعاتی که نوشتید در فرم مانده است. اتصال اینترنت را بررسی کنید و دوباره بفرستید.');
+      } finally {
+        clearTimeout(timer);
+        sending = false;
+        button.disabled = false;
+        button.removeAttribute('aria-busy');
+        label.textContent = submitText;
       }
-      notice.classList.remove('hidden');
-      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) notice.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.23,1,.32,1)' });
     });
   });
 </script>

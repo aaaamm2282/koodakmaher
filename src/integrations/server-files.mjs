@@ -2,6 +2,10 @@
  * After every build, writes the host files that carry the redirects from the old site:
  * dist/.htaccess (Apache, LiteSpeed) and dist/_redirects (Netlify, Cloudflare Pages).
  * The build stops if a redirect would hide a real page, points to a page that does not exist, or loops.
+ *
+ * When the forms post to a PHP file on the site itself (PUBLIC_FORM_ENDPOINT=/api/form.php), the form
+ * handler (server/form-handler.php) is copied to that address too, so every upload of dist carries it.
+ * Its private settings never are: they stay in form-config.php above the web root (docs/forms-setup.md).
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -33,6 +37,15 @@ export default function serverFiles() {
         fs.writeFileSync(path.join(out, '_redirects'), toNetlify(checked));
         const moved = checked.filter((r) => r.status === 301).length;
         logger.info(`${moved} ریدایرکت ۳۰۱ و ${checked.length - moved} نشانی حذف‌شده (۴۱۰) در .htaccess و _redirects`);
+
+        const endpoint = (process.env.PUBLIC_FORM_ENDPOINT ?? '').trim();
+        if (/^\/(?:[\w-]+\/)*[\w-]+\.php$/.test(endpoint)) {
+          const target = path.join(out, endpoint);
+          if (fs.existsSync(target)) throw new Error(`${endpoint} هم صفحه‌ای از سایت است و هم نشانی فرم‌ها؛ نشانی دیگری برای PUBLIC_FORM_ENDPOINT بگذارید.`);
+          fs.mkdirSync(path.dirname(target), { recursive: true });
+          fs.copyFileSync(fileURLToPath(new URL('../../server/form-handler.php', import.meta.url)), target);
+          logger.info(`گیرنده فرم‌ها: ${endpoint}. تنظیمات خصوصی آن (form-config.php) را بیرون از پوشه سایت بگذارید (docs/forms-setup.md).`);
+        }
       },
     },
   };

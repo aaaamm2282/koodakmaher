@@ -48,10 +48,15 @@ const list = units.filter((u) => !u.soon);
 
   <section class="container-x py-14 sm:py-20">
     <div class="mx-auto max-w-2xl">
-      <FormShell id="contact-form" title="فرم تماس" submit="ارسال پیام">
+      <FormShell id="contact-form" kind="contact" title="فرم تماس" submit="ارسال پیام"
+        success={{ title: 'پیام شما رسید', text: 'پاسخ را از همان راهی که نوشتید، تلفن یا ایمیل، می‌گیرید.' }}>
         <Field label="نام" name="name" required autocomplete="name" />
         <Field label="شماره تماس یا ایمیل" name="contact" required />
-        <Field label="واحد مرتبط" name="unit" type="select" required full options={['کودکستان', 'دبستان', 'متوسطه اول', 'متوسطه دوم', 'آموزشگاه زبان', 'آموزشگاه فنی‌وحرفه‌ای', 'عمومی']} />
+        <Field label="واحد مرتبط" name="unit" type="select" required full param="unit" options={[
+          { value: 'کودکستان', slug: 'kindergarten' }, { value: 'دبستان', slug: 'primary' }, { value: 'متوسطه اول', slug: 'middle-school' },
+          { value: 'متوسطه دوم', slug: 'high-school' }, { value: 'آموزشگاه زبان', slug: 'language' }, { value: 'آموزشگاه فنی‌وحرفه‌ای', slug: 'vocational' },
+          { value: 'عمومی', slug: 'general' },
+        ]} />
         <Field label="پیام" name="message" type="textarea" required full />
       </FormShell>
     </div>

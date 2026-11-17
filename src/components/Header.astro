@@ -44,7 +44,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="/register/" class="btn-primary hidden !min-h-10 !px-4 text-sm sm:inline-flex">پیش‌ثبت‌نام و مشاوره</a>
+      <a href="/register/" class="btn-primary hidden !min-h-10 !px-4 text-sm sm:inline-flex" data-cta="header">پیش‌ثبت‌نام و مشاوره</a>
       <button id="menu-btn" type="button" class="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface xl:hidden" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-menu">
         <Icon name="menu" size={22} />
       </button>
@@ -72,7 +72,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
           </li>
         ))}
       </ul>
-      <a href="/register/" class="btn-primary mt-5 w-full" data-close>پیش‌ثبت‌نام و مشاوره</a>
+      <a href="/register/" class="btn-primary mt-5 w-full" data-close data-cta="menu">پیش‌ثبت‌نام و مشاوره</a>
     </nav>
   </div>
 </header>

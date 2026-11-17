@@ -1,19 +1,30 @@
 ---
+/** A select option: plain text, or a value with the unit slug that `?unit=` in the address can pick (`param`). */
+type Option = string | { value: string; slug?: string };
 interface Props {
   label: string;
   name: string;
   type?: 'text' | 'tel' | 'email' | 'select' | 'textarea' | 'file' | 'checkbox';
   required?: boolean;
-  options?: string[];
+  options?: Option[];
+  /** select only: the address parameter that pre-selects an option by its slug, like `unit` for /register/?unit=kindergarten */
+  param?: string;
   placeholder?: string;
   hint?: string;
   full?: boolean;
   autocomplete?: string;
   maxwords?: number;
+  /** Most characters; the defaults stay at or below the limits in server/form-handler.php */
+  maxlength?: number;
+  /** file only: accepted extensions, a label for them in the error message, and the largest size in MB */
   accept?: string;
+  acceptLabel?: string;
+  maxMb?: number;
 }
-const { label, name, type = 'text', required = false, options = [], placeholder, hint, full = false, autocomplete, maxwords, accept } = Astro.props;
+const { label, name, type = 'text', required = false, options = [], param, placeholder, hint, full = false, autocomplete, maxwords, accept, acceptLabel, maxMb } = Astro.props;
+const maxlength = Astro.props.maxlength ?? ({ text: 100, tel: 20, email: 120, textarea: 1500 } as Record<string, number>)[type];
 const id = `f-${name}-${Math.random().toString(36).slice(2, 7)}`;
+const describedBy = hint ? `${id}-hint` : undefined;
 const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg-surface px-3.5 text-base text-ink outline-none transition-[border-color,box-shadow] duration-150 focus:border-accent focus:ring-3 focus:ring-accent/15 placeholder:text-ink-mute/70 aria-[invalid=true]:border-danger';
 ---
 {type === 'checkbox' ? (
@@ -31,20 +42,22 @@ const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg
       {required ? <span class="text-danger" aria-hidden="true"> *</span> : <span class="text-sm font-normal text-ink-mute"> (اختیاری)</span>}
     </label>
     {type === 'select' ? (
-      <select id={id} name={name} required={required} class={base}>
+      <select id={id} name={name} required={required} class={base} data-param={param}>
         <option value="">انتخاب کنید</option>
-        {options.map((o) => <option>{o}</option>)}
+        {options.map((o) => (typeof o === 'string' ? <option>{o}</option> : <option value={o.value} data-slug={o.slug}>{o.value}</option>))}
       </select>
     ) : type === 'textarea' ? (
-      <textarea id={id} name={name} required={required} rows="4" placeholder={placeholder} class={base + ' py-3'} data-maxwords={maxwords} aria-describedby={hint ? `${id}-hint` : undefined}></textarea>
+      <textarea id={id} name={name} required={required} rows="4" placeholder={placeholder} maxlength={maxlength} class={base + ' py-3'} data-maxwords={maxwords} aria-describedby={describedBy}></textarea>
     ) : type === 'file' ? (
-      <input id={id} name={name} type="file" required={required} accept={accept} class={base + ' py-2.5 file:ml-3 file:rounded-md file:border-0 file:bg-sand file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink'} />
+      <input id={id} name={name} type="file" required={required} accept={accept} data-accept-label={acceptLabel} data-max-mb={maxMb} aria-describedby={describedBy}
+        class={base + ' py-2.5 file:ml-3 file:rounded-md file:border-0 file:bg-sand file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink'} />
     ) : (
-      <input id={id} name={name} type={type} required={required} placeholder={placeholder} autocomplete={autocomplete ?? 'off'} class={base}
+      <input id={id} name={name} type={type} required={required} placeholder={placeholder} autocomplete={autocomplete ?? 'off'} maxlength={maxlength} class={base}
         spellcheck={type === 'tel' || type === 'email' ? 'false' : undefined}
-        aria-describedby={hint ? `${id}-hint` : undefined}
+        aria-describedby={describedBy}
         dir={type === 'tel' || type === 'email' ? 'ltr' : undefined}
-        inputmode={type === 'tel' ? 'tel' : undefined} />
+        inputmode={type === 'tel' ? 'tel' : undefined}
+        pattern={type === 'tel' ? '\\+?[0-9][0-9 \\-]{6,18}' : undefined} />
     )}
     {hint && <p id={`${id}-hint`} class="mt-1 text-sm text-ink-mute">{hint}</p>}
     <p id={`${id}-err`} class="field-error mt-1 hidden text-sm text-danger" aria-live="polite"></p>

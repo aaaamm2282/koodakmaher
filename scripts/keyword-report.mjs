@@ -47,7 +47,8 @@ const read = (p) => {
   const file = path.join(dist, p, 'index.html');
   if (!fs.existsSync(file)) return null;
   const html = fs.readFileSync(file, 'utf8');
-  const main = html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? html;
+  // Templates (a form's thank-you screen) and noscript notes are not what a visitor or Google reads on the page.
+  const main = (html.match(/<main[\s\S]*?<\/main>/i)?.[0] ?? html).replace(/<(template|noscript)\b[\s\S]*?<\/\1>/gi, ' ');
   return {
     title: decode(html.match(/<title>([\s\S]*?)<\/title>/i)?.[1] ?? '').trim(),
     description: decode(html.match(/<meta name="description" content="([^"]*)"/i)?.[1] ?? '').trim(),

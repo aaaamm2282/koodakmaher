@@ -15,6 +15,7 @@
  * The CSV is the working sheet a person reviews (status 301 / 410 / 404 / same, or empty = not decided).
  * redirects.json is what the site uses; it can also be edited in the CMS. Guide: docs/migration.md
  */
+import '../src/lib/load-env.mjs'; // .env settings, before anything reads process.env
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';

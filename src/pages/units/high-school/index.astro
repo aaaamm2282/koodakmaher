@@ -24,7 +24,8 @@ const schema = [faqPage(u.faqs)];
         <p class="border-r-2 border-saffron pr-5 text-ink-soft">این واحد هنوز ثبت‌نام ندارد. اگر می‌خواهید وقتی ثبت‌نام آغاز شد خبردار شوید، فرم «خبرم کنید» را پر کنید.</p>
         <p class="text-ink-soft">تا آن زمان: <a href="/units/middle-school/" class="link">متوسطه اول پسرانه</a> و <a href="/path/" class="link">مسیر رشد ۳ تا ۱۸ سال</a></p>
       </div>
-      <FormShell id="notify-form" title="خبرم کنید" submit="خبرم کنید" kind="notify">
+      <FormShell id="notify-form" title="خبرم کنید" submit="خبرم کنید" kind="notify" unit="high-school"
+        success={{ title: 'ثبت شد', text: 'وقتی ثبت‌نام متوسطه دوم شروع شود، به شما خبر می‌دهیم.' }}>
         <Field label="نام والد" name="parent" required autocomplete="name" />
         <Field label="شماره تماس" name="phone" type="tel" required autocomplete="tel" />
         <Field label="پایه فعلی فرزند" name="grade" type="select" required full options={['هفتم', 'هشتم', 'نهم', 'دهم', 'یازدهم', 'دوازدهم']} />

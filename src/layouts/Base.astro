@@ -4,6 +4,7 @@ import vazirArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-w
 import naskhArabic from '@fontsource-variable/noto-naskh-arabic/files/noto-naskh-arabic-arabic-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
 import { site } from '../data/site';
 import { organization, website, breadcrumbs } from '../lib/schema';
 
@@ -78,7 +79,19 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
       document.documentElement.classList.add('js');
       // If the animation script never starts (blocked, offline, old browser), show everything after 3 s.
       setTimeout(function () { if (!window.__animReady) document.documentElement.classList.remove('js'); }, 3000);
+      // Where this visit started: first page, the site it came from and its UTM tags, kept for this tab only
+      // (sessionStorage, no cookie). Forms send it with the fields so the institute knows which channel
+      // brought a request, even without any statistics service (src/components/FormShell.astro).
+      try {
+        if (!sessionStorage.getItem('km:src')) {
+          var q = new URLSearchParams(location.search), src = { landing: location.pathname + location.search };
+          if (document.referrer) { var r = new URL(document.referrer); if (r.host !== location.host) src.referrer = r.origin; }
+          ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (q.get(k)) src[k] = q.get(k).slice(0, 100); });
+          sessionStorage.setItem('km:src', JSON.stringify(src));
+        }
+      } catch (e) {}
     </script>
+    <Analytics />
   </head>
   <body class="overflow-x-hidden">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
@@ -90,7 +103,7 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     <!-- Mobile: quick actions stay within thumb reach once the visitor has scrolled past the first screen -->
     <div id="quickbar" class="fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-line bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 data-[show=true]:translate-y-0 sm:hidden" data-show="false">
       <div class="flex gap-2">
-        <a href="/register/" class="btn-primary flex-1 !min-h-11">پیش‌ثبت‌نام و مشاوره</a>
+        <a href="/register/" class="btn-primary flex-1 !min-h-11" data-cta="quickbar">پیش‌ثبت‌نام و مشاوره</a>
         <a href="/contact/" class="btn-ghost !min-h-11">تماس</a>
       </div>
     </div>

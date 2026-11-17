@@ -61,6 +61,7 @@ const moved = Object.fromEntries(rules.filter((r) => r.status === 301).map((r) =
 
 <script>
   import { suggestPath, decodePath } from '../data/url-hints.mjs';
+  import { track } from '../lib/track';
 
   const box = document.querySelector<HTMLElement>('[data-nf]');
   if (box) {
@@ -73,6 +74,11 @@ const moved = Object.fromEntries(rules.filter((r) => r.status === 301).map((r) =
     } else {
       const guess = suggestPath(path);
       const label = guess && labels[guess.to.split('?')[0]];
+      // Shows up in the statistics as «page_not_found», so broken links from old pages and other
+      // sites can be found and redirected (docs/migration.md).
+      let from = '';
+      try { from = document.referrer ? new URL(document.referrer).host : ''; } catch { /* no referrer */ }
+      track('page_not_found', { path: path.slice(0, 100), referrer: from, suggested: guess && label ? guess.to : undefined });
       const hint = box.querySelector<HTMLElement>('[data-nf-suggest]');
       const link = box.querySelector<HTMLAnchorElement>('[data-nf-link]');
       if (guess && label && hint && link) {

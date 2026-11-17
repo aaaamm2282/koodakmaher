@@ -1,4 +1,5 @@
 // @ts-check
+import './src/lib/load-env.mjs'; // .env settings, before anything reads process.env
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';

@@ -1,0 +1,38 @@
+---
+/**
+ * Visit statistics, only when the institute sets them up at build time (docs/forms-setup.md, «آمار بازدید»):
+ *   PUBLIC_GA4_ID     Google Analytics 4 measurement ID, like G-ABC123XYZ
+ *   PUBLIC_UMAMI_SRC  address of an Umami script (self-hosted or Umami Cloud), like https://…/script.js
+ *   PUBLIC_UMAMI_ID   that site's ID in Umami
+ * Without them this component renders nothing and the site loads no statistics code at all.
+ *
+ * The services load after the page has finished loading, so they never slow it down, and not at all for
+ * visitors whose browser asks not to be tracked (Do Not Track, Global Privacy Control).
+ *
+ * Events (names follow Google Analytics 4 conventions; parameters never hold names, phones or messages):
+ *   generate_lead     a form was sent                      form, unit
+ *   form_not_sent     a form was filled in before sending was set up   form, unit
+ *   form_error        a form was sent with fields to fix   form, fields
+ *   form_send_error   sending failed (network or server)   form
+ *   click_phone       a phone number was tapped            unit
+ *   click_email       an email address was clicked         unit
+ *   click_map         a Neshan, Balad or Google Maps link  app, unit
+ *   social            Instagram, Telegram, Eitaa, Shad…    network, unit
+ *   cta               a link to the pre-registration form  unit, placement
+ *   review            a review link («نظر شما»)            unit, app
+ *   explorer_select   a stage of the age path on the home page   stage
+ *   page_not_found    the 404 page was shown               path, referrer
+ */
+import AnalyticsClient from './AnalyticsClient.astro';
+
+const ga = (import.meta.env.PUBLIC_GA4_ID ?? '').trim();
+const umamiSrc = (import.meta.env.PUBLIC_UMAMI_SRC ?? '').trim();
+const umamiId = (import.meta.env.PUBLIC_UMAMI_ID ?? '').trim();
+const config = {
+  ...(/^G-[A-Z0-9]{4,}$/i.test(ga) && { ga }),
+  ...(/^https:\/\//.test(umamiSrc) && umamiId && { umamiSrc, umamiId }),
+};
+const enabled = Object.keys(config).length > 0;
+---
+{enabled && <meta name="km-analytics" content={JSON.stringify(config)} />}
+{enabled && <AnalyticsClient />}
