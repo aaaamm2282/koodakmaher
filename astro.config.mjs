@@ -6,12 +6,23 @@ import tailwindcss from '@tailwindcss/vite';
 import remarkSrcAssets from './src/lib/remark-src-assets.mjs';
 import serverFiles from './src/integrations/server-files.mjs';
 import { loadRedirects, toAstroRedirects } from './src/lib/redirects.mjs';
-import fs from 'node:fs';
+import { readEntries, isPublished, isoDay } from './src/lib/content-files.mjs';
 
-/** True when a collection folder has at least one entry that is not a draft (used to keep empty lists out of the sitemap). */
-const hasPublished = (dir) =>
-  fs.existsSync(dir) && fs.readdirSync(dir).some((f) => f.endsWith('.md') && !/^draft:\s*true\s*$/m.test(fs.readFileSync(`${dir}/${f}`, 'utf8').split(/^---$/m)[1] ?? ''));
-const newsLive = hasPublished('./src/content/news');
+// Articles and announcements on the site today (not drafts, date already come; the same rule as the pages)
+const posts = readEntries('./src/content/blog').filter((e) => isPublished(e));
+const news = readEntries('./src/content/news').filter((e) => isPublished(e));
+const newsLive = news.length > 0;
+
+// <lastmod> in the sitemap only where the content itself says when it changed: an article (its «updated»
+// date, else its publish date), an announcement, and the two lists (their newest entry). Other pages get
+// none: Google ignores a lastmod it finds unreliable, and a build date on every page would be one.
+const newest = (list) => list.map((e) => e.updated ?? e.date).sort((a, b) => b - a)[0];
+const lastmod = new Map([
+  ...posts.filter((e) => e.slug).map((e) => [`/blog/${e.slug}/`, e.updated ?? e.date]),
+  ...news.filter((e) => e.slug).map((e) => [`/news/${e.slug}/`, e.date]),
+  ['/blog/', newest(posts)],
+  ['/news/', newest(news)],
+]);
 
 // دامنه نهایی سایت را اینجا تنظیم کنید (برای canonical، sitemap و Open Graph لازم است)
 const SITE_URL = process.env.SITE_URL || 'https://mahermana.com';
@@ -33,6 +44,11 @@ export default defineConfig({
         if (path.startsWith('/admin/') || path.startsWith('/review/') || path === '/404/') return false;
         if (path === '/news/' && !newsLive) return false; // the list says "no announcements yet" and is noindex
         return true;
+      },
+      serialize(item) {
+        const date = lastmod.get(new URL(item.url).pathname);
+        if (date) item.lastmod = isoDay(date);
+        return item;
       },
     }),
     serverFiles(),

@@ -22,7 +22,7 @@ const day = [
     {steps.map(([t, d], i) => (
       <li class:list={['py-6 sm:px-6', i > 0 && 'border-t border-line sm:border-t-0 sm:border-r', i === 0 && 'sm:pr-0']}>
         <span class="num text-2xl text-saffron">{(i + 1).toLocaleString('fa-IR')}</span>
-        <h3 class="mt-2 text-lg">{t}</h3>
+        <p class="mt-2 font-serif text-lg font-semibold">{t}</p>
         <p class="mt-1 text-sm text-ink-soft">{d}</p>
       </li>
     ))}

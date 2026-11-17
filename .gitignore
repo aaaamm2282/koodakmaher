@@ -12,3 +12,10 @@ dist-preview/
 *.log
 # the form handler's private settings (server/form-config.example.php is the template)
 form-config.php
+
+# Speed and accessibility check output
+.lighthouseci/
+lighthouse-reports/
+
+# Monthly reports (counts from the forms and Search Console; kept on this computer)
+reports/

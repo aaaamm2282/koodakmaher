@@ -1,36 +1,68 @@
 # مؤسسه آموزشی کودک ماهر مانا
 
-وب‌سایت مؤسسه آموزشی کودک ماهر مانا: Astro (HTML ایستا و سریع) + Tailwind CSS 4 + Motion.
+وب‌سایت مؤسسه آموزشی کودک ماهر مانا: Astro (HTML ایستا و سریع) + Tailwind CSS 4، پنل مدیریت محتوا با Decap CMS، حرکت با CSS، GSAP (فقط صفحه‌ی مسیر) و Lottie.
 
 ## اجرا
 
+Node 22 (فایل `.nvmrc`):
+
 ```bash
-npm install
+npm ci
 npm run dev      # http://localhost:4321
 npm run build    # خروجی در dist/
+npm run preview  # دیدن نسخه‌ی ساخته‌شده
 npm run offline  # نسخه‌ی آفلاین در offline/ (index.html را مستقیم در مرورگر باز کنید)
 ```
 
-## تنظیمات
+## دستورهای دیگر
 
-- محتوای سایت از `docs/content-brief.md` آمده است.
-- `src/data/site.ts`: نام، شعار، تلفن، نشانی، واحدها و پرسش‌های پرتکرار. مقدارهای `null` یعنی هنوز تکمیل نشده؛ در صفحه کادر «در حال تکمیل» نشان داده می‌شود.
-- صفحه‌ها در `src/pages/`؛ جاهای خالی با کامپوننت `Pending` مشخص شده‌اند (`grep -rn "Pending" src/pages`).
-- تنظیمات ساخت در فایل `.env` است (نمونه با توضیح: `.env.example`): `SITE_URL` (دامنه‌ی نهایی، پیش‌فرض `https://mahermana.com`)، مقصد فرم‌ها و آمار بازدید.
-- فرم‌ها: تا `PUBLIC_FORM_ENDPOINT` خالی است، فقط خانه‌ها را بررسی می‌کنند و چیزی نمی‌فرستند. گیرنده‌ی PHP برای هاست ایرانی (ذخیره در CSV و خبر در «بله») در `server/` است؛ راهنما: [docs/forms-setup.md](docs/forms-setup.md).
+| دستور | کار | راهنما |
+|---|---|---|
+| `npm run check:pages` | همه‌ی صفحه‌ها در Chrome: دسترس‌پذیری، پیوند شکسته، خطا، بیرون‌زدگی در گوشی | [deploy.md](docs/deploy.md)، بخش ۸ |
+| `npm run seo:keywords` | بررسی عنوان، توضیح و H1 هر صفحه با نقشه‌ی کلمات کلیدی و ساختن گزارشش | [keyword-map.md](docs/keyword-map.md) |
+| `npm run local:profiles` | متن‌ها و لینک‌های آماده برای نشان، بلد و گوگل‌مپ | [local-profiles.md](docs/local-profiles.md) |
+| `npm run migrate:import`، `apply`، `nginx`، `check` | نشانی‌های سایت قبلی، ریدایرکت‌ها و بررسی بعد از راه‌اندازی | [migration.md](docs/migration.md) |
+| `npm run report:monthly` | گزارش ماهانه از خروجی سرچ کنسول و فایل فرم‌ها | [monthly-report.md](docs/monthly-report.md) |
+| `npm run preview:photos` | پیش‌نمایش طرح با جای عکس‌ها، پیش از عکاسی | [photo-shot-list.md](docs/photo-shot-list.md) |
+| `scripts/deploy-ftp.sh` | بارگذاری روی هاست با FTP (همان که GitHub خودکار اجرا می‌کند) | [deploy.md](docs/deploy.md) |
+
+## محتوا و تنظیمات
+
+- **پنل مدیریت:** `/admin/`؛ راه‌اندازی ورود و نقش‌ها در [cms-setup.md](docs/cms-setup.md).
+- **محتوا** در `src/content/`: واحدها (`units/*.json`)، تنظیمات عمومی، پرسش‌ها، کارگاه‌ها و ریدایرکت‌ها (`settings/*.json`)، مقاله‌ها (`blog/*.md`) و اطلاعیه‌ها (`news/*.md`). `src/data/site.ts` این‌ها را برای صفحه‌ها می‌خواند. مقدار خالی یا `null` یعنی هنوز تأیید نشده؛ در صفحه کادر «در حال تکمیل» نشان داده می‌شود و هیچ مقداری حدسی پر نمی‌شود.
+- **تنظیمات ساخت** در فایل `.env` (نمونه با توضیح: `.env.example`): نشانی سایت (`SITE_URL`)، مقصد فرم‌ها و آمار بازدید.
+- **فرم‌ها:** تا `PUBLIC_FORM_ENDPOINT` خالی است، فقط خانه‌ها را بررسی می‌کنند و چیزی نمی‌فرستند. گیرنده‌ی PHP برای هاست ایرانی (ذخیره در CSV و خبر در «بله») در `server/` است؛ راهنما: [forms-setup.md](docs/forms-setup.md).
+
+## انتشار و بررسی خودکار
+
+- `.github/workflows/deploy.yml`: بعد از هر تغییر در `main` (و هر روز صبح برای مقاله‌های زمان‌بندی‌شده) سایت را می‌سازد و روی هاست بارگذاری می‌کند. تا متغیر `DEPLOY_TARGET` تنظیم نشده خاموش است.
+- `.github/workflows/quality.yml`: روی هر تغییر، ساخت، نقشه‌ی کلمات کلیدی، بررسی همه‌ی صفحه‌ها و Lighthouse موبایل (حداقل ۹۰).
+- راهنمای کامل هاست، رمزها و رفع اشکال: [deploy.md](docs/deploy.md).
 
 ## سیستم طراحی
 
-- زمینه کاغذی `#fbf9f5`، متن `#17201c`، یک رنگ تأکیدی سبز `#1e5b47`؛ زعفرانی فقط برای شماره‌ها و برچسب «در حال تکمیل».
-- عنوان‌ها با Noto Naskh Arabic، متن با Vazirmatn؛ وزن‌ها فقط ۴۰۰ / ۵۰۰ / ۶۰۰.
-- جداکننده‌ها خط یک‌پیکسلی‌اند، نه سایه و رنگ‌های پررنگ. توکن‌ها در `src/styles/global.css`.
-- حرکت: فقط ظاهر شدن نرم هنگام اسکرول و کشیده شدن خط مسیر ۳ تا ۱۸ سالگی؛ با «کاهش حرکت» فقط محو شدن می‌ماند.
-- لوگوی فعلی موقت است (`src/components/Logo.astro` و `public/favicon.svg`).
+- زمینه‌ی کاغذی `#fbf9f5`، متن `#17201c`، رنگ اصلی سرمه‌ای لوگو `#01237a`؛ طلایی لوگو `#d9b25a` فقط روی زمینه‌ی سرمه‌ای، و زعفرانی تیره‌تر `#86631a` برای شماره‌ها روی زمینه‌ی روشن. همه‌ی ترکیب‌های متن و زمینه کنتراست WCAG AA دارند. توکن‌ها در `src/styles/global.css`.
+- عنوان‌ها با Noto Naskh Arabic و متن با Vazirmatn، روی خود سایت و فقط با حروف فارسی و لاتین لازم (هر خانواده یک فایل حدود ۵۵ تا ۶۰ کیلوبایت؛ `scripts/subset-fonts.py`)؛ وزن‌ها ۴۰۰ تا ۶۰۰.
+- جداکننده‌ها خط یک‌پیکسلی‌اند، نه سایه‌ی سنگین.
+- حرکت: بلوک‌ها هنگام اسکرول یک بار نرم ظاهر می‌شوند، خط مسیر ۳ تا ۱۸ سالگی با اسکرول پر می‌شود، آیکون‌های Lottie و نوار کارگاه‌ها با دکمه‌ی توقف. با «کاهش حرکت» در سیستم‌عامل فقط محو شدن کوتاه می‌ماند و نوار کارگاه‌ها فهرست ثابت می‌شود.
+- لوگو از فایل مؤسسه بازسازی شده است (`src/components/Logo.astro` و `public/favicon.svg`).
+
+## راهنماها
+
+| فایل | درباره‌ی |
+|---|---|
+| [content-brief.md](docs/content-brief.md) | محتوای تأییدشده‌ی مؤسسه؛ منبع همه‌ی متن‌ها |
+| [seo-geo-audit.md](docs/seo-geo-audit.md) | بررسی سئو و جئو سایت قبلی و رقیب‌ها |
+| [keyword-map.md](docs/keyword-map.md) | نقشه‌ی کلمات کلیدی (ساخته‌شده با `seo:keywords`) |
+| [content-calendar.md](docs/content-calendar.md) | تقویم سه‌ماهه‌ی مقاله‌ها |
+| [photo-shot-list.md](docs/photo-shot-list.md) | عکس‌های لازم و رضایت‌نامه |
+| [cms-setup.md](docs/cms-setup.md) | پنل مدیریت |
+| [forms-setup.md](docs/forms-setup.md) | فرم‌ها و آمار بازدید |
+| [local-profiles.md](docs/local-profiles.md) | نشان، بلد و گوگل‌مپ (ساخته‌شده با `local:profiles`) |
+| [migration.md](docs/migration.md) | جابه‌جایی از وردپرس بدون از دست دادن جایگاه در گوگل |
+| [deploy.md](docs/deploy.md) | هاست، انتشار خودکار، بررسی کیفیت و نقشه‌ی سایت |
+| [monthly-report.md](docs/monthly-report.md) | گزارش ماهانه |
 
 ## سئو و جئو
 
-گزارش کامل در [docs/seo-geo-audit.md](docs/seo-geo-audit.md). خروجی‌های مرتبط: `/sitemap-index.xml`، `/robots.txt`، `/llms.txt` و JSON-LD در همه‌ی صفحه‌ها.
-
-## استقرار
-
-خروجی `dist/` ایستاست و روی هر هاست ساده، Cloudflare Pages، Netlify، Vercel یا لیارا قابل انتشار است.
+خروجی‌های مرتبط: `/sitemap-index.xml` (با تاریخ تغییر مقاله‌ها)، `/robots.txt`، `/llms.txt` و JSON-LD در همه‌ی صفحه‌ها. جزئیات در [seo-geo-audit.md](docs/seo-geo-audit.md).

@@ -67,7 +67,7 @@ npm run dev                  # در پنجره‌ی دیگر
 انتشار در پنل یعنی تغییر در شاخه‌ی `main`. ساخت و بارگذاری سایت به میزبان بستگی دارد (کار شماره ۶ فهرست شما: دامنه و هاست):
 
 - **Cloudflare Pages یا Netlify:** مخزن را وصل کنید؛ با هر تغییر در `main` خودکار ساخته می‌شود. فرمان ساخت `npm run build` و پوشه‌ی خروجی `dist`.
-- **هاست cPanel ایرانی:** یک گردش کار GitHub Actions که پس از هر تغییر `npm run build` را اجرا و پوشه‌ی `dist` را با FTP یا SSH روی هاست بارگذاری کند. نام کاربری و رمز FTP فقط در **Settings ← Secrets and variables ← Actions** مخزن ذخیره شود. نمونه در `docs/deploy.md`.
+- **هاست cPanel ایرانی:** گردش کار آماده‌ی GitHub Actions (`.github/workflows/deploy.yml`) پس از هر تغییر سایت را می‌سازد و با FTP رمزنگاری‌شده روی هاست بارگذاری می‌کند، و هر روز صبح مقاله‌هایی را که تاریخ انتشارشان رسیده منتشر می‌کند. نام کاربری و رمز FTP فقط در **Settings ← Secrets and variables ← Actions** مخزن ذخیره می‌شود. راه‌اندازی: [deploy.md](deploy.md)، بخش ۳.
 
 ## عکس‌ها
 

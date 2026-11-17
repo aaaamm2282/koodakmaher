@@ -1,6 +1,7 @@
 /**
  * After every build, writes the host files that carry the redirects from the old site:
- * dist/.htaccess (Apache, LiteSpeed) and dist/_redirects (Netlify, Cloudflare Pages).
+ * dist/.htaccess (Apache, LiteSpeed) and dist/_redirects (Netlify, Cloudflare Pages), plus compression and
+ * caching: the end of .htaccess, dist/_astro/.htaccess and dist/_headers (src/lib/host-speed.mjs).
  * The build stops if a redirect would hide a real page, points to a page that does not exist, or loops.
  *
  * When the forms post to a PHP file on the site itself (PUBLIC_FORM_ENDPOINT=/api/form.php), the form
@@ -11,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadRedirects, checkRedirects, toHtaccess, toNetlify, toAstroRedirects, pathKey } from '../lib/redirects.mjs';
+import { htaccessSpeed, htaccessImmutable, netlifyHeaders } from '../lib/host-speed.mjs';
 
 export default function serverFiles() {
   let site;
@@ -33,8 +35,11 @@ export default function serverFiles() {
         for (const w of warnings) logger.warn(w);
         if (errors.length) throw new Error(`ریدایرکت‌های سایت قبلی (src/content/settings/redirects.json):\n- ${errors.join('\n- ')}`);
 
-        fs.writeFileSync(path.join(out, '.htaccess'), toHtaccess(checked, { site }));
+        fs.writeFileSync(path.join(out, '.htaccess'), toHtaccess(checked, { site }) + htaccessSpeed);
         fs.writeFileSync(path.join(out, '_redirects'), toNetlify(checked));
+        // Compression and caching (src/lib/host-speed.mjs)
+        fs.writeFileSync(path.join(out, '_headers'), netlifyHeaders);
+        if (fs.existsSync(path.join(out, '_astro'))) fs.writeFileSync(path.join(out, '_astro', '.htaccess'), htaccessImmutable);
         const moved = checked.filter((r) => r.status === 301).length;
         logger.info(`${moved} ریدایرکت ۳۰۱ و ${checked.length - moved} نشانی حذف‌شده (۴۱۰) در .htaccess و _redirects`);
 

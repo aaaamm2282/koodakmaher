@@ -136,7 +136,8 @@ export function toHtaccess(rules, { site } = {}) {
     'RewriteEngine On',
     '',
     '# Host files are not pages',
-    'RewriteRule ^(?:\\.htaccess|_redirects)$ - [R=404,L]',
+    'RewriteRule (?:^|/)\\.htaccess$ - [R=404,L]',
+    'RewriteRule ^(?:_redirects|_headers)$ - [R=404,L]',
     '',
   ];
   if (host) {
@@ -207,6 +208,14 @@ export function toNginx(rules, { site } = {}) {
       lines.push(r.status === 410 ? `location = ${loc} { return 410; }` : `location = ${loc} { return 301 ${target}; }`);
     }
   }
+  lines.push(
+    '',
+    '# Speed and host files (the same as the .htaccess the build writes; src/lib/host-speed.mjs)',
+    'gzip on;',
+    'gzip_types text/css text/plain text/xml text/javascript application/javascript application/json application/xml application/manifest+json image/svg+xml;',
+    'location /_astro/ { add_header Cache-Control "public, max-age=31536000, immutable"; }',
+    'location ~ (?:^|/)(?:\\.htaccess|_redirects|_headers)$ { return 404; }',
+  );
   if (site) {
     const host = new URL(site).host;
     lines.push(

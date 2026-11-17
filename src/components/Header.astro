@@ -7,12 +7,13 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 ---
 <header id="site-header" class="sticky top-0 z-50 border-b border-transparent bg-paper/95 transition-[border-color] duration-200 data-[scrolled=true]:border-line">
   <div class="container-x flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
-    <a href="/" class="flex items-center gap-3" aria-label={`${site.name} - خانه`}>
-      <Logo class="h-10 w-10 shrink-0" />
+    <a href="/" class="flex items-center gap-3">
+      <Logo class="h-10 w-10 shrink-0" decorative />
       <span class="flex flex-col leading-tight">
         <span class="font-serif text-[1.0625rem] font-semibold">{site.brand}</span>
         <span class="text-xs text-ink-mute">مؤسسه آموزشی کودک ماهر مانا</span>
       </span>
+      <span class="sr-only">، صفحه اول</span>
     </a>
 
     <nav aria-label="منوی اصلی" class="hidden xl:block">

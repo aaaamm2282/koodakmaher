@@ -45,22 +45,30 @@ const places = units.filter((u) => u.address);
     <div class="mt-10"><UnitCards /></div>
   </Section>
 
-  <!-- Workshops marquee -->
-  <a href="/workshops/" class="marquee block overflow-hidden bg-accent py-5 text-white" aria-label="کارگاه‌های مهارتی: خلاقیت، کار با چوب، نقاشی خلاق، هوش مصنوعی، الکترونیک و مهارت‌های نرم">
-    <div class="marquee-track" aria-hidden="true">
+  <!-- Workshops marquee. The whole band links to /workshops/ (a stretched link with its own name); the moving
+       names are decoration. It pauses on hover, on keyboard focus and with its button (WCAG 2.2.2), and does not
+       move at all with reduced motion. -->
+  <div class="marquee relative overflow-hidden bg-accent py-5 text-white" data-marquee>
+    <div class="marquee-fade" aria-hidden="true"><div class="marquee-track">
       {[0, 1].map(() => (
         <ul class="flex shrink-0 items-center">
-          {[...workshops, ...workshops].map((w) => (
-            <li class="flex items-center gap-3 px-8 font-serif text-xl sm:text-2xl">
+          {[...workshops, ...workshops].map((w, i) => (
+            <li class="flex items-center gap-3 px-8 font-serif text-xl sm:text-2xl" data-dup={i >= workshops.length ? '' : undefined}>
               <Icon name={w.icon} size={22} class="text-gold" />{w.n}
               {w.age && <span class="font-sans text-sm text-white/60">{w.age}</span>}
-              <span class="mr-8 h-1.5 w-1.5 rounded-full bg-gold/60"></span>
+              <span class="mr-8 h-1.5 w-1.5 rounded-full bg-gold/60" data-sep></span>
             </li>
           ))}
         </ul>
       ))}
-    </div>
-  </a>
+    </div></div>
+    <a href="/workshops/" class="absolute inset-0 z-0 outline-offset-[-6px] focus-visible:outline-2 focus-visible:outline-white"><span class="sr-only">کارگاه‌های مهارتی: خلاقیت، کار با چوب، نقاشی خلاق، هوش مصنوعی، الکترونیک و مهارت‌های نرم</span></a>
+    <button type="button" class="group absolute inset-y-0 left-3 z-10 my-auto grid size-10 place-items-center rounded-full bg-accent text-white ring-1 ring-white/35 transition-colors hover:bg-accent-hover hover:ring-white/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:hidden" aria-pressed="false" data-marquee-toggle>
+      <span class="sr-only">توقف نوار کارگاه‌ها</span>
+      <Icon name="pause" size={16} class="group-aria-pressed:hidden" />
+      <Icon name="play" size={16} class="hidden group-aria-pressed:block" />
+    </button>
+  </div>
 
   <!-- 04 A day -->
   <Section id="day" kicker="۰۴ — یک روز در کودک ماهر" tone="sand">
@@ -119,3 +127,15 @@ const places = units.filter((u) => u.address);
 
   <CTA />
 </Base>
+
+<script>
+  // Pause or restart the workshops band.
+  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((band) => {
+    const button = band.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
+    button?.addEventListener('click', () => {
+      const paused = button.getAttribute('aria-pressed') !== 'true';
+      button.setAttribute('aria-pressed', String(paused));
+      band.toggleAttribute('data-paused', paused);
+    });
+  });
+</script>

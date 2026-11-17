@@ -14,20 +14,22 @@
     "migrate:import": "node scripts/migrate.mjs import",
     "migrate:apply": "node scripts/migrate.mjs apply",
     "migrate:nginx": "node scripts/migrate.mjs nginx",
-    "migrate:check": "node scripts/migrate.mjs check"
+    "migrate:check": "node scripts/migrate.mjs check",
+    "check:pages": "node scripts/site-check.mjs",
+    "report:monthly": "node scripts/monthly-report.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.7.4",
-    "@fontsource-variable/noto-naskh-arabic": "^5.3.0",
-    "@fontsource-variable/vazirmatn": "^5.3.0",
-    "@tailwindcss/vite": "^4.3.4",
-    "astro": "^5.18.2",
-    "gsap": "^3.15.0",
-    "lottie-web": "^5.13.0",
-    "qrcode": "^1.5.4",
-    "tailwindcss": "^4.3.4"
+    "@astrojs/sitemap": "3.7.4",
+    "@tailwindcss/vite": "4.3.4",
+    "astro": "5.18.2",
+    "gsap": "3.15.0",
+    "lottie-web": "5.13.0",
+    "qrcode": "1.5.4",
+    "tailwindcss": "4.3.4"
   },
   "devDependencies": {
-    "svgpath": "^2.6.0"
+    "axe-core": "4.14.1",
+    "playwright-core": "1.65.1",
+    "svgpath": "2.6.0"
   }
 }

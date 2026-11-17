@@ -21,6 +21,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { decodePath, suggestPath } from '../src/data/url-hints.mjs';
 import { REDIRECTS_FILE, loadRedirects, normalizeRule, checkRedirects, toNginx, pathKey } from '../src/lib/redirects.mjs';
+import { parseCsv, csvCell, toLatinDigits } from './lib/csv.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -38,7 +39,6 @@ const flag = (name) => {
   const [value] = args.splice(i, 2).slice(1);
   return value ?? '';
 };
-const toLatinDigits = (s) => String(s).replace(/[۰-۹]/g, (d) => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d));
 const num = (s) => {
   const n = parseInt(toLatinDigits(s ?? '').replace(/[^\d]/g, ''), 10);
   return Number.isFinite(n) ? n : 0;
@@ -56,34 +56,6 @@ const fail = (msg) => {
   process.exit(1);
 };
 
-/* ---------- CSV (RFC 4180, with the BOM Excel needs for Persian) ---------- */
-function parseCsv(text) {
-  text = text.replace(/^﻿/, '');
-  const sep = !text.split('\n')[0].includes(',') && text.split('\n')[0].includes('\t') ? '\t' : ',';
-  const rows = [];
-  let row = [];
-  let cell = '';
-  let quoted = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (quoted) {
-      if (c === '"' && text[i + 1] === '"') (cell += '"'), i++;
-      else if (c === '"') quoted = false;
-      else cell += c;
-    } else if (c === '"') quoted = true;
-    else if (c === sep) row.push(cell), (cell = '');
-    else if (c === '\n' || c === '\r') {
-      if (c === '\r' && text[i + 1] === '\n') i++;
-      row.push(cell), rows.push(row), (row = []), (cell = '');
-    } else cell += c;
-  }
-  if (cell || row.length) row.push(cell), rows.push(row);
-  return rows.filter((r) => r.some((c) => c.trim()));
-}
-const csvCell = (v) => {
-  const s = String(v ?? '');
-  return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-};
 function readMap() {
   if (!fs.existsSync(MAP_FILE)) return [];
   const [head, ...rows] = parseCsv(fs.readFileSync(MAP_FILE, 'utf8'));

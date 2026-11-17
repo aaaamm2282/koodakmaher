@@ -1,7 +1,8 @@
 ---
 import '../styles/global.css';
-import vazirArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-wght-normal.woff2?url';
-import naskhArabic from '@fontsource-variable/noto-naskh-arabic/files/noto-naskh-arabic-arabic-wght-normal.woff2?url';
+// The two font files every page needs (src/styles/global.css), fetched in parallel with the CSS.
+import vazirFont from '../assets/fonts/vazirmatn-fa.woff2?url';
+import naskhFont from '../assets/fonts/noto-naskh-arabic-fa.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import Analytics from '../components/Analytics.astro';
@@ -53,8 +54,8 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     {hasCanonical && <link rel="canonical" href={canonical} />}
     <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
     <meta name="theme-color" content="#01237a" />
-    <link rel="preload" href={vazirArabic} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={naskhArabic} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={vazirFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={naskhFont} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -101,12 +102,13 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     </main>
     <Footer />
     <!-- Mobile: quick actions stay within thumb reach once the visitor has scrolled past the first screen -->
-    <div id="quickbar" class="fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-line bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-transform duration-300 data-[show=true]:translate-y-0 sm:hidden" data-show="false">
+    <!-- While it is off screen it is also invisible, so keyboard and screen-reader users never land on hidden links. -->
+    <nav id="quickbar" aria-label="دسترسی سریع" class="invisible fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-line bg-paper/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-[translate,visibility] duration-300 data-[show=true]:visible data-[show=true]:translate-y-0 sm:hidden" data-show="false">
       <div class="flex gap-2">
         <a href="/register/" class="btn-primary flex-1 !min-h-11" data-cta="quickbar">پیش‌ثبت‌نام و مشاوره</a>
         <a href="/contact/" class="btn-ghost !min-h-11">تماس</a>
       </div>
-    </div>
+    </nav>
     <script>
       import '../scripts/reveal';
       const qb = document.getElementById('quickbar');
