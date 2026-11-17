@@ -28,7 +28,7 @@ const nodes = [[160, 40], [264, 220], [56, 220]];
         <button type="button" class:list={['orbit-step flex w-full items-start gap-5 py-6 text-right', i === 0 && 'is-active']} data-orbit-step={i} aria-pressed={i === 0 ? 'true' : 'false'}>
           <span class="num text-[2rem] leading-none text-ink-mute transition-colors duration-300">{(i + 1).toLocaleString('fa-IR')}</span>
           <span class="flex-1">
-            <span class="block font-serif text-2xl font-semibold">{c.title}</span>
+            <span class="block font-serif text-2xl font-semibold" data-orbit-title>{c.title}</span>
             <span class="orbit-text block text-ink-soft">{c.text}</span>
           </span>
         </button>
@@ -38,18 +38,19 @@ const nodes = [[160, 40], [264, 220], [56, 220]];
 </div>
 
 <script>
-  import { cycle } from '../data/site';
+  // Titles come from the rendered list, so the page data is not shipped to the browser.
   document.querySelectorAll<HTMLElement>('[data-orbit]').forEach((root) => {
     const marker = root.querySelector<SVGGElement>('[data-orbit-marker]')!;
     const label = root.querySelector<SVGTextElement>('[data-orbit-label]')!;
     const steps = [...root.querySelectorAll<HTMLButtonElement>('[data-orbit-step]')];
     const nodes = [...root.querySelectorAll<SVGGElement>('[data-orbit-node]')];
+    const titles = steps.map((s) => s.querySelector('[data-orbit-title]')?.textContent ?? '');
     let current = 0, turns = 0, timer: number | undefined, interacted = false;
     const set = (i: number) => {
       const diff = (i - current + 3) % 3;
       turns += diff; current = i;
       marker.style.transform = `rotate(${turns * 120}deg)`;
-      label.textContent = cycle[i].title;
+      label.textContent = titles[i];
       steps.forEach((s, k) => { s.classList.toggle('is-active', k === i); s.setAttribute('aria-pressed', String(k === i)); });
       nodes.forEach((n, k) => n.classList.toggle('is-active', k === i));
     };

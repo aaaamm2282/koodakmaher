@@ -3,42 +3,66 @@ import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import CTA from '../../components/CTA.astro';
 import Icon from '../../components/Icon.astro';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/path/');
 
 const crumbs = [{ label: 'مسیر رشد ۳ تا ۱۸ سال' }];
 const stages = [
-  { age: '۳ تا ۵', stage: 'کودکستان', focus: 'بازی، کنجکاوی، عادت حدس زدن', form: '«حدس و امتحان» با اشیا و بازی، بدون نوشتن. حدس کودک را تصحیح نمی‌کنیم.', href: '/units/kindergarten/' },
-  { age: '۶ تا ۸', stage: 'دبستان (دوره اول)', focus: 'شناخت کارها و نقش‌ها', form: 'کارت حدس ساده و چرخش نقش‌ها در کلاس', href: '/units/primary/' },
-  { age: '۹ تا ۱۱', stage: 'دبستان (دوره دوم)', focus: 'تجربه‌های متنوع، باز نگه داشتن گزینه‌ها', form: 'دفتر پیش‌بینی ساده و کارگاه‌های گوناگون', href: '/units/primary/' },
-  { age: '۱۲ تا ۱۴', stage: 'متوسطه اول', focus: 'مسئله واقعی و مقایسه مسیرها', form: 'چرخه‌های شش تا هشت هفته‌ای مسئله واقعی و «پرونده انتخاب»', href: '/units/middle-school/' },
-  { age: '۱۵', stage: 'پایه نهم', focus: 'اولین انتخاب آگاهانه', form: 'انتخاب رشته بر پایه پرونده انتخاب', milestone: true },
-  { age: '۱۵ تا ۱۸', stage: 'متوسطه دوم', focus: 'واکاوی خود و دنیای آینده', form: 'آزمودن رشته و کار در مقیاس واقعی‌تر', href: '/units/high-school/', soon: true },
-  { age: '۱۸', stage: 'پایان مسیر', focus: 'انتخاب نهایی', form: 'تصمیم برای دانشگاه یا ورود به کار', milestone: true },
+  { age: '۳ تا ۵', from: 3, stage: 'کودکستان', focus: 'بازی، کنجکاوی، عادت حدس زدن', form: '«حدس و امتحان» با اشیا و بازی، بدون نوشتن. حدس کودک را تصحیح نمی‌کنیم.', href: '/units/kindergarten/' },
+  { age: '۶ تا ۸', from: 6, stage: 'دبستان (دوره اول)', focus: 'شناخت کارها و نقش‌ها', form: 'کارت حدس ساده و چرخش نقش‌ها در کلاس', href: '/units/primary/' },
+  { age: '۹ تا ۱۱', from: 9, stage: 'دبستان (دوره دوم)', focus: 'تجربه‌های متنوع، باز نگه داشتن گزینه‌ها', form: 'دفتر پیش‌بینی ساده و کارگاه‌های گوناگون', href: '/units/primary/' },
+  { age: '۱۲ تا ۱۴', from: 12, stage: 'متوسطه اول', focus: 'مسئله واقعی و مقایسه مسیرها', form: 'چرخه‌های شش تا هشت هفته‌ای مسئله واقعی و «پرونده انتخاب»', href: '/units/middle-school/' },
+  { age: '۱۵', from: 15, stage: 'پایه نهم', focus: 'اولین انتخاب آگاهانه', form: 'انتخاب رشته بر پایه پرونده انتخاب', milestone: true },
+  { age: '۱۵ تا ۱۸', from: 15, stage: 'متوسطه دوم', focus: 'واکاوی خود و دنیای آینده', form: 'آزمودن رشته و کار در مقیاس واقعی‌تر', href: '/units/high-school/', soon: true },
+  { age: '۱۸', from: 18, stage: 'پایان مسیر', focus: 'انتخاب نهایی', form: 'تصمیم برای دانشگاه یا ورود به کار', milestone: true },
 ];
+const ticks = [3, 6, 9, 12, 15, 18];
 ---
-<Base title="مسیر رشد ۳ تا ۱۸ سال · کودک ماهر" description="یک مسیر پیوسته از کودکستان تا انتخاب رشته در ۱۵ و ۱۸ سالگی." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="یک مسیر پیوسته، نه چند برنامه جدا" subtitle="چرخه پیش‌بینی، تجربه، بازبینی در همه سنین یکی است؛ فقط شکلش با سن کودک عوض می‌شود." kicker="مسیر رشد ۳ تا ۱۸ سال" crumbs={crumbs} />
 
-  <section class="container-x py-14 sm:py-20" aria-label="مراحل مسیر رشد">
-    <ol class="relative mx-auto max-w-4xl">
-      <span class="absolute top-3 bottom-3 right-[5.5rem] w-px bg-line-strong sm:right-[7.5rem]" aria-hidden="true"></span>
-      <span class="absolute top-3 bottom-3 right-[5.5rem] w-0.5 origin-top translate-x-[0.5px] bg-accent sm:right-[7.5rem]" data-timeline-line aria-hidden="true"></span>
-      {stages.map((s) => (
-        <li class="relative grid grid-cols-[4.5rem_1fr] gap-x-8 pb-10 last:pb-0 sm:grid-cols-[6.5rem_1fr]" data-reveal>
-          <p class="num pt-0.5 text-left text-[1.375rem] leading-tight sm:text-[1.75rem]">{s.age}<span class="block font-sans text-xs text-ink-mute">سال</span></p>
-          <span class:list={['absolute top-2 right-[5.5rem] h-3.5 w-3.5 translate-x-1/2 rounded-full border-2 border-accent sm:right-[7.5rem]', s.milestone ? 'bg-accent' : 'bg-paper']} aria-hidden="true"></span>
-          <div class:list={['pr-2', s.milestone && 'rounded-xl bg-forest p-5 text-white']}>
-            <div class="flex flex-wrap items-center gap-2">
-              <h2 class="text-xl sm:text-2xl">{s.stage}</h2>
-              {s.soon && <span class="rounded-md bg-saffron-soft px-1.5 py-px text-xs font-medium text-saffron">به‌زودی</span>}
-              {s.milestone && <span class="rounded-md bg-white/15 px-1.5 py-px text-xs font-medium">نقطه انتخاب</span>}
-            </div>
-            <p class:list={['mt-1 font-medium', s.milestone ? 'text-white' : 'text-accent']}>{s.focus}</p>
-            <p class:list={['mt-1', s.milestone ? 'text-white/75' : 'text-ink-soft']}>{s.form}</p>
-            {s.href && <a href={s.href} class="link mt-2 inline-flex items-center gap-1 text-sm">صفحه واحد<Icon name="arrow" size={14} /></a>}
+  <section class="container-x py-14 sm:py-20" aria-label="مراحل مسیر رشد" data-path>
+    <div class="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[15rem_1fr] lg:gap-16">
+      <!-- Age dial (decorative): counts 3 → 18 while the stages scroll past. Wide screens only. -->
+      <div class="hidden lg:block motion-reduce:lg:hidden" aria-hidden="true">
+        <div class="sticky top-28 flex gap-8">
+          <div class="relative w-px bg-line-strong" style="height:18rem" data-path-ruler>
+            <div class="absolute inset-x-[-0.5px] top-0 h-full origin-top bg-accent" style="transform:scaleY(0)" data-path-fill></div>
+            {ticks.map((t) => (
+              <span class="absolute right-3 -translate-y-1/2 text-xs text-ink-mute num" style={`top:${((t - 3) / 15) * 100}%`}>{t.toLocaleString('fa-IR')}</span>
+            ))}
+            <span class="absolute -right-[7px] -top-[7px] h-[15px] w-[15px] rounded-full border-2 border-paper bg-gold shadow-[0_0_0_4px_rgb(1_35_122/0.12)]" data-path-marker></span>
           </div>
-        </li>
-      ))}
-    </ol>
+          <div class="pt-1">
+            <p class="text-sm text-ink-mute">سن</p>
+            <p class="num mt-1 text-[5.5rem] leading-none text-accent" data-path-age>۳</p>
+            <p class="mt-3 text-sm text-ink-mute">سالگی</p>
+            <p class="mt-6 max-w-[8rem] font-serif text-lg leading-8" data-path-stage>{stages[0].stage}</p>
+          </div>
+        </div>
+      </div>
+
+      <ol class="relative" data-path-list>
+        <span class="absolute top-3 bottom-3 right-[5.5rem] w-px bg-line-strong sm:right-[7.5rem]" aria-hidden="true"></span>
+        <span class="absolute top-3 bottom-3 right-[5.5rem] w-0.5 origin-top translate-x-[0.5px] bg-accent sm:right-[7.5rem]" data-timeline-line aria-hidden="true"></span>
+        {stages.map((s) => (
+          <li class="path-item relative grid grid-cols-[4.5rem_1fr] gap-x-8 pb-12 last:pb-0 sm:grid-cols-[6.5rem_1fr]" data-path-item data-age={s.from} data-stage={s.stage} data-reveal>
+            <p class="num pt-0.5 text-left text-[1.375rem] leading-tight sm:text-[1.75rem]">{s.age}<span class="block font-sans text-xs text-ink-mute">سال</span></p>
+            <span class:list={['path-dot absolute top-2 right-[5.5rem] h-3.5 w-3.5 translate-x-1/2 rounded-full border-2 border-accent sm:right-[7.5rem]', s.milestone ? 'bg-accent' : 'bg-paper']} aria-hidden="true"></span>
+            <div class:list={['pr-2', s.milestone && 'rounded-xl bg-forest p-5 text-white']}>
+              <div class="flex flex-wrap items-center gap-2">
+                <h2 class="text-xl sm:text-2xl">{s.stage}</h2>
+                {s.soon && <span class="rounded-md bg-saffron-soft px-1.5 py-px text-xs font-medium text-saffron">به‌زودی</span>}
+                {s.milestone && <span class="rounded-md bg-white/15 px-1.5 py-px text-xs font-medium">نقطه انتخاب</span>}
+              </div>
+              <p class:list={['mt-1 font-medium', s.milestone ? 'text-white' : 'text-accent']}>{s.focus}</p>
+              <p class:list={['mt-1', s.milestone ? 'text-white/75' : 'text-ink-soft']}>{s.form}</p>
+              {s.href && <a href={s.href} class:list={['link mt-2 inline-flex items-center gap-1 text-sm', s.milestone && '!text-gold']}>صفحه واحد<Icon name="arrow" size={14} /></a>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
   </section>
 
   <section class="border-y border-line bg-sand" aria-labelledby="early-title">
@@ -50,3 +74,7 @@ const stages = [
 
   <CTA />
 </Base>
+
+<script>
+  import '../../scripts/path-story';
+</script>

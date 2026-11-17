@@ -3,9 +3,11 @@ import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import UnitCards from '../../components/UnitCards.astro';
 import CTA from '../../components/CTA.astro';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/units/');
 const crumbs = [{ label: 'واحدها' }];
 ---
-<Base title="واحدهای کودک ماهر مانا" description="کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، متوسطه دوم (در دست برنامه‌ریزی)، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="واحدهای ما" kicker="واحدها" crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20"><UnitCards /></section>
   <CTA />

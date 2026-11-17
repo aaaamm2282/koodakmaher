@@ -1,10 +1,20 @@
 ---
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
 import Logo from './Logo.astro';
-interface Props { title: string; subtitle?: string; kicker?: string; crumbs?: { href?: string; label: string }[]; badge?: string }
-const { title, subtitle, kicker, crumbs = [], badge } = Astro.props;
+interface Props {
+  title: string;
+  subtitle?: string;
+  kicker?: string;
+  crumbs?: { href?: string; label: string }[];
+  badge?: string;
+  /** A real photo of the place (with consent). Without it the hero stays text-only. */
+  image?: { src: ImageMetadata; alt: string } | null;
+}
+const { title, subtitle, kicker, crumbs = [], badge, image } = Astro.props;
 ---
 <section class="relative overflow-hidden border-b border-line">
-  <Logo variant="mark" class="page-logo pointer-events-none absolute top-1/2 left-[4%] hidden w-72 -translate-y-1/2 text-accent/[0.06] lg:block" />
+  {!image && <Logo variant="mark" class="page-logo pointer-events-none absolute top-1/2 left-[4%] hidden w-72 -translate-y-1/2 text-accent/[0.06] lg:block" />}
   <div class="container-x relative pt-8 pb-12 sm:pt-10 sm:pb-16">
     {crumbs.length > 0 && (
       <nav aria-label="مسیر صفحه" class="text-sm text-ink-mute">
@@ -16,14 +26,23 @@ const { title, subtitle, kicker, crumbs = [], badge } = Astro.props;
         </ol>
       </nav>
     )}
-    <div class="mt-10 max-w-3xl">
-      <div class="rise flex flex-wrap items-center gap-3" style="--i:0">
-        {kicker && <p class="kicker">{kicker}</p>}
-        {badge && <span class="rounded-md border border-saffron/30 bg-saffron-soft px-2 py-0.5 text-xs font-medium text-saffron">{badge}</span>}
+    <div class:list={['mt-10', image ? 'grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:items-center lg:gap-14' : 'max-w-3xl']}>
+      <div class:list={[image && 'max-w-3xl']}>
+        <div class="rise flex flex-wrap items-center gap-3" style="--i:0">
+          {kicker && <p class="kicker">{kicker}</p>}
+          {badge && <span class="rounded-md border border-saffron/30 bg-saffron-soft px-2 py-0.5 text-xs font-medium text-saffron">{badge}</span>}
+        </div>
+        <h1 class="rise mt-4 text-[2rem] sm:text-[2.5rem] md:text-[3rem]" style="--i:1; line-height:1.35">{title}</h1>
+        {subtitle && <p class="rise lead mt-5" style="--i:2">{subtitle}</p>}
+        <slot />
       </div>
-      <h1 class="rise mt-4 text-[2rem] sm:text-[2.5rem] md:text-[3rem]" style="--i:1; line-height:1.35">{title}</h1>
-      {subtitle && <p class="rise lead mt-5" style="--i:2">{subtitle}</p>}
-      <slot />
+      {image && (
+        <figure class="relative overflow-hidden rounded-2xl border border-line bg-sand">
+          <!-- No entrance animation here: this photo is usually the largest paint (LCP) of the page -->
+          <Picture src={image.src} alt={image.alt} formats={['avif', 'webp']} widths={[480, 720, 960, 1280]} sizes="(min-width: 1024px) 40vw, 100vw"
+            loading="eager" fetchpriority="high" class="aspect-[4/3] h-full w-full object-cover" />
+        </figure>
+      )}
     </div>
   </div>
 </section>

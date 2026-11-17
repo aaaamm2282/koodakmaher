@@ -4,9 +4,11 @@ import PageHero from '../../components/PageHero.astro';
 import Pending from '../../components/Pending.astro';
 import FormShell from '../../components/FormShell.astro';
 import Field from '../../components/Field.astro';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/careers/');
 const crumbs = [{ label: 'همکاری با ما' }];
 ---
-<Base title="همکاری با ما · کودک ماهر" description="دنبال معلمان و مربیانی هستیم که پرسیدن را از جواب دادن مهم‌تر می‌دانند." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="با ما کار کنید" kicker="همکاری با ما" crumbs={crumbs}
     subtitle="دنبال معلمان و مربیانی هستیم که پرسیدن را از جواب دادن مهم‌تر می‌دانند، از کار با کودک لذت می‌برند و آماده یادگیری یک روش تازه‌اند. همکاران ما آموزش متد کودک ماهر را می‌بینند و با فرم‌ها و بازبینی منظم همراهی می‌شوند." />
   <section class="container-x py-14 sm:py-20">

@@ -1,29 +1,18 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import PageHero from '../../../components/PageHero.astro';
-import InfoList from '../../../components/InfoList.astro';
-import UnitContact from '../../../components/UnitContact.astro';
+import UnitPage from '../../../components/unit/UnitPage.astro';
 import Pending from '../../../components/Pending.astro';
-import CTA from '../../../components/CTA.astro';
-import { units } from '../../../data/site';
-const u = units.find((x) => x.slug === 'vocational')!;
-const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'آموزشگاه فنی‌وحرفه‌ای' }];
+import { unitBySlug } from '../../../data/site';
+import { related } from '../../../lib/related';
+const u = unitBySlug('vocational');
 ---
-<Base title="آموزشگاه آزاد فنی‌وحرفه‌ای کودک ماهر" description="آموزشگاه آزاد فنی‌وحرفه‌ای مؤسسه آموزشی کودک ماهر مانا." crumbs={crumbs}>
-  <PageHero title="آموزشگاه آزاد فنی‌وحرفه‌ای کودک ماهر" kicker="آموزشگاه فنی‌وحرفه‌ای" crumbs={crumbs} />
-  <section class="container-x py-14 sm:py-20">
-    <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr] lg:gap-16">
-      <div class="space-y-14">
-        <div data-reveal><h2 class="text-2xl">معرفی</h2><Pending class="mt-4" label="فهرست دوره‌ها، مخاطبان (نوجوان/بزرگسال)، مدت دوره‌ها، نوع گواهی‌نامه و مرجع صادرکننده آن" /></div>
-        <div data-reveal>
-          <h2 class="text-2xl">پیوند با مسیر کودک ماهر</h2>
-          <p class="lead mt-4">برای نوجوانان متوسطه، این آموزشگاه می‌تواند جایی برای تجربه کوتاه و واقعی یک حرفه باشد؛ تجربه‌ای که به پرونده انتخاب اضافه می‌شود.</p>
-          <Pending inline class="mt-2" label="پیشنهادی؛ تأیید شود" />
-        </div>
-        <UnitContact unit={u} />
-      </div>
-      <InfoList items={[{ label: 'ثبت‌نام', pending: 'تکمیل شود' }, { label: 'شهریه', pending: 'تکمیل شود' }]} />
-    </div>
-  </section>
-  <CTA />
-</Base>
+<UnitPage unit={u} related={related.vocational}>
+  <div data-reveal>
+    <h2 class="text-2xl">معرفی</h2>
+    <Pending class="mt-4" label="فهرست دوره‌ها، مخاطبان (نوجوان/بزرگسال)، مدت دوره‌ها، نوع گواهی‌نامه و مرجع صادرکننده آن" />
+  </div>
+  <div data-reveal>
+    <h2 class="text-2xl">پیوند با مسیر کودک ماهر</h2>
+    <p class="lead mt-4">برای نوجوانان متوسطه، این آموزشگاه می‌تواند جایی برای تجربه کوتاه و واقعی یک حرفه باشد؛ تجربه‌ای که به پرونده انتخاب اضافه می‌شود.</p>
+    <Pending inline class="mt-2" label="پیشنهادی؛ تأیید شود" />
+  </div>
+</UnitPage>

@@ -1,12 +1,15 @@
 ---
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
+import NewsBar from '../components/NewsBar.astro';
 import Icon from '../components/Icon.astro';
 import Section from '../components/Section.astro';
 import CycleOrbit from '../components/CycleOrbit.astro';
 import UnitCards from '../components/UnitCards.astro';
 import CTA from '../components/CTA.astro';
 import { units, workshops } from '../data/site';
+import { pageSeo } from '../data/keywords';
+const seo = pageSeo('/');
 
 const pillars = [
   { t: 'یادگیری با تجربه واقعی', d: 'کودک با دست و ذهن کار می‌کند، نه فقط با حفظ کردن.' },
@@ -16,8 +19,9 @@ const pillars = [
 ];
 const places = units.filter((u) => u.address);
 ---
-<Base>
+<Base title={seo.title} description={seo.description}>
   <Hero />
+  <NewsBar />
 
   <!-- 01 The problem -->
   <Section id="problem" kicker="۰۱ — مسئله">

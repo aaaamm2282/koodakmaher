@@ -5,6 +5,8 @@ import Section from '../../components/Section.astro';
 import Icon from '../../components/Icon.astro';
 import CycleSteps from '../../components/CycleSteps.astro';
 import CTA from '../../components/CTA.astro';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/method/');
 
 const crumbs = [{ label: 'متد کودک ماهر' }];
 const cycleItems = [
@@ -26,7 +28,7 @@ const principles = [
   { t: 'بدون برچسب استعداد.', d: 'علاقه به یک کارگاه، دلیل کافی برای گفتن «استعدادش این است» نیست.' },
 ];
 ---
-<Base title="متد کودک ماهر: پیش‌بینی، تجربه، بازبینی" description="روشی برای اینکه کودک خودش را با تجربه بشناسد و مسیر تحصیلش را آگاهانه انتخاب کند." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="متد کودک ماهر: پیش‌بینی، تجربه، بازبینی" subtitle="روشی برای اینکه کودک خودش را با شاهد بشناسد، نه با حدس دیگران." kicker="متد" crumbs={crumbs} />
 
   <Section id="goal" kicker="هدف" title="دو نقطه انتخاب آگاهانه">

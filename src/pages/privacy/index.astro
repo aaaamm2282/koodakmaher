@@ -3,9 +3,11 @@ import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Pending from '../../components/Pending.astro';
 import { site } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/privacy/');
 const crumbs = [{ label: 'حریم خصوصی' }];
 ---
-<Base title="حریم خصوصی · کودک ماهر" description="نحوه نگه‌داری و استفاده از اطلاعات فرم‌ها و پرونده رشد دانش‌آموزان در کودک ماهر مانا." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="حریم خصوصی" kicker="حریم خصوصی" crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20">
     <div class="max-w-3xl space-y-5 text-[1.0625rem] leading-[2]" data-reveal>

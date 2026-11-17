@@ -4,7 +4,8 @@ import vazirArabic from '@fontsource-variable/vazirmatn/files/vazirmatn-arabic-w
 import naskhArabic from '@fontsource-variable/noto-naskh-arabic/files/noto-naskh-arabic-arabic-wght-normal.woff2?url';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { site, social, units } from '../data/site';
+import { site } from '../data/site';
+import { organization, website, breadcrumbs } from '../lib/schema';
 
 interface Props {
   /** Full <title>, exactly as in section 5 of the content brief */
@@ -13,7 +14,7 @@ interface Props {
   image?: string;
   type?: 'website' | 'article';
   crumbs?: { href?: string; label: string }[];
-  schema?: Record<string, unknown>[];
+  schema?: (Record<string, unknown> | null)[];
   noindex?: boolean;
 }
 
@@ -30,79 +31,10 @@ const {
 const fullTitle = title;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
-const origin = new URL('/', Astro.site).href;
 
-// schema.org school types per unit (more specific than EducationalOrganization helps local results)
-const schemaType: Record<string, string> = { kindergarten: 'Preschool', primary: 'ElementarySchool', 'middle-school': 'MiddleSchool' };
-// Only confirmed facts go into structured data; unknown values (null in site.ts) are left out.
-const orgSchema: Record<string, unknown> = {
-  '@context': 'https://schema.org',
-  '@type': 'EducationalOrganization',
-  '@id': `${origin}#org`,
-  name: site.name,
-  alternateName: [site.brand, 'کودک ماهر مانا', 'ماهر مانا', 'Maher Mana'],
-  slogan: site.slogan,
-  description: site.mission,
-  url: origin,
-  logo: new URL('/logo.png', Astro.site).href,
-  image: ogImage,
-  founder: { '@type': 'Person', name: site.founder },
-  department: units.filter((u) => !u.soon).map((u) => ({
-    '@type': schemaType[u.slug] ?? 'EducationalOrganization',
-    '@id': new URL(`/units/${u.slug}/#unit`, Astro.site).href,
-    name: u.officialName ?? `${u.name} کودک ماهر`,
-    url: new URL(`/units/${u.slug}/`, Astro.site).href,
-    ...(u.address && { address: { '@type': 'PostalAddress', streetAddress: u.address, ...(site.city && { addressLocality: site.city }), addressCountry: 'IR' } }),
-    ...(u.phone && { telephone: u.phone.tel }),
-    ...(u.mapUrl && { hasMap: u.mapUrl }),
-  })),
-};
-if (site.phone) orgSchema.telephone = site.phone;
-if (site.address || site.city) orgSchema.address = { '@type': 'PostalAddress', ...(site.address && { streetAddress: site.address }), ...(site.city && { addressLocality: site.city }), addressCountry: 'IR' };
-// foundingYear is a Persian (Hijri Shamsi) year, which schema.org foundingDate (ISO 8601) can't express; it stays in visible text only.
-if (social.length) orgSchema.sameAs = social.map((s) => s.href);
+// Organisation, site and breadcrumbs on every page; pages add their own (unit, article, FAQ) via `schema`.
+const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...(crumbs.length ? [breadcrumbs(crumbs, Astro.url.pathname, Astro.site!)] : []), ...schema.filter(Boolean)];
 
-const websiteSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  '@id': `${origin}#website`,
-  name: site.name,
-  url: origin,
-  inLanguage: 'fa-IR',
-  publisher: { '@id': `${origin}#org` },
-};
-const crumbSchema = crumbs.length
-  ? [{
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [{ label: 'خانه', href: '/' }, ...crumbs].map((c, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        name: c.label,
-        item: new URL(c.href ?? Astro.url.pathname, Astro.site).href,
-      })),
-    }]
-  : [];
-// On a unit page, describe that unit on its own too (linked to the parent organisation).
-const unitMatch = Astro.url.pathname.match(/^\/units\/([^/]+)\/$/);
-const pageUnit = unitMatch ? units.find((x) => x.slug === unitMatch[1] && !x.soon) : undefined;
-const unitSchema = pageUnit
-  ? [{
-      '@context': 'https://schema.org',
-      '@type': schemaType[pageUnit.slug] ?? 'EducationalOrganization',
-      '@id': new URL(`/units/${pageUnit.slug}/#unit`, Astro.site).href,
-      name: pageUnit.officialName ?? `${pageUnit.name} کودک ماهر`,
-      url: canonical,
-      parentOrganization: { '@id': `${origin}#org` },
-      ...(pageUnit.short && { description: pageUnit.short }),
-      ...(pageUnit.address && { address: { '@type': 'PostalAddress', streetAddress: pageUnit.address, ...(site.city && { addressLocality: site.city }), addressCountry: 'IR' } }),
-      ...(pageUnit.phone && { telephone: pageUnit.phone.tel }),
-      ...(pageUnit.mapUrl && { hasMap: pageUnit.mapUrl }),
-      ...(pageUnit.instagram && { sameAs: [`https://instagram.com/${pageUnit.instagram.slice(1)}`] }),
-      ...(pageUnit.manager && { employee: { '@type': 'Person', name: pageUnit.manager, jobTitle: `مدیر ${pageUnit.name}` } }),
-    }]
-  : [];
-const allSchema = [orgSchema, websiteSchema, ...unitSchema, ...crumbSchema, ...schema];
 ---
 <!doctype html>
 <html lang="fa" dir="rtl">
@@ -136,7 +68,11 @@ const allSchema = [orgSchema, websiteSchema, ...unitSchema, ...crumbSchema, ...s
 
     {allSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
 
-    <script is:inline>document.documentElement.classList.add('js');</script>
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      // If the animation script never starts (blocked, offline, old browser), show everything after 3 s.
+      setTimeout(function () { if (!window.__animReady) document.documentElement.classList.remove('js'); }, 3000);
+    </script>
   </head>
   <body class="overflow-x-hidden">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:right-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
@@ -153,7 +89,7 @@ const allSchema = [orgSchema, websiteSchema, ...unitSchema, ...crumbSchema, ...s
       </div>
     </div>
     <script>
-      import '../scripts/motion';
+      import '../scripts/reveal';
       const qb = document.getElementById('quickbar');
       if (qb && !location.pathname.startsWith('/register')) {
         const on = () => (qb.dataset.show = String(scrollY > innerHeight * 0.8 && innerHeight + scrollY < document.body.scrollHeight - 200));

@@ -1,13 +1,9 @@
 ---
-import Base from '../../../layouts/Base.astro';
-import PageHero from '../../../components/PageHero.astro';
-import InfoList from '../../../components/InfoList.astro';
-import UnitContact from '../../../components/UnitContact.astro';
+import UnitPage from '../../../components/unit/UnitPage.astro';
 import Pending from '../../../components/Pending.astro';
-import CTA from '../../../components/CTA.astro';
-import { units } from '../../../data/site';
-const u = units.find((x) => x.slug === 'language')!;
-const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'آموزشگاه زبان' }];
+import { unitBySlug } from '../../../data/site';
+import { related } from '../../../lib/related';
+const u = unitBySlug('language');
 const languages = ['انگلیسی', 'فرانسه', 'ترکی استانبولی', 'عربی', 'آلمانی'];
 const groups = [
   { t: 'خردسالان', d: '۳ تا ۶ سال' },
@@ -16,47 +12,30 @@ const groups = [
 ];
 const levels = ['پیش از دبستان', 'مقدماتی', 'نیمه‌پیشرفته', 'پیشرفته'];
 ---
-<Base title="آموزشگاه زبان کودک ماهر" description="آموزشگاه زبان کودک ماهر مانا: انگلیسی، فرانسه، ترکی استانبولی، عربی و آلمانی برای خردسالان ۳ تا ۶ سال، نوجوانان دبیرستانی و بزرگسالان." crumbs={crumbs}>
-  <PageHero title="آموزشگاه زبان کودک ماهر" kicker="آموزشگاه زبان" subtitle="پنج زبان، از خردسالی تا بزرگسالی؛ با یادگیری فعال، ارتباط مؤثر و بازی." crumbs={crumbs} />
-  <section class="container-x py-14 sm:py-20">
-    <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr] lg:gap-16">
-      <div class="space-y-14">
-        <div data-reveal>
-          <h2 class="text-2xl">زبان‌ها</h2>
-          <ul class="mt-5 flex flex-wrap gap-x-8 gap-y-2 font-serif text-[1.375rem]">{languages.map((l) => <li>{l}</li>)}</ul>
-        </div>
-        <div data-reveal>
-          <h2 class="text-2xl">گروه‌های سنی</h2>
-          <ul class="mt-6 grid border-y border-line sm:grid-cols-3">
-            {groups.map((g, i) => <li class:list={['py-5 sm:px-6', i > 0 && 'border-t border-line sm:border-t-0 sm:border-r', i === 0 && 'sm:pr-0']}><p class="font-medium">{g.t}</p><p class="mt-1 text-sm text-ink-soft">{g.d}</p></li>)}
-          </ul>
-        </div>
-        <div data-reveal>
-          <h2 class="text-2xl">سطح‌ها</h2>
-          <ol class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-ink-soft">
-            {levels.map((l, i) => <li class="flex items-center gap-3">{i > 0 && <span class="h-px w-6 bg-line-strong" aria-hidden="true"></span>}<span>{l}</span></li>)}
-          </ol>
-        </div>
-        <div data-reveal>
-          <h2 class="text-2xl">روش تدریس</h2>
-          <p class="lead mt-4">روش آموزشی ما بر پایه یادگیری فعال (Active Learning)، ارتباط مؤثر (Communicative Language Teaching) و آموزش از طریق بازی (Learning Through Play) برای سنین ۳ تا ۹ سال، و مکالمه‌محور برای نوجوانان و بزرگسالان طراحی شده است.</p>
-        </div>
-        <div data-reveal>
-          <h2 class="text-2xl">پیوند با متد</h2>
-          <p class="lead mt-4">زبان‌آموز پیش از هر واحد پیش‌بینی می‌کند چه چیزی برایش سخت خواهد بود و در پایان واحد آن را بازبینی می‌کند؛ این کار به او کمک می‌کند روش یادگیری خودش را بشناسد.</p>
-          <Pending inline class="mt-2" label="پیشنهادی؛ تأیید شود" />
-        </div>
-        <UnitContact unit={u} />
-      </div>
-      <InfoList items={[
-        { label: 'زبان‌ها', value: languages.join('، ') },
-        { label: 'گروه‌های سنی', value: u.ages! },
-        { label: 'زمان کلاس‌ها', pending: 'تکمیل شود' },
-        { label: 'تعیین سطح', pending: 'تکمیل شود' },
-        { label: 'کتاب‌ها', pending: 'تکمیل شود' },
-        { label: 'شهریه', pending: 'تکمیل شود' },
-      ]} />
-    </div>
-  </section>
-  <CTA />
-</Base>
+<UnitPage unit={u} subtitle="پنج زبان، از خردسالی تا بزرگسالی؛ با یادگیری فعال، ارتباط مؤثر و بازی." related={related.language}>
+  <div data-reveal>
+    <h2 class="text-2xl">زبان‌ها</h2>
+    <ul class="mt-5 flex flex-wrap gap-x-8 gap-y-2 font-serif text-[1.375rem]">{languages.map((l) => <li>{l}</li>)}</ul>
+  </div>
+  <div data-reveal>
+    <h2 class="text-2xl">گروه‌های سنی</h2>
+    <ul class="mt-6 grid border-y border-line sm:grid-cols-3">
+      {groups.map((g, i) => <li class:list={['py-5 sm:px-6', i > 0 && 'border-t border-line sm:border-t-0 sm:border-r', i === 0 && 'sm:pr-0']}><h3 class="font-sans text-base font-medium">{g.t}</h3><p class="mt-1 text-sm text-ink-soft">{g.d}</p></li>)}
+    </ul>
+  </div>
+  <div data-reveal>
+    <h2 class="text-2xl">سطح‌ها</h2>
+    <ol class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-ink-soft">
+      {levels.map((l, i) => <li class="flex items-center gap-3">{i > 0 && <span class="h-px w-6 bg-line-strong" aria-hidden="true"></span>}<span>{l}</span></li>)}
+    </ol>
+  </div>
+  <div data-reveal>
+    <h2 class="text-2xl">روش تدریس</h2>
+    <p class="lead mt-4">روش آموزشی ما بر پایه یادگیری فعال (Active Learning)، ارتباط مؤثر (Communicative Language Teaching) و آموزش از طریق بازی (Learning Through Play) برای سنین ۳ تا ۹ سال، و مکالمه‌محور برای نوجوانان و بزرگسالان طراحی شده است.</p>
+  </div>
+  <div data-reveal>
+    <h2 class="text-2xl">پیوند با متد</h2>
+    <p class="lead mt-4">زبان‌آموز پیش از هر واحد پیش‌بینی می‌کند چه چیزی برایش سخت خواهد بود و در پایان واحد آن را بازبینی می‌کند؛ این کار به او کمک می‌کند روش یادگیری خودش را بشناسد.</p>
+    <Pending inline class="mt-2" label="پیشنهادی؛ تأیید شود" />
+  </div>
+</UnitPage>

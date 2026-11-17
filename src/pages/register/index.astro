@@ -5,9 +5,11 @@ import Pending from '../../components/Pending.astro';
 import FormShell from '../../components/FormShell.astro';
 import Field from '../../components/Field.astro';
 import { registerSteps, documents } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/register/');
 const crumbs = [{ label: 'پیش‌ثبت‌نام و مشاوره' }];
 ---
-<Base title="پیش‌ثبت‌نام و مشاوره · کودک ماهر" description="فرم پیش‌ثبت‌نام و رزرو جلسه مشاوره و بازدید؛ مراحل ثبت‌نام و مدارک لازم هر مقطع." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="پیش‌ثبت‌نام و رزرو جلسه مشاوره" kicker="پیش‌ثبت‌نام" crumbs={crumbs}
     subtitle="فرم زیر را پر کنید. همکاران ما برای هماهنگی جلسه مشاوره و بازدید با شما تماس می‌گیرند. پر کردن این فرم به معنای ثبت‌نام قطعی نیست." />
   <section class="container-x py-14 sm:py-20">

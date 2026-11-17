@@ -1,8 +1,8 @@
 ---
 import Pending from './Pending.astro';
 import Icon from './Icon.astro';
-interface Props { title?: string; items: { label: string; value?: string; href?: string; pending?: string; ltr?: boolean }[] }
-const { title = 'اطلاعات ثبت‌نام', items } = Astro.props;
+interface Props { title?: string; items: { label: string; value?: string; href?: string; pending?: string; ltr?: boolean }[]; cta?: { href: string; label: string } | null }
+const { title = 'اطلاعات ثبت‌نام', items, cta = { href: '/register/', label: 'پیش‌ثبت‌نام و مشاوره' } } = Astro.props;
 ---
 <aside class="card h-fit p-6 lg:sticky lg:top-24" data-reveal>
   <h2 class="font-sans text-base font-semibold">{title}</h2>
@@ -17,5 +17,5 @@ const { title = 'اطلاعات ثبت‌نام', items } = Astro.props;
       </div>
     ))}
   </dl>
-  <a href="/register/" class="btn-primary mt-4 w-full">پیش‌ثبت‌نام و مشاوره<Icon name="arrow" size={18} /></a>
+  {cta && <a href={cta.href} class="btn-primary mt-4 w-full" data-cta="register-aside">{cta.label}<Icon name="arrow" size={18} /></a>}
 </aside>

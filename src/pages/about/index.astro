@@ -5,6 +5,8 @@ import Section from '../../components/Section.astro';
 import Pending from '../../components/Pending.astro';
 import CTA from '../../components/CTA.astro';
 import { site, units } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/about/');
 
 const crumbs = [{ label: 'درباره ما' }];
 const values = [
@@ -16,7 +18,7 @@ const values = [
 ];
 const team = units.filter((u) => u.manager).map((u) => ({ name: u.manager!, role: `مدیر ${u.name}`, href: `/units/${u.slug}/` }));
 ---
-<Base title="درباره ما · کودک ماهر مانا" description="کودک ماهر مانا؛ یک مدرسه مهارت‌محور شامل کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای." crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title="کودک ماهر مانا؛ یک مدرسه مهارت‌محور" kicker="درباره ما" crumbs={crumbs} />
 
   <section class="container-x py-14 sm:py-20">

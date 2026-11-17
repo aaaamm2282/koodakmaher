@@ -1,0 +1,75 @@
+---
+// Real photos of a unit (only those with written consent reach here: see src/data/site.ts).
+// AVIF/WebP in several widths; a click opens the larger photo in a native <dialog>.
+import { Picture, getImage } from 'astro:assets';
+import { resolveImage } from '../../lib/images';
+import type { GalleryItem } from '../../data/site';
+interface Props { items: GalleryItem[]; title: string; id?: string }
+const { items, title, id = 'gallery' } = Astro.props;
+const photos = (
+  await Promise.all(
+    items.map(async (g) => {
+      const img = resolveImage(g.image);
+      if (!img) return null;
+      const large = await getImage({ src: img, width: Math.min(1600, img.width), format: 'webp' });
+      return { ...g, img, large: large.src };
+    }),
+  )
+).filter((p): p is NonNullable<typeof p> => p !== null);
+---
+{photos.length > 0 && (
+  <section class="container-x py-12 sm:py-16" aria-labelledby={`${id}-title`} data-gallery>
+    <h2 id={`${id}-title`} class="text-2xl sm:text-[1.75rem]">{title}</h2>
+    <ul class="mt-6 grid auto-rows-[9rem] grid-cols-2 gap-3 sm:auto-rows-[12rem] md:grid-cols-4" data-stagger>
+      {photos.map((p, i) => (
+        <li class:list={[i === 0 && 'col-span-2 row-span-2']}>
+          <figure class="relative h-full">
+            <a href={p.large} class="group block h-full overflow-hidden rounded-xl border border-line bg-sand" data-lightbox-item aria-label={`نمایش بزرگ: ${p.alt}`}>
+              <Picture src={p.img} alt={p.alt} formats={['avif', 'webp']} widths={[360, 720, 1080]} sizes={i === 0 ? '(min-width: 768px) 50vw, 100vw' : '(min-width: 768px) 25vw, 50vw'} class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading={i === 0 ? 'eager' : 'lazy'} />
+            </a>
+            {p.caption && <figcaption class="absolute inset-x-0 bottom-0 rounded-b-xl bg-gradient-to-t from-ink/70 to-transparent px-3 pt-6 pb-2 text-xs text-white">{p.caption}</figcaption>}
+          </figure>
+        </li>
+      ))}
+    </ul>
+    <dialog class="m-auto max-h-[92vh] w-[min(64rem,94vw)] rounded-2xl bg-ink p-0 text-white backdrop:bg-ink/80" data-lightbox aria-label={title}>
+      <div class="relative">
+        <img alt="" class="max-h-[80vh] w-full rounded-t-2xl object-contain" data-lightbox-img />
+        <div class="flex items-center justify-between gap-3 p-3">
+          <p class="text-sm text-white/80" data-lightbox-caption></p>
+          <div class="flex shrink-0 gap-2">
+            <button type="button" class="grid h-11 w-11 place-items-center rounded-lg bg-white/10 hover:bg-white/20" data-lightbox-prev aria-label="عکس قبلی">‹</button>
+            <button type="button" class="grid h-11 w-11 place-items-center rounded-lg bg-white/10 hover:bg-white/20" data-lightbox-next aria-label="عکس بعدی">›</button>
+            <button type="button" class="grid h-11 w-11 place-items-center rounded-lg bg-white/10 hover:bg-white/20" data-lightbox-close aria-label="بستن">✕</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </section>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((root) => {
+    const links = [...root.querySelectorAll<HTMLAnchorElement>('[data-lightbox-item]')];
+    const dialog = root.querySelector<HTMLDialogElement>('[data-lightbox]');
+    if (!dialog || typeof dialog.showModal !== 'function') return; // without <dialog>, the links open the photo
+    const img = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const caption = dialog.querySelector<HTMLElement>('[data-lightbox-caption]')!;
+    let i = 0;
+    const show = (k: number) => {
+      i = (k + links.length) % links.length;
+      const a = links[i];
+      const pic = a.querySelector('img');
+      img.src = a.href;
+      img.alt = pic?.alt ?? '';
+      caption.textContent = a.closest('figure')?.querySelector('figcaption')?.textContent ?? pic?.alt ?? '';
+    };
+    links.forEach((a, k) => a.addEventListener('click', (e) => { e.preventDefault(); show(k); dialog.showModal(); }));
+    dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+    // RTL: "next" sits on the left
+    dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => show(i + 1));
+    dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => show(i - 1));
+    dialog.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') show(i + 1); if (e.key === 'ArrowRight') show(i - 1); });
+    dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+  });
+</script>

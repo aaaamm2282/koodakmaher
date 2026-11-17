@@ -4,22 +4,39 @@ import PageHero from '../../../components/PageHero.astro';
 import Pending from '../../../components/Pending.astro';
 import FormShell from '../../../components/FormShell.astro';
 import Field from '../../../components/Field.astro';
+import FaqList from '../../../components/FaqList.astro';
+import { unitBySlug } from '../../../data/site';
+import { pageSeo } from '../../../data/keywords';
+import { faqPage } from '../../../lib/schema';
+const u = unitBySlug('high-school');
+const seo = pageSeo('/units/high-school/');
 const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'متوسطه دوم' }];
+// Not open yet, so it is not marked up as an organisation; only its confirmed question.
+const schema = [faqPage(u.faqs)];
 ---
-<Base title="متوسطه دوم کودک ماهر (به‌زودی)" description="راه‌اندازی متوسطه دوم کودک ماهر برای ادامه مسیر از ۱۵ تا ۱۸ سالگی در دست برنامه‌ریزی است." crumbs={crumbs}>
-  <PageHero title="متوسطه دوم؛ از انتخاب اول تا انتخاب نهایی" kicker="متوسطه دوم" badge="به‌زودی" crumbs={crumbs} />
+<Base title={seo.title} description={seo.description} crumbs={crumbs} schema={schema}>
+  <PageHero title={seo.h1} kicker="متوسطه دوم" badge="به‌زودی" crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20">
     <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
       <div class="space-y-8" data-reveal>
         <p class="font-serif text-[1.25rem] leading-[2]">برای ادامه مسیر از ۱۵ تا ۱۸ سالگی، راه‌اندازی متوسطه دوم در دست برنامه‌ریزی است. در این دوره نوجوان انتخاب اولش را در عمل می‌آزماید، خود و دنیای کار را دوباره واکاوی می‌کند و برای انتخاب نهایی در ۱۸ سالگی آماده می‌شود.</p>
         <div><h2 class="font-sans text-base font-semibold">وضعیت</h2><Pending class="mt-3" label="زمان احتمالی شروع، رشته‌ها و وضعیت مجوز" /></div>
         <p class="border-r-2 border-saffron pr-5 text-ink-soft">این واحد هنوز ثبت‌نام ندارد. اگر می‌خواهید وقتی ثبت‌نام آغاز شد خبردار شوید، فرم «خبرم کنید» را پر کنید.</p>
+        <p class="text-ink-soft">تا آن زمان: <a href="/units/middle-school/" class="link">متوسطه اول پسرانه</a> و <a href="/path/" class="link">مسیر رشد ۳ تا ۱۸ سال</a></p>
       </div>
-      <FormShell id="notify-form" title="خبرم کنید" submit="خبرم کنید">
+      <FormShell id="notify-form" title="خبرم کنید" submit="خبرم کنید" kind="notify">
         <Field label="نام والد" name="parent" required autocomplete="name" />
         <Field label="شماره تماس" name="phone" type="tel" required autocomplete="tel" />
         <Field label="پایه فعلی فرزند" name="grade" type="select" required full options={['هفتم', 'هشتم', 'نهم', 'دهم', 'یازدهم', 'دوازدهم']} />
       </FormShell>
     </div>
   </section>
+  {u.faqs.length > 0 && (
+    <section class="border-t border-line bg-surface" aria-labelledby="unit-faq-title">
+      <div class="container-x grid gap-8 py-14 sm:py-20 lg:grid-cols-[1fr_1.8fr] lg:gap-16">
+        <h2 id="unit-faq-title" class="text-2xl sm:text-[1.75rem]" data-reveal>پرسش‌های پرتکرار درباره {u.name}</h2>
+        <FaqList items={u.faqs} level="h3" />
+      </div>
+    </section>
+  )}
 </Base>

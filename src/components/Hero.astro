@@ -1,7 +1,15 @@
 ---
+import { Picture, getImage } from 'astro:assets';
 import Icon from './Icon.astro';
 import Logo from './Logo.astro';
 import { site, units } from '../data/site';
+import { resolveImage } from '../lib/images';
+// Real photo or short video of the institute, only with written consent (site.json → hero).
+// Without one, the panel stays the navy brand panel.
+const heroImg = site.hero.consent ? resolveImage(site.hero.image) : null;
+const heroAlt = site.hero.alt ?? '';
+const heroVideo = site.hero.consent && site.hero.video ? site.hero.video : null;
+const poster = heroImg ? (await getImage({ src: heroImg, width: Math.min(1280, heroImg.width), format: 'webp' })).src : undefined;
 const u = (slug: string) => units.find((x) => x.slug === slug)!;
 // The brand idea: one continuous path from age 3 to 18 with two choice points.
 // Stops are an interactive explorer: it plays by itself until the visitor picks a stop.
@@ -29,13 +37,30 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
         </div>
       </div>
 
-      <!-- Brand panel: logo mark + rotating method word -->
-      <div class="rise relative isolate overflow-hidden rounded-2xl bg-accent p-7 text-white sm:p-9" style="--i:2">
-        <div class="pointer-events-none absolute -bottom-24 -left-24 -z-10 h-72 w-72 rounded-full border-[28px] border-white/[0.04]" aria-hidden="true"></div>
+      <!-- Brand panel: logo mark + rotating method word; with a consented photo/video behind it when there is one -->
+      <div class:list={['relative isolate overflow-hidden rounded-2xl bg-accent p-7 text-white sm:p-9', heroImg ? 'hero-photo' : 'rise']} style="--i:2" data-hero-panel>
+        {heroImg && (
+          <Picture src={heroImg} alt={heroAlt} formats={['avif', 'webp']} widths={[480, 800, 1200, 1600]} sizes="(min-width: 1024px) 42vw, 100vw"
+            loading="eager" fetchpriority="high" class="absolute inset-0 -z-20 h-full w-full object-cover" />
+        )}
+        {heroImg && heroVideo && (
+          <video class="absolute inset-0 -z-20 h-full w-full object-cover" muted playsinline loop preload="none" poster={poster} aria-hidden="true" data-hero-video>
+            <source src={heroVideo} type="video/mp4" />
+          </video>
+        )}
+        {heroImg
+          ? <div class="hero-scrim pointer-events-none absolute inset-0 -z-10" aria-hidden="true"></div>
+          : <div class="pointer-events-none absolute -bottom-24 -left-24 -z-10 h-72 w-72 rounded-full border-[28px] border-white/[0.04]" aria-hidden="true"></div>}
+        {heroImg && heroVideo && (
+          <button type="button" class="absolute top-3 left-3 grid h-11 w-11 place-items-center rounded-full bg-ink/45 text-white backdrop-blur-sm hover:bg-ink/65" data-video-toggle aria-label="پخش ویدیو" aria-pressed="false">
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" data-icon-play><path d="M4 2.5v11l9-5.5z" fill="currentColor" /></svg>
+            <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="hidden" data-icon-pause><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor" /></svg>
+          </button>
+        )}
         <div class="flex h-full min-h-[15rem] flex-col justify-between gap-10 sm:min-h-[19rem]">
           <div class="flex items-start justify-between gap-6">
             <p class="max-w-[14rem] font-serif text-lg leading-8 text-gold">{site.slogan2}</p>
-            <Logo variant="mark" class="hero-logo h-12 w-auto shrink-0 text-gold sm:h-14" />
+            <span class="shrink-0 text-gold" data-logo-draw><Logo variant="mark" class="h-12 w-auto sm:h-14" /></span>
           </div>
           <div>
             <p class="text-sm text-white/70">در هر کلاس و هر کارگاه، یک چرخه تکرار می‌شود:</p>
@@ -95,6 +120,23 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
 
 <script>
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Hero video: muted and looping, starts only when there is motion permission and no data saver,
+  // and can always be paused (WCAG 2.2.2). Under reduced motion the poster photo stays.
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-video-toggle]');
+  if (video && toggle) {
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const setState = (playing: boolean) => {
+      toggle.setAttribute('aria-pressed', String(playing));
+      toggle.setAttribute('aria-label', playing ? 'توقف ویدیو' : 'پخش ویدیو');
+      toggle.querySelector('[data-icon-play]')!.classList.toggle('hidden', playing);
+      toggle.querySelector('[data-icon-pause]')!.classList.toggle('hidden', !playing);
+    };
+    const play = () => { video.preload = 'auto'; video.play().then(() => setState(true)).catch(() => setState(false)); };
+    toggle.addEventListener('click', () => (video.paused ? play() : (video.pause(), setState(false))));
+    if (!reduce && !saveData) play();
+  }
 
   // Rotating method word in the brand panel (3s per word, bars fill like stories)
   const word = document.querySelector<HTMLElement>('[data-cycle-word]');

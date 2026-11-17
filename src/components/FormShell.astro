@@ -2,10 +2,10 @@
 import Icon from './Icon.astro';
 // Forms are appearance-only for now: the institute will choose where submissions go.
 // No endpoint, key or secret lives in the code. When a destination is chosen, pass it as `action`.
-interface Props { title?: string; submit: string; action?: string; id: string }
-const { title, submit, action = '', id } = Astro.props;
+interface Props { title?: string; submit: string; action?: string; id: string; kind?: string }
+const { title, submit, action = '', id, kind = id } = Astro.props;
 ---
-<form id={id} class="card p-6 shadow-soft sm:p-8" method="post" action={action || undefined} data-form data-action={action} novalidate>
+<form id={id} class="card p-6 shadow-soft sm:p-8" method="post" action={action || undefined} data-form data-kind={kind} data-action={action} novalidate>
   {title && <h2 class="mb-6 text-2xl">{title}</h2>}
   <div class="grid gap-5 sm:grid-cols-2" data-fields>
     <slot />
@@ -20,7 +20,6 @@ const { title, submit, action = '', id } = Astro.props;
 </form>
 
 <script>
-  import { animate } from 'motion';
   const fa = '۰۱۲۳۴۵۶۷۸۹';
   document.querySelectorAll<HTMLFormElement>('form[data-form]').forEach((form) => {
     const err = form.querySelector<HTMLElement>('.form-error')!;
@@ -66,7 +65,7 @@ const { title, submit, action = '', id } = Astro.props;
         }
       }
       notice.classList.remove('hidden');
-      animate(notice, { opacity: [0, 1], y: [6, 0] }, { duration: 0.3, ease: [0.23, 1, 0.32, 1] });
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) notice.animate([{ opacity: 0, transform: 'translateY(6px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.23,1,.32,1)' });
     });
   });
 </script>
