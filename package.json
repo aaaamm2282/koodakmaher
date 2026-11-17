@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "offline": "astro build && node scripts/make-offline.mjs offline",
-    "preview:photos": "node scripts/preview-photos.mjs"
+    "preview:photos": "node scripts/preview-photos.mjs",
+    "seo:keywords": "node scripts/keyword-report.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

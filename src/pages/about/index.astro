@@ -19,7 +19,7 @@ const values = [
 const team = units.filter((u) => u.manager).map((u) => ({ name: u.manager!, role: `مدیر ${u.name}`, href: `/units/${u.slug}/` }));
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
-  <PageHero title="کودک ماهر مانا؛ یک مدرسه مهارت‌محور" kicker="درباره ما" crumbs={crumbs} />
+  <PageHero title={seo.h1} kicker="درباره ما" crumbs={crumbs} />
 
   <section class="container-x py-14 sm:py-20">
     <div class="grid gap-12 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
@@ -29,6 +29,7 @@ const team = units.filter((u) => u.manager).map((u) => ({ name: u.manager!, role
         <p class="lead">امروز مؤسسه شامل کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای است. برخی از دانش‌آموزان امروز ما از کودکستان با ما بوده‌اند.</p>
       </div>
       <dl class="card h-fit divide-y divide-line px-6" data-reveal>
+        <div class="py-4"><dt class="text-sm text-ink-mute">نام رسمی</dt><dd class="mt-1">{site.name}</dd></div>
         <div class="py-4"><dt class="text-sm text-ink-mute">سال تأسیس</dt><dd class="num mt-1 text-2xl">{site.foundingYear ?? <Pending inline label="سال تأسیس" />}</dd></div>
         <div class="py-4"><dt class="text-sm text-ink-mute">بنیان‌گذار</dt><dd class="mt-1">{site.founder}</dd></div>
         <div class="py-4"><dt class="text-sm text-ink-mute">مجوزها</dt><dd class="mt-1"><Pending inline label="نام و شماره مجوز هر واحد از مرجع صادرکننده" /></dd></div>

@@ -12,7 +12,7 @@ const crumbs = [{ label: 'تماس با ما' }];
 const list = units.filter((u) => !u.soon);
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
-  <PageHero title="تماس با ما" kicker="تماس" crumbs={crumbs} />
+  <PageHero title={seo.h1} kicker="نشانی و تلفن کودک ماهر" crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20" aria-label="نشانی واحدها">
     <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3" data-stagger>
       {list.map((c) => (
