@@ -32,7 +32,9 @@ function inlineCss(href) {
 const jsCache = new Map();
 async function inlineJs(src) {
   if (jsCache.has(src)) return jsCache.get(src);
-  const r = await build({ entryPoints: [path.join(dist, src)], bundle: true, format: 'iife', minify: true, write: false });
+  // Vite's preload helper reads import.meta only when a dynamic import has CSS or chunks to preload first;
+  // the site's one dynamic import (the Lottie player) has none, so the empty import.meta of an IIFE is never read.
+  const r = await build({ entryPoints: [path.join(dist, src)], bundle: true, format: 'iife', minify: true, write: false, logOverride: { 'empty-import-meta': 'silent' } });
   const js = r.outputFiles[0].text.replace(/<\/script/gi, '<\\/script');
   jsCache.set(src, js);
   return js;

@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 /** The CMS saves an empty field as "" — treat that as "not set". */
@@ -29,7 +30,7 @@ const blog = defineCollection({
     focus: optStr,
     cover: optStr,
     coverAlt: optStr,
-    sources: z.preprocess(blank, z.array(z.object({ title: z.string(), url: z.string().url(), publisher: optStr })).default([])),
+    sources: z.preprocess(blank, z.array(z.object({ title: z.string(), url: z.url(), publisher: optStr })).default([])),
     instagram: optStr,
     draft: z.boolean().default(false),
   }),

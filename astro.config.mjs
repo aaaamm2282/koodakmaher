@@ -3,6 +3,7 @@ import './src/lib/load-env.mjs'; // .env settings, before anything reads process
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
+import { unified } from '@astrojs/markdown-remark';
 import remarkSrcAssets from './src/lib/remark-src-assets.mjs';
 import serverFiles from './src/integrations/server-files.mjs';
 import { loadRedirects, toAstroRedirects } from './src/lib/redirects.mjs';
@@ -52,8 +53,25 @@ export default defineConfig({
       },
     }),
     serverFiles(),
+    {
+      // The CMS panel is a plain file (public/admin/index.html). A host opens a folder's index.html by itself;
+      // the dev server does not, so /admin/ (docs/cms-setup.md) is pointed at the file here.
+      name: 'koodakmaher:admin-dev',
+      hooks: {
+        'astro:server:setup': ({ server }) => {
+          server.middlewares.use((req, _res, next) => {
+            const [pathname, query] = (req.url ?? '').split('?');
+            if (pathname === '/admin' || pathname === '/admin/') req.url = '/admin/index.html' + (query ? `?${query}` : '');
+            next();
+          });
+        },
+      },
+    },
   ],
-  markdown: { remarkPlugins: [remarkSrcAssets] },
+  // Unified (remark) keeps the plugin that points CMS image paths at the optimised copies
+  markdown: { processor: unified({ remarkPlugins: [remarkSrcAssets] }) },
+  // Whitespace between inline tags stays a space (Persian text is split across lines in the templates)
+  compressHTML: true,
   image: { layout: 'constrained', responsiveStyles: true },
   vite: { plugins: [tailwindcss()] },
   build: { inlineStylesheets: 'auto' },

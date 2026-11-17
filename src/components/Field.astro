@@ -1,4 +1,5 @@
 ---
+import { fieldId } from '../lib/field-id';
 /** A select option: plain text, or a value with the unit slug that `?unit=` in the address can pick (`param`). */
 type Option = string | { value: string; slug?: string };
 interface Props {
@@ -23,7 +24,7 @@ interface Props {
 }
 const { label, name, type = 'text', required = false, options = [], param, placeholder, hint, full = false, autocomplete, maxwords, accept, acceptLabel, maxMb } = Astro.props;
 const maxlength = Astro.props.maxlength ?? ({ text: 100, tel: 20, email: 120, textarea: 1500 } as Record<string, number>)[type];
-const id = `f-${name}-${Math.random().toString(36).slice(2, 7)}`;
+const id = fieldId(Astro.request, name);
 const describedBy = hint ? `${id}-hint` : undefined;
 const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg-surface px-3.5 text-base text-ink outline-none transition-[border-color,box-shadow] duration-150 focus:border-accent focus:ring-3 focus:ring-accent/15 placeholder:text-ink-mute/70 aria-[invalid=true]:border-danger';
 ---
