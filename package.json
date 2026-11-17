@@ -9,7 +9,11 @@
     "preview": "astro preview",
     "offline": "astro build && node scripts/make-offline.mjs offline",
     "preview:photos": "node scripts/preview-photos.mjs",
-    "seo:keywords": "node scripts/keyword-report.mjs"
+    "seo:keywords": "node scripts/keyword-report.mjs",
+    "migrate:import": "node scripts/migrate.mjs import",
+    "migrate:apply": "node scripts/migrate.mjs apply",
+    "migrate:nginx": "node scripts/migrate.mjs nginx",
+    "migrate:check": "node scripts/migrate.mjs check"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

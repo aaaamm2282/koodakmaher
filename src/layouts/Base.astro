@@ -16,6 +16,8 @@ interface Props {
   crumbs?: { href?: string; label: string }[];
   schema?: (Record<string, unknown> | null)[];
   noindex?: boolean;
+  /** false on the 404 page: it is served at many addresses, so it has no address of its own */
+  canonical?: boolean;
 }
 
 const defaultDescription = `مؤسسه آموزشی مهارت‌محور${site.city ? ` در ${site.city}` : ''}: کودکستان، دبستان، متوسطه اول، آموزشگاه زبان و فنی‌وحرفه‌ای.`;
@@ -27,6 +29,7 @@ const {
   crumbs = [],
   schema = [],
   noindex: noindexProp = false,
+  canonical: hasCanonical = true,
 } = Astro.props;
 // Builds that show drafts or placeholder photos are for review only: keep every page out of search.
 const reviewBuild = process.env.SHOW_DRAFTS === '1' || process.env.PREVIEW_PHOTOS === '1';
@@ -46,7 +49,7 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {hasCanonical && <link rel="canonical" href={canonical} />}
     <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
     <meta name="theme-color" content="#01237a" />
     <link rel="preload" href={vazirArabic} as="font" type="font/woff2" crossorigin />
@@ -62,7 +65,7 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:url" content={canonical} />
+    {hasCanonical && <meta property="og:url" content={canonical} />}
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={fullTitle} />

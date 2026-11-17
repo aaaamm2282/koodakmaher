@@ -1,13 +1,85 @@
 ---
+/**
+ * Not found. Most visitors who land here come from an address of the old site (Google results,
+ * bookmarks, printed QR codes). The page guesses the new address from the words in the old one,
+ * and if the host could not run the redirect itself, sends the visitor on to the new page.
+ */
 import Base from '../layouts/Base.astro';
+import { units, nav, footerLinks } from '../data/site';
+import { normalizeRule, checkRedirects, pathKey } from '../lib/redirects.mjs';
+import redirectsJson from '../content/settings/redirects.json';
+
+const open = units.filter((u) => !u.soon);
+const main = [
+  ...open.map((u) => ({ href: `/units/${u.slug}/`, label: u.name, text: u.ages })),
+  { href: '/register/', label: 'پیش‌ثبت‌نام و مشاوره', text: null },
+  { href: '/contact/', label: 'نشانی و تلفن', text: null },
+];
+
+// Names for the «شاید دنبال این صفحه بودید» link, by path.
+const labels = Object.fromEntries([
+  ...[...nav, ...footerLinks].map((l) => [l.href, l.label]),
+  ...units.map((u) => [`/units/${u.slug}/`, u.name]),
+  ['/units/', 'واحدهای آموزشی کودک ماهر'],
+  ['/news/', 'اطلاعیه‌ها و اخبار'],
+]);
+// Old addresses with a 301. The server normally answers before this page; this covers hosts that cannot.
+const rules = checkRedirects(redirectsJson.items.map((r) => normalizeRule(r, Astro.site?.href)).filter((r) => r !== null)).rules;
+const moved = Object.fromEntries(rules.filter((r) => r.status === 301).map((r) => [pathKey(r.from), r.to]));
 ---
-<Base title="صفحه پیدا نشد · کودک ماهر" noindex>
-  <section class="container-x grid min-h-[60vh] place-items-center py-20 text-center">
-    <div>
+<Base title="صفحه پیدا نشد | کودک ماهر" noindex canonical={false}>
+  <section class="container-x py-16 sm:py-24" data-nf data-moved={JSON.stringify(moved)} data-labels={JSON.stringify(labels)}>
+    <div class="mx-auto max-w-2xl text-center">
       <p class="num text-7xl text-ink-mute" aria-hidden="true">۴۰۴</p>
       <h1 class="mt-6 text-3xl">این صفحه پیدا نشد</h1>
-      <p class="lead mt-3">شاید نشانی را اشتباه وارد کرده‌اید.</p>
-      <div class="mt-8 flex flex-wrap justify-center gap-3"><a href="/" class="btn-primary">بازگشت به خانه</a><a href="/units/" class="btn-ghost">واحدها</a></div>
+      <p class="lead mt-3">سایت کودک ماهر تازه شده و نشانی بعضی صفحه‌ها عوض شده است. اگر از لینکی قدیمی آمده‌اید، صفحه‌ی تازه‌اش را از فهرست زیر پیدا کنید.</p>
+      <p class="mt-8 rounded-2xl border border-line bg-sand px-5 py-4" data-nf-suggest hidden>
+        <span class="text-ink-mute">شاید دنبال این صفحه بودید:</span>
+        <a href="/" class="mt-2 block text-lg font-bold text-accent underline decoration-gold decoration-2 underline-offset-8 hover:decoration-accent sm:mt-0 sm:inline sm:ms-2" data-nf-link></a>
+      </p>
     </div>
+
+    <nav aria-labelledby="nf-links" class="mx-auto mt-12 max-w-3xl">
+      <h2 id="nf-links" class="text-center text-lg text-ink-mute">صفحه‌های اصلی</h2>
+      <ul class="mt-5 grid gap-3 sm:grid-cols-2">
+        {main.map((l) => (
+          <li>
+            <a href={l.href} class="group flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-5 py-3 transition-colors hover:border-accent">
+              <span>
+                <span class="block font-bold">{l.label}</span>
+                {l.text && <span class="block text-sm text-ink-mute">{l.text}</span>}
+              </span>
+              <span aria-hidden="true" class="text-accent transition-transform group-hover:-translate-x-1">←</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p class="mt-8 text-center"><a href="/" class="btn-primary">بازگشت به صفحه اصلی</a></p>
+    </nav>
   </section>
 </Base>
+
+<script>
+  import { suggestPath, decodePath } from '../data/url-hints.mjs';
+
+  const box = document.querySelector<HTMLElement>('[data-nf]');
+  if (box) {
+    const moved: Record<string, string> = JSON.parse(box.dataset.moved || '{}');
+    const labels: Record<string, string> = JSON.parse(box.dataset.labels || '{}');
+    const path = decodePath(location.pathname);
+    const key = path.length > 1 ? path.replace(/\/+$/, '') : path;
+    if (moved[key]) {
+      location.replace(moved[key]);
+    } else {
+      const guess = suggestPath(path);
+      const label = guess && labels[guess.to.split('?')[0]];
+      const hint = box.querySelector<HTMLElement>('[data-nf-suggest]');
+      const link = box.querySelector<HTMLAnchorElement>('[data-nf-link]');
+      if (guess && label && hint && link) {
+        link.href = guess.to;
+        link.textContent = label;
+        hint.hidden = false;
+      }
+    }
+  }
+</script>

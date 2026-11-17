@@ -291,3 +291,23 @@ collections:
               - { label: پرسش, name: q, widget: string }
               - { label: پاسخ, name: a, widget: text, required: false }
               - { label: چه چیزی هنوز معلوم نیست؟, name: pending, widget: string, required: false }
+      - label: ریدایرکت‌ها (نشانی‌های سایت قبلی)
+        name: redirects
+        file: src/content/settings/redirects.json
+        fields:
+          - label: نشانی‌ها
+            name: items
+            widget: list
+            summary: '{{fields.from}} ← {{fields.to}} ({{fields.status}})'
+            hint: 'وقتی سرچ کنسول نشانی قدیمی‌ای را «پیدا نشد (۴۰۴)» نشان داد، اینجا به صفحه تازه‌اش وصلش کنید. اگر نشانی اشتباه باشد، انتشار سایت متوقف می‌شود و سایت آسیبی نمی‌بیند. راهنما: docs/migration.md'
+            fields:
+              - { label: نشانی قدیمی, name: from, widget: string, hint: 'مثل ‎/درباره-ما/‎ . می‌توانید کل نشانی را از نوار مرورگر کپی کنید.' }
+              - { label: نشانی تازه, name: to, widget: string, required: false, hint: 'مثل ‎/about/‎ . برای «حذف شده» خالی بماند.' }
+              - label: نوع
+                name: status
+                widget: select
+                default: '301'
+                options:
+                  - { label: 'منتقل شده به نشانی تازه (۳۰۱)', value: '301' }
+                  - { label: 'حذف شده و جایگزین ندارد (۴۱۰)', value: '410' }
+              - { label: یادداشت, name: note, widget: string, required: false, hint: 'برای خودتان: این نشانی چه بود.' }

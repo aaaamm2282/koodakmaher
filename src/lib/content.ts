@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { getCollection, type CollectionEntry } from 'astro:content';
 
 /**
@@ -6,7 +7,14 @@ import { getCollection, type CollectionEntry } from 'astro:content';
  */
 export const showDrafts = process.env.SHOW_DRAFTS === '1';
 
-const visible = (e: { data: { draft: boolean; date: Date } }) => showDrafts || (!e.data.draft && e.data.date.getTime() <= Date.now());
+/**
+ * Astro keeps a cache of entries (node_modules/.astro) and, when the last file of a collection is deleted,
+ * does not drop it. Hosts that cache node_modules between builds would keep publishing a deleted
+ * announcement, so an entry is shown only while its file still exists.
+ */
+const stillThere = (e: { filePath?: string }) => !e.filePath || fs.existsSync(e.filePath);
+const visible = (e: { filePath?: string; data: { draft: boolean; date: Date } }) =>
+  stillThere(e) && (showDrafts || (!e.data.draft && e.data.date.getTime() <= Date.now()));
 
 export async function getPosts(): Promise<CollectionEntry<'blog'>[]> {
   return (await getCollection('blog', visible)).sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
