@@ -26,8 +26,11 @@ const {
   type = 'website',
   crumbs = [],
   schema = [],
-  noindex = false,
+  noindex: noindexProp = false,
 } = Astro.props;
+// Builds that show drafts or placeholder photos are for review only: keep every page out of search.
+const reviewBuild = process.env.SHOW_DRAFTS === '1' || process.env.PREVIEW_PHOTOS === '1';
+const noindex = noindexProp || reviewBuild;
 const fullTitle = title;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(image, Astro.site).href;
