@@ -3,7 +3,7 @@ interface Props { id?: string; title?: string; kicker?: string; intro?: string; 
 const { id, title, kicker, intro, class: cls = '', tone = 'paper' } = Astro.props;
 const hid = id ? `${id}-title` : undefined;
 ---
-<section id={id} class:list={['scroll-mt-24', tone === 'sand' && 'bg-sand', tone === 'white' && 'border-y border-line bg-surface']} aria-labelledby={title ? hid : undefined}>
+<section id={id} class:list={['scroll-mt-4', tone === 'sand' && 'bg-sand', tone === 'white' && 'border-y border-line bg-surface']} aria-labelledby={title ? hid : undefined}>
   <div class:list={['container-x py-16 sm:py-24', cls]}>
     {(title || kicker) && (
       <div class="max-w-2xl" data-reveal>

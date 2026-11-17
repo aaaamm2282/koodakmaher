@@ -13,20 +13,36 @@ document.querySelectorAll<HTMLElement>('[data-stagger]').forEach((group) => {
 });
 
 const targets = document.querySelectorAll('[data-reveal], [data-stagger]');
+let io: IntersectionObserver | undefined;
 if ('IntersectionObserver' in window) {
-  const io = new IntersectionObserver(
+  io = new IntersectionObserver(
     (entries) => {
       for (const en of entries) {
         // Also reveal anything already above the screen (anchor links, restored scroll position)
         if (en.isIntersecting || en.boundingClientRect.top < 0) {
           reveal(en.target);
-          io.unobserve(en.target);
+          io!.unobserve(en.target);
         }
       }
     },
     { rootMargin: '0px 0px -8% 0px' },
   );
-  targets.forEach((el) => io.observe(el));
+  targets.forEach((el) => io!.observe(el));
 } else {
   targets.forEach(reveal);
 }
+
+// Keyboard: focus never sits on something invisible. A block that has not come in yet shows at once,
+// and one still fading in (a group that came in a moment ago, the hero just after load) finishes now.
+const HIDDEN = '[data-reveal]:not(.is-in), [data-stagger]:not(.is-in)';
+const ENTRANCE = new Set(['rise', 'fade', 'fade-in']);
+document.addEventListener('focusin', (e) => {
+  const target = e.target as Element;
+  for (let el = target.closest?.(HIDDEN); el; el = el.parentElement?.closest(HIDDEN) ?? null) {
+    el.classList.add('is-in', 'is-now');
+    io?.unobserve(el);
+  }
+  for (let el: Element | null = target; el && el !== document.body; el = el.parentElement) {
+    for (const a of el.getAnimations()) if (a instanceof CSSAnimation && ENTRANCE.has(a.animationName)) a.finish();
+  }
+});

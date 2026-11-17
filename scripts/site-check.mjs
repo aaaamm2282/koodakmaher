@@ -5,6 +5,10 @@
  *     an empty send, with its error messages showing.
  *   - errors in the browser console, and files that fail to load
  *   - content wider than the screen (sideways scrolling on a phone)
+ *   - the keyboard, at phone and desktop width: Tab through each page and Shift+Tab back; every stop must be
+ *     on the screen, show a focus ring and not be hidden under the sticky header or the phone's quick bar
+ *     (and nothing hidden, like a closed menu, may take focus). On a phone, the menu must take focus when it
+ *     opens, keep Tab inside, hide the page behind it and give focus back on Escape.
  *   - links, images and #sections of this site that do not exist; canonical and Open Graph addresses that
  *     point nowhere; links that only work through a redirect of the old site
  *
@@ -107,7 +111,7 @@ const note = (level, group, detail, where) => {
 };
 
 /* ---------- what each page does in the browser ---------- */
-const STILL = '*,*::before,*::after{animation-delay:0s!important;animation-duration:0s!important;transition-delay:0s!important;transition-duration:0s!important}';
+const STILL = 'html{scroll-behavior:auto!important}*,*::before,*::after{animation-delay:0s!important;animation-duration:0s!important;transition-delay:0s!important;transition-duration:0s!important}';
 
 /** Shows the blocks that fade in on scroll and stops all motion, so every colour can be measured. */
 async function settle(page) {
@@ -148,6 +152,75 @@ const overflow = () => {
   const name = (el) => el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '') + [...el.classList].slice(0, 4).map((c) => `.${c}`).join('');
   return { sw, vw, culprits: out.map(name) };
 };
+
+/** Where keyboard focus is now: on the screen, visible (not inside something hidden) and with a focus ring. */
+const focusState = () => {
+  const el = document.activeElement;
+  if (!el || el === document.body || el === document.documentElement) return null;
+  const r = el.getBoundingClientRect();
+  const cs = getComputedStyle(el);
+  const onScreen = r.width > 0 && r.height > 0 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth;
+  const visible = onScreen && el.checkVisibility({ opacityProperty: true, visibilityProperty: true });
+  const ring = (cs.outlineStyle !== 'none' && parseFloat(cs.outlineWidth) > 0) || cs.boxShadow !== 'none';
+  const label = (el.getAttribute('aria-label') || el.textContent || el.getAttribute('name') || '').trim().replace(/\s+/g, ' ').slice(0, 40);
+  const name = el.tagName.toLowerCase() + (el.id ? `#${el.id}` : '');
+  // Covered by the sticky header or the phone's quick-action bar? What is on top at the focused element's
+  // top, middle and bottom (so something drawn above the header, like the skip link, is not counted).
+  let covered = '';
+  for (const id of ['site-header', 'quickbar']) {
+    const bar = document.getElementById(id);
+    if (!bar || bar.contains(el) || !visible) continue;
+    const x = Math.min(Math.max(r.left + r.width / 2, 1), innerWidth - 1);
+    const ys = [r.top + 2, r.top + r.height / 2, r.bottom - 2].map((y) => Math.min(Math.max(y, 1), innerHeight - 1));
+    const hits = ys.filter((y) => bar.contains(document.elementFromPoint(x, y))).length;
+    if (hits) covered = `${hits === ys.length ? 'all' : 'part'}:${id}`;
+  }
+  return { key: `${name}|${label}|${Math.round(r.top + scrollY)}|${Math.round(r.left)}`, name, label, visible, ring, covered };
+};
+const COVER_NAME = { 'site-header': 'سربرگ بالای صفحه', quickbar: 'نوار دسترسی سریع پایین صفحه' };
+const covered = (f, where) => {
+  if (!f.covered) return;
+  const [how, id] = f.covered.split(':');
+  if (how === 'all') note('error', `فوکوس صفحه‌کلید کاملاً زیر ${COVER_NAME[id]} پنهان می‌شود`, `${f.name} «${f.label}»`, where);
+  else note('warn', `فوکوس صفحه‌کلید نیمه‌پنهان زیر ${COVER_NAME[id]}`, `${f.name} «${f.label}»`, where);
+};
+
+/** Tab from the top of the page to the end, then Shift+Tab back up (each stop then scrolls in at the top, under the header). */
+async function keyboard(page, where) {
+  await page.evaluate(() => { document.activeElement?.blur?.(); scrollTo(0, 0); });
+  for (const key of ['Tab', 'Shift+Tab']) {
+    const seenStops = new Set();
+    for (let i = 0; i < 250; i++) {
+      await page.keyboard.press(key);
+      const f = await page.evaluate(focusState);
+      if (!f || seenStops.has(f.key)) break; // past the last stop (focus goes to the browser's own toolbar), or round again
+      seenStops.add(f.key);
+      if (!f.visible) note('error', 'فوکوس صفحه‌کلید روی چیزی که دیده نمی‌شود', `${f.name} «${f.label}»`, where);
+      else if (!f.ring) note('error', 'فوکوس صفحه‌کلید بدون نشانه‌ی دیدنی (حلقه‌ی فوکوس)', `${f.name} «${f.label}»`, where);
+      else covered(f, where);
+    }
+  }
+}
+
+/** Phone menu: focus goes in when it opens, Tab stays in, the page behind is hidden, Escape gives focus back. */
+async function phoneMenu(page, where) {
+  const btn = page.locator('#menu-btn');
+  if (!(await btn.isVisible())) return;
+  await btn.focus();
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(50);
+  if (!(await page.evaluate(() => !!document.activeElement?.closest('#mobile-menu')))) note('error', 'منوی موبایل', 'با باز شدن، فوکوس به داخل منو نمی‌رود', where);
+  for (let i = 0; i < 30; i++) {
+    await page.keyboard.press('Tab');
+    const out = await page.evaluate(() => { const a = document.activeElement; return !!a && a !== document.body && !a.closest('#mobile-menu'); });
+    if (out) { note('error', 'منوی موبایل', 'Tab از منوی باز بیرون می‌رود، به صفحه‌ی پشت آن', where); break; }
+  }
+  if (!(await page.evaluate(() => !!document.querySelector('main')?.closest('[inert]')))) note('error', 'منوی موبایل', 'وقتی منو باز است، صفحه‌ی پشت آن برای صفحه‌خوان پنهان (inert) نیست', where);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(50);
+  const after = await page.evaluate(() => ({ open: document.getElementById('mobile-menu')?.dataset.open, focus: document.activeElement?.id, inert: !!document.querySelector('main')?.closest('[inert]') }));
+  if (after.open !== 'false' || after.focus !== 'menu-btn' || after.inert) note('error', 'منوی موبایل', 'Escape منو را نمی‌بندد، یا فوکوس را به دکمه‌ی منو برنمی‌گرداند، یا صفحه پنهان می‌ماند', where);
+}
 
 /** Every address the page points to, and the ids that #links can land on. */
 const addresses = () => {
@@ -217,6 +290,12 @@ for (const pass of PASSES) {
       for (const n of v.nodes.slice(0, 4)) {
         note('error', `دسترس‌پذیری: ${v.id} (${v.impact})`, v.help, `${p} (${pass.name}): ${n.target.join(' ')}${n.failureSummary ? ` — ${n.failureSummary.split('\n').slice(1).join(' ').trim()}` : ''}`);
       }
+    }
+
+    // Keyboard (phone and desktop; with «reduce motion» the Tab order is the same as on the phone)
+    if (!pass.options.reducedMotion) {
+      await keyboard(page, `${p} (${pass.name})`);
+      if (pass.options === PHONE && p === '/') await phoneMenu(page, `${p} (${pass.name})`);
     }
 
     // Forms after an empty send: error messages, aria-invalid and focus must still be accessible

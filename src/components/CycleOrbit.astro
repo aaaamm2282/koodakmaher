@@ -55,7 +55,10 @@ const nodes = [[160, 40], [264, 220], [56, 220]];
       nodes.forEach((n, k) => n.classList.toggle('is-active', k === i));
     };
     set(0);
-    steps.forEach((s, i) => s.addEventListener('click', () => { interacted = true; clearInterval(timer); set(i); }));
+    const stop = () => { interacted = true; clearInterval(timer); };
+    steps.forEach((s, i) => s.addEventListener('click', () => { stop(); set(i); }));
+    // A keyboard or screen-reader user on the steps: the active step must not move under them
+    root.addEventListener('focusin', stop, { once: true });
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     new IntersectionObserver(([e]) => {
       clearInterval(timer);

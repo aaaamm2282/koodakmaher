@@ -52,7 +52,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     </div>
   </div>
 
-  <div id="mobile-menu" class="pointer-events-none fixed inset-0 z-50 opacity-0 transition-opacity duration-200 xl:hidden data-[open=true]:pointer-events-auto data-[open=true]:opacity-100" data-open="false">
+  <!-- Closed: inert, so its links are not Tab stops and screen readers skip it. Open: a modal; the rest of the page is inert. -->
+  <div id="mobile-menu" class="pointer-events-none fixed inset-0 z-50 opacity-0 transition-opacity duration-200 xl:hidden data-[open=true]:pointer-events-auto data-[open=true]:opacity-100" data-open="false" role="dialog" aria-modal="true" aria-label="منو" inert>
     <div class="absolute inset-0 bg-ink/30" data-close></div>
     <nav aria-label="منوی موبایل" class="absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-paper p-5 shadow-soft">
       <div class="mb-4 flex items-center justify-between">
@@ -86,13 +87,21 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 
   const menu = document.getElementById('mobile-menu')!;
   const btn = document.getElementById('menu-btn')!;
+  const closeBtn = menu.querySelector<HTMLElement>('button[data-close]')!;
+  // Everything but the menu: the header bar and the rest of the page
+  const outside = () => [...header.children, ...document.body.children].filter((el) => el !== menu && el !== header && el.tagName !== 'SCRIPT') as HTMLElement[];
   const setOpen = (open: boolean) => {
+    if ((menu.dataset.open === 'true') === open) return;
     menu.dataset.open = String(open);
+    menu.inert = !open;
+    for (const el of outside()) el.inert = open;
     btn.setAttribute('aria-expanded', String(open));
     document.body.style.overflow = open ? 'hidden' : '';
-    if (!open && menu.contains(document.activeElement)) btn.focus();
+    (open ? closeBtn : btn).focus();
   };
   btn.addEventListener('click', () => setOpen(true));
   menu.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => setOpen(false)));
-  document.addEventListener('keydown', (e) => e.key === 'Escape' && menu.dataset.open === 'true' && setOpen(false));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+  // Turning a tablet to a width with the full header hides the menu: give the page back
+  matchMedia('(min-width: 80rem)').addEventListener('change', (e) => e.matches && setOpen(false));
 </script>
