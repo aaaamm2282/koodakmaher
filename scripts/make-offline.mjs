@@ -7,7 +7,8 @@ import path from 'node:path';
 const dist = path.resolve('dist');
 const out = path.resolve(process.argv[2] || 'offline');
 fs.rmSync(out, { recursive: true, force: true });
-fs.cpSync(dist, out, { recursive: true });
+// The CMS panel needs a server and a GitHub sign-in, so it is left out of the offline copy.
+fs.cpSync(dist, out, { recursive: true, filter: (src) => !path.relative(dist, src).split(path.sep).includes('admin') });
 
 const htmlFiles = [];
 (function walk(d) {

@@ -1,0 +1,60 @@
+{
+  "name": "مؤسسه آموزشی کودک ماهر مانا",
+  "brand": "کودک ماهر",
+  "slogan": "یادگیری برای زندگی، نه برای امتحان",
+  "slogan2": "مهارت برای زندگی؛ انتخاب برای آینده",
+  "mission": "ما به کودک و نوجوان کمک می‌کنیم خودش را بشناسد، با تجربه واقعی یاد بگیرد و در ۱۵ و ۱۸ سالگی مسیر تحصیل و کارش را آگاهانه انتخاب کند.",
+  "founder": "مهدی ملکی",
+  "founderMessage": null,
+  "founderPhoto": null,
+  "city": null,
+  "phone": null,
+  "address": null,
+  "foundingYear": "۱۳۹۹",
+  "privacyContact": null,
+  "oldSite": "https://mahermana.com/",
+  "licenses": [],
+  "hero": {
+    "image": null,
+    "alt": null,
+    "video": null,
+    "consent": false
+  },
+  "social": [
+    {
+      "label": "اینستاگرام کودکستان و دبستان",
+      "handle": "@koodakmaher",
+      "href": "https://instagram.com/koodakmaher"
+    },
+    {
+      "label": "اینستاگرام دبیرستان",
+      "handle": "@mahermana_highschool",
+      "href": "https://instagram.com/mahermana_highschool"
+    },
+    {
+      "label": "اینستاگرام آموزشگاه زبان",
+      "handle": "@mahermana.language",
+      "href": "https://instagram.com/mahermana.language"
+    },
+    {
+      "label": "اینستاگرام آموزشگاه فنی‌وحرفه‌ای",
+      "handle": "@maheremana",
+      "href": "https://instagram.com/maheremana"
+    },
+    {
+      "label": "تلگرام",
+      "handle": "@koodakmaheremana",
+      "href": "https://t.me/koodakmaheremana"
+    },
+    {
+      "label": "ایتا",
+      "handle": "@koodakmaheremana",
+      "href": "https://eitaa.com/koodakmaheremana"
+    },
+    {
+      "label": "شاد مؤسسه",
+      "handle": "کانال شاد",
+      "href": "https://shad.ir/joinc/JIFGBH0LPBZTOAHHTYMANAHJLBKIHWOI"
+    }
+  ]
+}

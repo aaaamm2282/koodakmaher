@@ -1,0 +1,58 @@
+{
+  "items": [
+    {
+      "title": "خلاقیت",
+      "text": "ایده دادن، ساختن و آزمودن ایده‌ها.",
+      "icon": "bulb",
+      "age": "از ۴ سال",
+      "image": null,
+      "alt": null,
+      "consent": false
+    },
+    {
+      "title": "کار با چوب",
+      "text": "طراحی و ساختن اشیای واقعی با رعایت ایمنی.",
+      "icon": "hammer",
+      "age": "از ۴ سال",
+      "image": null,
+      "alt": null,
+      "consent": false
+    },
+    {
+      "title": "نقاشی خلاق",
+      "text": "بیان آزاد، رنگ و فرم.",
+      "icon": "palette",
+      "age": "از ۴ سال",
+      "image": null,
+      "alt": null,
+      "consent": false
+    },
+    {
+      "title": "هوش مصنوعی",
+      "text": "آشنایی با اینکه هوش مصنوعی چطور کار می‌کند و استفاده درست و مسئولانه از آن.",
+      "icon": "cpu",
+      "age": "از ۷ سال",
+      "image": null,
+      "alt": null,
+      "consent": false
+    },
+    {
+      "title": "الکترونیک",
+      "text": "مدارهای ساده و ساختن وسایل کوچک.",
+      "icon": "zap",
+      "age": "از ۱۰ سال",
+      "image": null,
+      "alt": null,
+      "consent": false
+    },
+    {
+      "title": "مهارت‌های نرم",
+      "text": "تصمیم‌گیری، همکاری، گفت‌وگو و مسئولیت‌پذیری؛ جلسه روزانه در همه مراکز.",
+      "icon": "users",
+      "age": null,
+      "image": null,
+      "alt": null,
+      "consent": false
+    }
+  ]
+}

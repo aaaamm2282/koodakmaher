@@ -1,0 +1,43 @@
+{
+  "slug": "vocational",
+  "order": 6,
+  "name": "آموزشگاه آزاد فنی‌وحرفه‌ای",
+  "officialName": null,
+  "short": null,
+  "shortPending": "یک جمله درباره دوره‌ها و مخاطبان",
+  "ages": null,
+  "icon": "wrench",
+  "soon": false,
+  "manager": "خانم امامیون",
+  "address": null,
+  "phone": null,
+  "hours": null,
+  "openingHours": [],
+  "mapUrl": null,
+  "geo": null,
+  "googleMapsUrl": null,
+  "baladUrl": null,
+  "reviewUrl": null,
+  "instagram": "@maheremana",
+  "facts": [
+    {
+      "label": "دوره‌ها",
+      "value": null,
+      "pending": "فهرست دوره‌ها"
+    },
+    {
+      "label": "ثبت‌نام",
+      "value": null,
+      "pending": "تکمیل شود"
+    },
+    {
+      "label": "شهریه",
+      "value": null,
+      "pending": "تکمیل شود"
+    }
+  ],
+  "documents": null,
+  "gallery": [],
+  "faqs": [],
+  "reviews": []
+}

@@ -1,0 +1,33 @@
+{
+  "slug": "high-school",
+  "order": 4,
+  "name": "متوسطه دوم",
+  "officialName": null,
+  "short": "در دست برنامه‌ریزی؛ برای واکاوی ۱۵ تا ۱۸ سالگی.",
+  "shortPending": null,
+  "ages": "پایه دهم تا دوازدهم",
+  "icon": "flag",
+  "soon": true,
+  "manager": null,
+  "address": null,
+  "phone": null,
+  "hours": null,
+  "openingHours": [],
+  "mapUrl": null,
+  "geo": null,
+  "googleMapsUrl": null,
+  "baladUrl": null,
+  "reviewUrl": null,
+  "instagram": null,
+  "facts": [],
+  "documents": null,
+  "gallery": [],
+  "faqs": [
+    {
+      "q": "متوسطه دوم کودک ماهر کی راه‌اندازی می‌شود؟",
+      "a": "راه‌اندازی متوسطه دوم در دست برنامه‌ریزی است و هنوز ثبت‌نام ندارد. برای باخبر شدن از آغاز ثبت‌نام، فرم «خبرم کنید» را پر کنید.",
+      "pending": null
+    }
+  ],
+  "reviews": []
+}

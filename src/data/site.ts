@@ -1,42 +1,72 @@
 /**
  * اطلاعات پایه‌ی مؤسسه. منبع: docs/content-brief.md و پاسخ‌های مؤسسه (۱۴۰۵/۰۸/۲۴).
  *
- * قاعده: هر مقداری که هنوز معلوم نیست `null` است. در صفحه به‌جای آن کادر
- * «در حال تکمیل» نشان داده می‌شود و در داده‌ی ساختاریافته (JSON-LD) و متاها
- * اصلاً نمی‌آید. هیچ مقداری را حدسی پر نکنید.
+ * داده‌های قابل‌ویرایش در پوشه‌ی src/content است و از پنل مدیریت (/admin/) هم
+ * ویرایش می‌شود. این فایل فقط آن‌ها را می‌خواند، تمیز می‌کند و با نوع مشخص
+ * در اختیار صفحه‌ها می‌گذارد.
+ *
+ * قاعده: هر مقداری که هنوز معلوم نیست `null` (یا خالی) است. در صفحه به‌جای آن
+ * کادر «در حال تکمیل» نشان داده می‌شود و در داده‌ی ساختاریافته (JSON-LD) و
+ * متاها اصلاً نمی‌آید. هیچ مقداری را حدسی پر نکنید.
  */
+import siteJson from '../content/settings/site.json';
+import workshopsJson from '../content/settings/workshops.json';
+import registerJson from '../content/settings/register.json';
+import faqsJson from '../content/settings/faqs.json';
+
+/* ---------- helpers: the CMS may save "" or {} where we mean "unknown" ---------- */
+type Maybe<T> = T | null | undefined;
+const str = (v: unknown): string | null => (typeof v === 'string' && v.trim() !== '' ? v.trim() : null);
+const list = <T>(v: Maybe<T[]>): T[] => (Array.isArray(v) ? v : []);
+
+/* ---------- design preview only (npm run preview:photos) ----------
+ * Labelled placeholders in every photo slot, to show the photo layout before real photos exist.
+ * Inactive unless PREVIEW_PHOTOS=1 and the generated (git-ignored) folder src/assets/preview exists. */
+type PreviewPhoto = { image: string; alt: string; caption?: string };
+type PreviewManifest = { hero?: PreviewPhoto; units?: Record<string, PreviewPhoto[]>; workshops?: Record<string, PreviewPhoto> };
+const previewFile = Object.values(import.meta.glob<PreviewManifest>('/src/assets/preview/manifest.json', { eager: true, import: 'default' }))[0];
+const preview: PreviewManifest | null = process.env.PREVIEW_PHOTOS === '1' && previewFile ? previewFile : null;
+
+/* ---------- site ---------- */
+export type Social = { label: string; handle: string; href: string; note?: string };
+type SiteJson = typeof siteJson & Record<string, unknown>;
+const s = siteJson as SiteJson;
+
 export const site = {
-  name: 'مؤسسه آموزشی کودک ماهر مانا',
-  brand: 'کودک ماهر',
-  slogan: 'یادگیری برای زندگی، نه برای امتحان',
-  slogan2: 'مهارت برای زندگی؛ انتخاب برای آینده',
-  mission:
-    'ما به کودک و نوجوان کمک می‌کنیم خودش را بشناسد، با تجربه واقعی یاد بگیرد و در ۱۵ و ۱۸ سالگی مسیر تحصیل و کارش را آگاهانه انتخاب کند.',
-  founder: 'مهدی ملکی',
-
-  city: null as string | null, // {{شهر}} — پیش‌شماره‌ها ۰۵۱ است ولی شهر هنوز تأیید نشده
-  phone: null as string | null, // {{تلفن اصلی}}
-  address: null as string | null, // {{نشانی اصلی}}
-  foundingYear: '۱۳۹۹' as string | null,
+  name: str(s.name)!,
+  brand: str(s.brand)!,
+  slogan: str(s.slogan)!,
+  slogan2: str(s.slogan2)!,
+  mission: str(s.mission)!,
+  founder: str(s.founder),
+  founderMessage: str(s.founderMessage),
+  founderPhoto: str(s.founderPhoto),
+  city: str(s.city), // {{شهر}} — پیش‌شماره‌ها ۰۵۱ است ولی شهر هنوز تأیید نشده
+  phone: str(s.phone), // {{تلفن اصلی}}
+  address: str(s.address), // {{نشانی اصلی}}
+  foundingYear: str(s.foundingYear),
   mapUrl: null as string | null, // نقشه‌ی هر واحد جداگانه در units آمده است
-  privacyContact: null as string | null, // {{راه ارتباطی}}
-
+  privacyContact: str(s.privacyContact), // {{راه ارتباطی}}
   /** نشانی سایت قبلی (برای ارجاع در اسکیما) */
-  oldSite: 'https://mahermana.com/',
+  oldSite: str(s.oldSite),
+  licenses: list(s.licenses as Maybe<{ title: string; issuer?: string; number?: string; url?: string }[]>)
+    .filter((l) => str(l?.title))
+    .map((l) => ({ title: str(l.title)!, issuer: str(l.issuer), number: str(l.number), url: str(l.url) })),
+  hero: preview?.hero
+    ? { image: preview.hero.image, alt: preview.hero.alt, video: null as string | null, consent: true }
+    : {
+        image: str((s.hero as Record<string, unknown> | undefined)?.image),
+        alt: str((s.hero as Record<string, unknown> | undefined)?.alt),
+        video: str((s.hero as Record<string, unknown> | undefined)?.video),
+        consent: Boolean((s.hero as Record<string, unknown> | undefined)?.consent),
+      },
 };
 
-export type Social = { label: string; handle: string; href: string; note?: string };
+export const social: Social[] = list(s.social as Maybe<Social[]>)
+  .filter((x) => str(x?.href) && str(x?.label))
+  .map((x) => ({ label: str(x.label)!, handle: str(x.handle) ?? '', href: str(x.href)! }));
 
-export const social: Social[] = [
-  { label: 'اینستاگرام کودکستان و دبستان', handle: '@koodakmaher', href: 'https://instagram.com/koodakmaher' },
-  { label: 'اینستاگرام دبیرستان', handle: '@mahermana_highschool', href: 'https://instagram.com/mahermana_highschool' },
-  { label: 'اینستاگرام آموزشگاه زبان', handle: '@mahermana.language', href: 'https://instagram.com/mahermana.language' },
-  { label: 'اینستاگرام آموزشگاه فنی‌وحرفه‌ای', handle: '@maheremana', href: 'https://instagram.com/maheremana' },
-  { label: 'تلگرام', handle: '@koodakmaheremana', href: 'https://t.me/koodakmaheremana' },
-  { label: 'ایتا', handle: '@koodakmaheremana', href: 'https://eitaa.com/koodakmaheremana' },
-  { label: 'شاد مؤسسه', handle: 'کانال شاد', href: 'https://shad.ir/joinc/JIFGBH0LPBZTOAHHTYMANAHJLBKIHWOI' },
-];
-
+/* ---------- navigation (structure, not content: stays in code) ---------- */
 export const nav = [
   { href: '/', label: 'خانه' },
   { href: '/method/', label: 'متد کودک ماهر' },
@@ -57,121 +87,133 @@ export const footerLinks = [
   { href: '/privacy/', label: 'حریم خصوصی' },
 ];
 
+/* ---------- units ---------- */
+export type Fact = { label: string; value: string | null; pending: string | null };
+export type Faq = { q: string; a: string | null; pending: string | null };
+export type GalleryItem = { image: string; alt: string; caption: string | null };
+export type Review = { text: string; author: string; date: string | null; source: string | null };
+export type Weekday = 'Saturday' | 'Sunday' | 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday';
+export type OpeningHours = { days: Weekday[]; opens: string; closes: string };
+
 export type Unit = {
   slug: string;
+  order: number;
   name: string;
   /** نام رسمی واحد، اگر با نام کوتاه فرق دارد */
-  officialName?: string;
+  officialName: string | null;
   short: string | null; // جمله‌ی کوتاه کارت؛ null یعنی هنوز تکمیل نشده
-  shortPending?: string;
+  shortPending: string | null;
   ages: string | null;
   icon: string;
-  soon?: boolean;
+  soon: boolean;
   manager: string | null;
   address: string | null;
-  phone: { display: string; tel: string; note?: string } | null;
+  phone: { display: string; tel: string; note: string | null } | null;
   hours: string | null;
+  /** فقط وقتی روز و ساعت دقیق تأیید شده باشد؛ برای openingHoursSpecification */
+  openingHours: OpeningHours[];
   mapUrl: string | null;
+  geo: { lat: number; lng: number } | null;
+  googleMapsUrl: string | null;
+  baladUrl: string | null;
+  reviewUrl: string | null;
   instagram: string | null;
+  facts: Fact[];
+  documents: { items: string[]; pending: string | null } | null;
+  gallery: GalleryItem[];
+  faqs: Faq[];
+  reviews: Review[];
 };
 
-export const units: Unit[] = [
-  {
-    slug: 'kindergarten', name: 'کودکستان', officialName: 'کودکستان کودک ماهر',
-    short: 'بازی، حدس زدن و امتحان کردن؛ اولین قدم‌های شناخت خود.', ages: '۳ تا ۶ سال', icon: 'blocks',
-    manager: 'فرزانه استادی پارسا', address: 'بلوار فردوسی، فرامرز عباسی ۳۲',
-    phone: { display: '۰۵۱-۳۶۰۶۱۶۸۱', tel: '05136061681' },
-    hours: '۷:۳۰ تا ۱۴ (آموزش ۸:۳۰ تا ۱۳)', mapUrl: 'https://nshn.ir/bevb1OvqpJFOCL', instagram: '@koodakmaher',
-  },
-  {
-    slug: 'primary', name: 'دبستان مهارت‌محور', officialName: 'پیش‌دبستانی و دبستان پسرانه غیردولتی کودک ماهر',
-    short: 'درس‌های رسمی، همراه با جلسه روزانه مهارت‌های نرم و کارگاه.', ages: 'پیش‌دبستانی و پایه اول تا ششم، پسرانه', icon: 'pencil',
-    manager: 'خانم محبوبه خوش‌خوی', address: 'بلوار فردوسی، خیابان مهدی ۱۰',
-    phone: { display: '۳۷۶۲۷۷۲۰', tel: '37627720', note: 'مدیریت' },
-    hours: 'در مدرسه ۷ تا ۱۴:۳۰، کلاس‌ها ۸ تا ۱۳:۴۵', mapUrl: 'https://nshn.ir/0c7b14kd5JFnNL', instagram: '@koodakmaher',
-  },
-  {
-    slug: 'middle-school', name: 'متوسطه اول پسرانه', officialName: 'دبیرستان ماهر مانا',
-    short: 'مسئله‌های واقعی و پرونده انتخاب برای تصمیم ۱۵ سالگی.', ages: 'پایه هفتم تا نهم، پسرانه', icon: 'compass',
-    manager: 'آقای تقی‌زادگان', address: 'میدان استقلال، نبش آزادی ۲۷', phone: null,
-    hours: '۷ تا ۱۴:۱۰، شنبه تا چهارشنبه', mapUrl: 'https://nshn.ir/24sb1Mdf5JFLBT', instagram: '@mahermana_highschool',
-  },
-  {
-    slug: 'high-school', name: 'متوسطه دوم', short: 'در دست برنامه‌ریزی؛ برای واکاوی ۱۵ تا ۱۸ سالگی.', ages: 'پایه دهم تا دوازدهم', icon: 'flag', soon: true,
-    manager: null, address: null, phone: null, hours: null, mapUrl: null, instagram: null,
-  },
-  {
-    slug: 'language', name: 'آموزشگاه زبان',
-    short: 'انگلیسی، فرانسه، ترکی استانبولی، عربی و آلمانی؛ برای خردسالان، نوجوانان و بزرگسالان.', ages: '۳ تا ۶ سال، نوجوانان دبیرستانی، بزرگسالان', icon: 'chat',
-    manager: 'خانم حسینی', address: null, phone: null, hours: null, mapUrl: null, instagram: '@mahermana.language',
-  },
-  {
-    slug: 'vocational', name: 'آموزشگاه آزاد فنی‌وحرفه‌ای', short: null, shortPending: 'یک جمله درباره دوره‌ها و مخاطبان', ages: null, icon: 'wrench',
-    manager: 'خانم امامیون', address: null, phone: null, hours: null, mapUrl: null, instagram: '@maheremana',
-  },
-];
+const WEEKDAYS: Weekday[] = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
 
+function toUnit(raw: Record<string, any>): Unit {
+  const phone = raw.phone && str(raw.phone.display) && str(raw.phone.tel)
+    ? { display: str(raw.phone.display)!, tel: String(raw.phone.tel).replace(/[^\d+]/g, ''), note: str(raw.phone.note) }
+    : null;
+  const lat = Number(raw.geo?.lat);
+  const lng = Number(raw.geo?.lng);
+  const docs = list<string>(raw.documents?.items).map(str).filter(Boolean) as string[];
+  return {
+    slug: str(raw.slug)!,
+    order: Number(raw.order) || 0,
+    name: str(raw.name)!,
+    officialName: str(raw.officialName),
+    short: str(raw.short),
+    shortPending: str(raw.shortPending),
+    ages: str(raw.ages),
+    icon: str(raw.icon) ?? 'flag',
+    soon: Boolean(raw.soon),
+    manager: str(raw.manager),
+    address: str(raw.address),
+    phone,
+    hours: str(raw.hours),
+    openingHours: list<any>(raw.openingHours)
+      .map((o) => ({ days: list<string>(o?.days).filter((d): d is Weekday => WEEKDAYS.includes(d as Weekday)), opens: String(o?.opens ?? ''), closes: String(o?.closes ?? '') }))
+      .filter((o) => o.days.length && TIME.test(o.opens) && TIME.test(o.closes)),
+    mapUrl: str(raw.mapUrl),
+    geo: Number.isFinite(lat) && Number.isFinite(lng) && lat !== 0 && lng !== 0 ? { lat, lng } : null,
+    googleMapsUrl: str(raw.googleMapsUrl),
+    baladUrl: str(raw.baladUrl),
+    reviewUrl: str(raw.reviewUrl),
+    instagram: str(raw.instagram),
+    facts: list<any>(raw.facts)
+      .filter((f) => str(f?.label))
+      .map((f) => ({ label: str(f.label)!, value: str(f.value), pending: str(f.pending) })),
+    documents: docs.length || str(raw.documents?.pending) ? { items: docs, pending: str(raw.documents?.pending) } : null,
+    // A photo is shown only when the institute confirms written consent for everyone in it.
+    gallery: (preview?.units?.[raw.slug] ? preview.units[raw.slug].map((g) => ({ ...g, consent: true })) : list<any>(raw.gallery))
+      .filter((g) => str(g?.image) && str(g?.alt) && g?.consent === true)
+      .map((g) => ({ image: str(g.image)!, alt: str(g.alt)!, caption: str(g.caption) })),
+    faqs: list<any>(raw.faqs)
+      .filter((f) => str(f?.q))
+      .map((f) => ({ q: str(f.q)!, a: str(f.a), pending: str(f.pending) })),
+    // A parent review is shown only with the writer's permission.
+    reviews: list<any>(raw.reviews)
+      .filter((r) => str(r?.text) && str(r?.author) && r?.permission === true)
+      .map((r) => ({ text: str(r.text)!, author: str(r.author)!, date: str(r.date), source: str(r.source) })),
+  };
+}
+
+const unitFiles = import.meta.glob<Record<string, any>>('../content/units/*.json', { eager: true, import: 'default' });
+export const units: Unit[] = Object.values(unitFiles).map(toUnit).sort((a, b) => a.order - b.order);
+export const unitBySlug = (slug: string) => {
+  const u = units.find((x) => x.slug === slug);
+  if (!u) throw new Error(`Unknown unit: ${slug}`);
+  return u;
+};
+
+/* ---------- method (brief-governed copy: stays in code) ---------- */
 export const cycle = [
   { title: 'پیش‌بینی', text: 'قبل از هر تجربه، کودک حدس می‌زند چه پیش می‌آید و خودش در آن چطور خواهد بود.' },
   { title: 'تجربه', text: 'کار واقعی انجام می‌دهد: ساختن، پرسیدن، آزمودن، مسئولیت گرفتن.' },
   { title: 'بازبینی', text: 'حدسش را با آنچه واقعاً شد مقایسه می‌کند و از فاصله آن دو، خودش را بهتر می‌شناسد.' },
 ] as const;
 
-export const workshops = [
-  { n: 'خلاقیت', d: 'ایده دادن، ساختن و آزمودن ایده‌ها.', icon: 'bulb', age: 'از ۴ سال' },
-  { n: 'کار با چوب', d: 'طراحی و ساختن اشیای واقعی با رعایت ایمنی.', icon: 'hammer', age: 'از ۴ سال' },
-  { n: 'نقاشی خلاق', d: 'بیان آزاد، رنگ و فرم.', icon: 'palette', age: 'از ۴ سال' },
-  { n: 'هوش مصنوعی', d: 'آشنایی با اینکه هوش مصنوعی چطور کار می‌کند و استفاده درست و مسئولانه از آن.', icon: 'cpu', age: 'از ۷ سال' },
-  { n: 'الکترونیک', d: 'مدارهای ساده و ساختن وسایل کوچک.', icon: 'zap', age: 'از ۱۰ سال' },
-  { n: 'مهارت‌های نرم', d: 'تصمیم‌گیری، همکاری، گفت‌وگو و مسئولیت‌پذیری؛ جلسه روزانه در همه مراکز.', icon: 'users', age: null },
-];
+/* ---------- workshops, registration, FAQ (editable in the CMS) ---------- */
+export type Workshop = { n: string; d: string; icon: string; age: string | null; photo: { image: string; alt: string } | null };
+export const workshops: Workshop[] = list<any>(workshopsJson.items)
+  .filter((w) => str(w?.title))
+  .map((w) => ({
+    n: str(w.title)!,
+    d: str(w.text) ?? '',
+    icon: str(w.icon) ?? 'bulb',
+    age: str(w.age),
+    // Same rule as the unit galleries: a photo appears only with written consent and a Persian description.
+    photo: preview?.workshops?.[w.title]
+      ?? (str(w.image) && str(w.alt) && w.consent === true ? { image: str(w.image)!, alt: str(w.alt)! } : null),
+  }));
 
-export const registerSteps = [
-  { t: 'پیش‌ثبت‌نام', d: 'اطلاعات اولیه را در فرم همین صفحه ثبت می‌کنید.' },
-  { t: 'وقت مصاحبه', d: 'همکاران ما تماس می‌گیرند و برای جلسه مصاحبه و آشنایی وقت می‌دهند.' },
-  { t: 'ثبت‌نام نهایی', d: 'مدارک را تحویل می‌دهید و پیش‌پرداخت شهریه را واریز می‌کنید.' },
-];
+export const registerSteps = list<any>(registerJson.steps)
+  .filter((x) => str(x?.title))
+  .map((x) => ({ t: str(x.title)!, d: str(x.text) ?? '' }));
 
-export const documents: { unit: string; items: string[]; pending?: string }[] = [
-  {
-    unit: 'کودکستان',
-    items: ['فتوکپی شناسنامه کودک', 'فتوکپی شناسنامه و کارت ملی پدر و مادر', 'فتوکپی کارت واکسیناسیون', '۶ قطعه عکس ۳×۴'],
-  },
-  {
-    unit: 'دبستان',
-    items: [
-      '۶ قطعه عکس دانش‌آموز',
-      'اصل و فتوکپی کارت ملی و همه صفحه‌های شناسنامه والدین',
-      'فتوکپی صفحه اول شناسنامه دانش‌آموز',
-      'ورودی پایه اول: فرم سنجش و گواهی سلامت بهداشت',
-      'سایر پایه‌ها: پرونده سال گذشته (سنجش لازم نیست)',
-    ],
-  },
-  {
-    unit: 'متوسطه اول',
-    items: [
-      'عکس دانش‌آموز',
-      'اصل و فتوکپی کارت ملی و همه صفحه‌های شناسنامه والدین',
-      'فتوکپی صفحه اول شناسنامه دانش‌آموز',
-      'پرونده سال گذشته',
-      'سنجش',
-    ],
-    pending: 'تعداد قطعه‌های عکس',
-  },
-];
+export const documents = units
+  .filter((u) => u.documents)
+  .map((u) => ({ unit: u.name, slug: u.slug, items: u.documents!.items, pending: u.documents!.pending ?? undefined }));
 
 /** پرسش‌های پرتکرار. `pending` یعنی پاسخ (یا بخشی از آن) هنوز تکمیل نشده و در اسکیمای FAQ نمی‌آید. */
-export const faqs: { q: string; a?: string; pending?: string }[] = [
-  { q: 'آیا برنامه درسی رسمی آموزش‌وپرورش اجرا می‌شود؟', a: 'بله. برنامه رسمی کامل اجرا می‌شود و جلسه‌های مهارت و کارگاه در کنار آن است.' },
-  { q: 'متد کودک ماهر جای درس خواندن را نمی‌گیرد؟', a: 'نه. هدف ما این است که کودک هم درس را خوب یاد بگیرد و هم خودش را بشناسد. بسیاری از مهارت‌هایی که تمرین می‌شود، مثل برنامه‌ریزی و سنجیدن حدس، به درس خواندن هم کمک می‌کند.' },
-  { q: 'آیا به بچه‌ها نمره مهارت یا اخلاق داده می‌شود؟', a: 'نه. مهارت‌ها با توصیف رفتار و شاهد ثبت می‌شوند و منش کودک را نمره نمی‌دهیم. بچه‌ها با هم مقایسه نمی‌شوند.' },
-  { q: 'شما استعداد فرزندم را تشخیص می‌دهید؟', a: 'ما به کودک برچسب استعداد نمی‌زنیم. کمکش می‌کنیم کارهای مختلف را امتحان کند و خودش با شاهد بفهمد در چه کاری علاقه و توان بیشتری دارد.' },
-  { q: 'اگر فرزندم از وسط سال یا از پایه بالاتر وارد شود چه؟', a: 'مسیر از هر سنی قابل شروع است. در تابستان ۱۵ جلسه آموزشی «مرور پایه» برگزار می‌شود؛ در این جلسه‌ها دانش‌آموز با معلم و شیوه آموزش ما آشنا می‌شود و سطح علمی‌اش تا حدودی مشخص می‌شود.' },
-  { q: 'آیا تضمین می‌کنید فرزندم رشته درست را انتخاب کند؟', a: 'نه، و هیچ روشی نمی‌تواند چنین تضمینی بدهد. انتخاب رشته به عوامل زیادی مثل کنکور، قوانین هدایت تحصیلی و بازار کار هم وابسته است. آنچه ما انجام می‌دهیم این است که انتخاب فرزندتان بر پایه تجربه و شناخت واقعی باشد.' },
-  { q: 'متد شما از کجا آمده؟', a: 'متد کودک ماهر بر پایه تجربه سال‌ها آموزش مهارتی و پژوهش‌های شناخته‌شده در آموزش تجربی ساخته شده و در حال اجرای آزمایشی و بهبود است. توضیح بیشتر در صفحه «متد کودک ماهر» آمده است.' },
-  { q: 'چطور در جریان پیشرفت فرزندمان هستیم؟', a: 'کارنامه ماهانه می‌گیرید و جلسه دیدار با اولیا ماهانه (گاهی دوماهه) برگزار می‌شود. معلم‌ها هر هفته وقت دیدار خصوصی با والدین دارند. کارنامه ترم اول در بهمن و کارنامه ترم دوم در خرداد ارائه می‌شود.' },
-  { q: 'شهریه چقدر است و امکان پرداخت اقساطی هست؟', a: 'شهریه دبستان در جلسه مشاوره اعلام می‌شود و امکان پرداخت اقساطی وجود دارد. شهریه کودکستان در صفحه کودکستان آمده است.', pending: 'شهریه متوسطه اول، آموزشگاه زبان و فنی‌وحرفه‌ای' },
-  { q: 'برنامه ناهار و پذیرایی دارید؟', a: 'برنامه ناهار نداریم. برای مناسبت‌ها، جشن‌ها و مراسم‌ها برنامه پذیرایی اجرا می‌شود.' },
-  { q: 'کارگاه‌ها برای کودکانی که دانش‌آموز شما نیستند هم برگزار می‌شود؟', a: 'بله. کودکان بیرون از مؤسسه هم می‌توانند در نوبت عصر در کارگاه‌ها شرکت کنند.' },
-  { q: 'سرویس رفت‌وآمد دارید؟', pending: 'تکمیل شود' },
-];
+export const faqs: { q: string; a?: string; pending?: string }[] = list<any>(faqsJson.items)
+  .filter((f) => str(f?.q))
+  .map((f) => ({ q: str(f.q)!, a: str(f.a) ?? undefined, pending: str(f.pending) ?? undefined }));
