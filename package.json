@@ -10,6 +10,7 @@
     "offline": "astro build && node scripts/make-offline.mjs offline",
     "preview:photos": "node scripts/preview-photos.mjs",
     "seo:keywords": "node scripts/keyword-report.mjs",
+    "local:profiles": "node scripts/local-profiles.mjs",
     "migrate:import": "node scripts/migrate.mjs import",
     "migrate:apply": "node scripts/migrate.mjs apply",
     "migrate:nginx": "node scripts/migrate.mjs nginx",
@@ -23,10 +24,10 @@
     "astro": "^5.18.2",
     "gsap": "^3.15.0",
     "lottie-web": "^5.13.0",
+    "qrcode": "^1.5.4",
     "tailwindcss": "^4.3.4"
   },
   "devDependencies": {
-    "qrcode": "^1.5.4",
     "svgpath": "^2.6.0"
   }
 }

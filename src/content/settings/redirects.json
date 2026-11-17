@@ -125,6 +125,36 @@
       "to": "",
       "status": "410",
       "note": "خوراک دیدگاه‌های وردپرس"
+    },
+    {
+      "from": "/r/kg/",
+      "to": "/review/kindergarten/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی کودکستان"
+    },
+    {
+      "from": "/r/pr/",
+      "to": "/review/primary/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی دبستان"
+    },
+    {
+      "from": "/r/ms/",
+      "to": "/review/middle-school/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی متوسطه اول"
+    },
+    {
+      "from": "/r/la/",
+      "to": "/review/language/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی آموزشگاه زبان"
+    },
+    {
+      "from": "/r/vo/",
+      "to": "/review/vocational/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی آموزشگاه فنی‌وحرفه‌ای"
     }
   ]
 }

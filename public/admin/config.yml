@@ -146,7 +146,7 @@ collections:
           { label: جمله کوتاه معرفی, name: short, widget: text, required: false, hint: 'در کارت‌های صفحه اول و فهرست واحدها.' },
           { label: سن یا پایه‌ها, name: ages, widget: string, required: false },
           { label: مدیر واحد, name: manager, widget: string, required: false },
-          { label: نشانی, name: address, widget: string, required: false, hint: 'دقیقاً همان نشانی پروفایل گوگل و نشان.' },
+          { label: نشانی, name: address, widget: string, required: false, hint: 'دقیقاً همان نشانی که در نشان، بلد و گوگل‌مپ ثبت می‌شود.' },
           { label: تلفن, name: phone, widget: object, required: false, collapsed: false, fields: [
               { label: شماره برای نمایش, name: display, widget: string, required: false, hint: 'مثل ۰۵۱-۳۶۰۶۱۶۸۱' },
               { label: شماره برای تماس (رقم انگلیسی), name: tel, widget: string, required: false, pattern: ['^\+?[0-9]{8,13}$', 'فقط رقم انگلیسی؛ مثل 05136061681'] },
@@ -159,13 +159,13 @@ collections:
                   { label: سه‌شنبه, value: Tuesday }, { label: چهارشنبه, value: Wednesday }, { label: پنجشنبه, value: Thursday }, { label: جمعه, value: Friday } ] },
               { label: از ساعت, name: opens, widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'به شکل 07:30'] },
               { label: تا ساعت, name: closes, widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'به شکل 14:00'] } ] },
-          { label: لینک مسیریابی نشان, name: mapUrl, widget: string, required: false },
+          { label: لینک صفحه مرکز در نشان, name: mapUrl, widget: string, required: false, hint: 'از اپ نشان: صفحه همین مرکز (با نام مرکز، نه یک نقطه خالی روی نقشه)، «اشتراک‌گذاری» و کپی لینک. دکمه «مسیریابی در نشان» و دکمه «امتیاز و نظر در نشان» از همین لینک‌اند.' },
           { label: مختصات, name: geo, widget: object, required: false, hint: 'از گوگل‌مپ: روی محل کلیک راست کنید و دو عدد را کپی کنید. با مختصات، نقشه در صفحه همین مرکز هم نشان داده می‌شود.', fields: [
               { label: عرض جغرافیایی (lat), name: lat, widget: number, value_type: float, required: false },
               { label: طول جغرافیایی (lng), name: lng, widget: number, value_type: float, required: false } ] },
-          { label: لینک پروفایل گوگل‌مپ, name: googleMapsUrl, widget: string, required: false },
-          { label: لینک مسیریابی بلد, name: baladUrl, widget: string, required: false, hint: 'از اپ بلد: صفحه همین مرکز، «اشتراک‌گذاری» و کپی لینک.' },
-          { label: لینک ثبت نظر در گوگل, name: reviewUrl, widget: string, required: false, hint: 'از پروفایل کسب‌وکار گوگل: «درخواست نظر» و کپی لینک.' },
+          { label: لینک صفحه مرکز در گوگل‌مپ, name: googleMapsUrl, widget: string, required: false, hint: 'از گوگل‌مپ: صفحه همین مرکز، «اشتراک‌گذاری» (Share) و کپی لینک. پروفایل کسب‌وکار گوگل برای ایران فعال نیست؛ اگر مرکز در گوگل‌مپ نیست، با «افزودن مکان جاافتاده» (Add a missing place) اضافه‌اش کنید. راهنما: docs/local-profiles.md' },
+          { label: لینک صفحه مرکز در بلد, name: baladUrl, widget: string, required: false, hint: 'از اپ بلد: صفحه همین مرکز، «اشتراک‌گذاری» و کپی لینک. دکمه «مسیریابی در بلد» و دکمه «امتیاز و نظر در بلد» از همین لینک‌اند.' },
+          { label: لینک ثبت نظر در گوگل, name: reviewUrl, widget: string, required: false, hint: 'به این شکل: https://search.google.com/local/writereview?placeid= و بعد شناسه مکان (Place ID) که ابزار Place ID Finder گوگل نشان می‌دهد. گوگل از ۱۰ اردیبهشت ۱۴۰۴ برای دبستان و متوسطه نظر نمی‌پذیرد؛ برای این دو خالی بماند (اگر پر شود هم در سایت نشان داده نمی‌شود).' },
           { label: اینستاگرام, name: instagram, widget: string, required: false, hint: 'با @؛ مثل @koodakmaher' },
           { label: اطلاعات کلیدی (شهریه، ساعت، ظرفیت), name: facts, widget: list, required: false, summary: '{{fields.label}}: {{fields.value}}', fields: [
               { label: عنوان, name: label, widget: string },
@@ -291,7 +291,7 @@ collections:
               - { label: پرسش, name: q, widget: string }
               - { label: پاسخ, name: a, widget: text, required: false }
               - { label: چه چیزی هنوز معلوم نیست؟, name: pending, widget: string, required: false }
-      - label: ریدایرکت‌ها (نشانی‌های سایت قبلی)
+      - label: ریدایرکت‌ها و لینک‌های کوتاه
         name: redirects
         file: src/content/settings/redirects.json
         fields:
@@ -299,7 +299,7 @@ collections:
             name: items
             widget: list
             summary: '{{fields.from}} ← {{fields.to}} ({{fields.status}})'
-            hint: 'وقتی سرچ کنسول نشانی قدیمی‌ای را «پیدا نشد (۴۰۴)» نشان داد، اینجا به صفحه تازه‌اش وصلش کنید. اگر نشانی اشتباه باشد، انتشار سایت متوقف می‌شود و سایت آسیبی نمی‌بیند. راهنما: docs/migration.md'
+            hint: 'نشانی‌های سایت قبلی و لینک‌های کوتاه پیامک (‎/r/kg/‎ و …). وقتی سرچ کنسول نشانی قدیمی‌ای را «پیدا نشد (۴۰۴)» نشان داد، اینجا به صفحه تازه‌اش وصلش کنید. اگر نشانی اشتباه باشد، انتشار سایت متوقف می‌شود و سایت آسیبی نمی‌بیند. راهنما: docs/migration.md'
             fields:
               - { label: نشانی قدیمی, name: from, widget: string, hint: 'مثل ‎/درباره-ما/‎ . می‌توانید کل نشانی را از نوار مرورگر کپی کنید.' }
               - { label: نشانی تازه, name: to, widget: string, required: false, hint: 'مثل ‎/about/‎ . برای «حذف شده» خالی بماند.' }

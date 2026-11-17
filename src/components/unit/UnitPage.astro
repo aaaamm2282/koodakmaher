@@ -17,6 +17,7 @@ import CTA from '../CTA.astro';
 import Gallery from './Gallery.astro';
 import { type Unit } from '../../data/site';
 import { pageSeo } from '../../data/keywords';
+import { reviewLinks, reviewPath } from '../../data/local.mjs';
 import { unit as unitSchema, faqPage } from '../../lib/schema';
 import { resolveImage } from '../../lib/images';
 import { getImage } from 'astro:assets';
@@ -128,7 +129,7 @@ const tel = u.phone ? `tel:${u.phone.tel}` : null;
           </li>
         ))}
       </ul>
-      {u.reviewUrl && <a href={u.reviewUrl} class="link mt-5 inline-flex items-center gap-1 text-sm" target="_blank" rel="noopener">نظر خود را در گوگل بنویسید<Icon name="arrow" size={15} /></a>}
+      {reviewLinks(u).length > 0 && <a href={reviewPath(u.slug)} class="link mt-5 inline-flex items-center gap-1 text-sm" data-track="review" data-unit={u.slug}>نظر خود را بنویسید<Icon name="arrow" size={15} /></a>}
     </section>
   )}
 

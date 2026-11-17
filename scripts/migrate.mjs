@@ -396,39 +396,46 @@ async function runCheck() {
     ...extra.map((r) => ({ from: r.old_path, row: r })),
   ];
   await pool(cases, 4, async ({ from, rule, row }) => {
+    // SMS short links (/r/kg/) live in the same redirects file but are not old addresses.
+    const group = from.startsWith('/r/') ? 'لینک کوتاه' : 'نشانی قدیمی';
     const res = await get(at(encodeURI(from)));
     if (rule?.status === 301) {
       const want = new URL(rule.to, origin);
       const loc = res.location && new URL(res.location, at(encodeURI(from)));
       const refresh = res.status === 200 && metaRefresh(res.body);
       if ([301, 308].includes(res.status) && loc && same(loc.pathname + loc.search, want.pathname + want.search)) {
-        add('ok', 'نشانی قدیمی', from, `301 → ${rule.to}`, `${res.status} → ${decodePath(loc.pathname + loc.search)}`);
+        add('ok', group, from, `301 → ${rule.to}`, `${res.status} → ${decodePath(loc.pathname + loc.search)}`);
         targets.add(want.href);
       } else if (refresh && same(new URL(refresh, origin).pathname, want.pathname)) {
-        add('warn', 'نشانی قدیمی', from, `301 → ${rule.to}`, 'meta refresh', 'گوگل این را هم ریدایرکت دائمی حساب می‌کند، ولی ریدایرکت سرور بهتر است (docs/migration.md).');
+        add('warn', group, from, `301 → ${rule.to}`, 'meta refresh', 'گوگل این را هم ریدایرکت دائمی حساب می‌کند، ولی ریدایرکت سرور بهتر است (docs/migration.md).');
         targets.add(want.href);
       } else if ([302, 303, 307].includes(res.status)) {
-        add('error', 'نشانی قدیمی', from, `301 → ${rule.to}`, `${res.status} → ${res.location}`, 'ریدایرکت موقت است؛ باید ۳۰۱ باشد.');
+        add('error', group, from, `301 → ${rule.to}`, `${res.status} → ${res.location}`, 'ریدایرکت موقت است؛ باید ۳۰۱ باشد.');
       } else {
-        add('error', 'نشانی قدیمی', from, `301 → ${rule.to}`, res.location ? `${shown(res)} → ${decodePath(res.location)}` : shown(res));
+        add('error', group, from, `301 → ${rule.to}`, res.location ? `${shown(res)} → ${decodePath(res.location)}` : shown(res));
       }
     } else if (rule?.status === 410 || ['404', ''].includes(row?.status)) {
       const want = rule ? '410' : '404';
-      if (res.status === 410 || res.status === 404) add(res.status === 404 && rule ? 'warn' : 'ok', 'نشانی قدیمی', from, want, String(res.status), res.status === 404 && rule ? 'به‌جای ۴۱۰، ۴۰۴ آمد؛ روی Netlify و Cloudflare طبیعی است و برای گوگل فرقی ندارد.' : row?.status === '' ? 'هنوز تصمیم‌نشده (docs/migration/old-urls.csv)' : '');
-      else add('error', 'نشانی قدیمی', from, want, res.location ? `${shown(res)} → ${decodePath(res.location)}` : shown(res), res.status === 200 ? 'صفحه‌ای با کد ۲۰۰ جواب داد؛ شاید هنوز سایت قبلی روی این نشانی است.' : '');
+      if (res.status === 410 || res.status === 404) add(res.status === 404 && rule ? 'warn' : 'ok', group, from, want, String(res.status), res.status === 404 && rule ? 'به‌جای ۴۱۰، ۴۰۴ آمد؛ روی Netlify و Cloudflare طبیعی است و برای گوگل فرقی ندارد.' : row?.status === '' ? 'هنوز تصمیم‌نشده (docs/migration/old-urls.csv)' : '');
+      else add('error', group, from, want, res.location ? `${shown(res)} → ${decodePath(res.location)}` : shown(res), res.status === 200 ? 'صفحه‌ای با کد ۲۰۰ جواب داد؛ شاید هنوز سایت قبلی روی این نشانی است.' : '');
     } else if (row?.status === 'same') {
-      add(res.status === 200 ? 'ok' : 'error', 'نشانی قدیمی', from, '200', shown(res));
+      add(res.status === 200 ? 'ok' : 'error', group, from, '200', shown(res));
     } else if (row?.status === '301') {
-      add('warn', 'نشانی قدیمی', from, `301 → ${row.new_path}`, shown(res), 'در old-urls.csv تصمیم گرفته شده ولی هنوز در redirects.json نیست: npm run migrate:apply');
+      add('warn', group, from, `301 → ${row.new_path}`, shown(res), 'در old-urls.csv تصمیم گرفته شده ولی هنوز در redirects.json نیست: npm run migrate:apply');
     }
   });
 
-  // 3. Each redirect target answers 200 and can be indexed.
+  // 3. Each redirect target answers 200 and can be indexed. The review pages behind the SMS short links
+  //    (/r/kg/ → /review/kindergarten/) are meant for parents only and stay noindex.
+  const privateTarget = (pathname) => pathname.startsWith('/review/');
   for (const href of targets) {
     const res = await get(href);
     const robots = metaRobots(res.body) + res.robots;
-    const rel = new URL(href).pathname + new URL(href).search;
+    const { pathname, search } = new URL(href);
+    const rel = pathname + search;
+    const isPrivate = privateTarget(pathname);
     if (res.status !== 200) add('error', 'مقصد ریدایرکت', rel, '200', shown(res));
+    else if (isPrivate) add(/noindex/i.test(robots) ? 'ok' : 'warn', 'مقصد ریدایرکت', rel, '200، noindex', /noindex/i.test(robots) ? '200، noindex' : '200، قابل ایندکس', /noindex/i.test(robots) ? '' : 'صفحه نظرخواهی باید از نتایج جست‌وجو بیرون بماند.');
     else if (/noindex/i.test(robots)) add('warn', 'مقصد ریدایرکت', rel, 'قابل ایندکس', 'noindex', 'این صفحه فعلاً عمداً noindex است (مثلاً «اخبار» تا اولین اطلاعیه)؛ وقتی محتوا گرفت خودکار ایندکس می‌شود.');
     else add('ok', 'مقصد ریدایرکت', rel, '200', '200');
   }
@@ -476,7 +483,7 @@ async function runCheck() {
   }
 
   // Report, in the order of the sections above
-  const groups = ['صفحه اصلی', 'نشانی قدیمی', 'مقصد ریدایرکت', 'robots.txt', 'نقشه سایت', 'صفحه ۴۰۴', 'یک نشانی برای کل سایت'];
+  const groups = ['صفحه اصلی', 'نشانی قدیمی', 'لینک کوتاه', 'مقصد ریدایرکت', 'robots.txt', 'نقشه سایت', 'صفحه ۴۰۴', 'یک نشانی برای کل سایت'];
   report.sort((a, b) => groups.indexOf(a.group) - groups.indexOf(b.group) || a.url.localeCompare(b.url, 'fa'));
   const errors = report.filter((r) => r.level === 'error');
   const warns = report.filter((r) => r.level === 'warn');

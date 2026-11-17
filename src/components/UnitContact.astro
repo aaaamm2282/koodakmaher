@@ -8,10 +8,13 @@
 import Icon from './Icon.astro';
 import Pending from './Pending.astro';
 import type { Unit, Weekday } from '../data/site';
+import { reviewLinks, reviewPath } from '../data/local.mjs';
 interface Props { unit: Unit; headingLevel?: 'h2' | 'h3' }
 const { unit: u, headingLevel = 'h2' } = Astro.props;
 const H = headingLevel;
 const ig = u.instagram ? `https://instagram.com/${u.instagram.replace(/^@/, '')}` : null;
+/** «نظر شما» page of the unit (Google, Neshan, Balad), once at least one of them has a link. */
+const review = reviewLinks(u).length > 0 ? reviewPath(u.slug) : null;
 
 const faDays: Record<Weekday, string> = { Saturday: 'شنبه', Sunday: 'یکشنبه', Monday: 'دوشنبه', Tuesday: 'سه‌شنبه', Wednesday: 'چهارشنبه', Thursday: 'پنجشنبه', Friday: 'جمعه' };
 const week: Weekday[] = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -78,9 +81,9 @@ const id = `contact-${u.slug}`;
           </div>
         )}
       </dl>
-      {u.reviewUrl && (
-        <a href={u.reviewUrl} target="_blank" rel="noopener" class="link mt-6 inline-flex items-center gap-1.5 text-sm" data-track="review" data-unit={u.slug}>
-          <Icon name="star" size={16} />نظر خود را درباره {u.name} در گوگل بنویسید
+      {review && (
+        <a href={review} class="link mt-6 inline-flex items-center gap-1.5 text-sm" data-track="review" data-unit={u.slug}>
+          <Icon name="star" size={16} />نظر خود را درباره {u.name} بنویسید
         </a>
       )}
     </div>
