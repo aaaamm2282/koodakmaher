@@ -16,7 +16,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       <span class="sr-only">، صفحه اول</span>
     </a>
 
-    <nav aria-label="منوی اصلی" class="hidden xl:block">
+    <nav aria-label="منوی اصلی" class="relative hidden xl:block" data-nav>
       <ul class="flex items-center gap-1">
         {nav.map((item) => item.children ? (
           <li class="group relative">
@@ -39,10 +39,12 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
           </li>
         ) : (
           <li>
-            <a href={item.href} class:list={['relative flex min-h-11 items-center rounded-lg px-3 text-sm transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft after:absolute after:inset-x-3 after:bottom-2 after:h-px after:origin-right after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:after:scale-x-100']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}{isActive(item.href) && <span class="nav-line" aria-hidden="true"></span>}</a>
+            <a href={item.href} class:list={['relative flex min-h-11 items-center rounded-lg px-3 text-sm transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}{isActive(item.href) && <span class="nav-line" aria-hidden="true"></span>}</a>
           </li>
         ))}
       </ul>
+      <!-- One line that slides under the item the mouse or the keyboard is on (see the script below) -->
+      <span class="nav-hover" aria-hidden="true" data-nav-hover></span>
     </nav>
 
     <div class="flex items-center gap-2">
@@ -78,6 +80,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       <a href="/register/" class="btn-primary mt-5 w-full" data-close data-cta="menu">پیش‌ثبت‌نام و مشاوره</a>
     </nav>
   </div>
+  <!-- Reading pages only: how much of the text has been read (src/scripts/fx.ts) -->
+  <span class="read-progress" aria-hidden="true" data-progress hidden></span>
 </header>
 
 <script>
@@ -105,4 +109,26 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
   // Turning a tablet to a width with the full header hides the menu: give the page back
   matchMedia('(min-width: 80rem)').addEventListener('change', (e) => e.matches && setOpen(false));
+
+  // Wide screens: one thin line slides under the menu item the mouse or the keyboard is on and fades out when
+  // they leave the menu (after "Animated Tabs" on 21st.dev, docs/21st-elements.md). The gold line under the
+  // current page stays where it is. Under the text only: 12px in from each side of the item.
+  const navEl = header.querySelector<HTMLElement>('[data-nav]');
+  const slider = navEl?.querySelector<HTMLElement>('[data-nav-hover]');
+  if (navEl && slider) {
+    let shown = false;
+    const moveTo = (link: HTMLElement) => {
+      const box = navEl.getBoundingClientRect(), r = link.getBoundingClientRect();
+      const t = `translateX(${(r.left - box.left + 12).toFixed(1)}px) scaleX(${Math.max(0, r.width - 24).toFixed(1)})`;
+      if (!shown) { slider.style.transition = 'none'; slider.style.transform = t; void slider.offsetWidth; slider.style.transition = ''; }
+      slider.style.transform = t; slider.style.opacity = '1'; shown = true;
+    };
+    const hide = () => { slider.style.opacity = '0'; shown = false; };
+    navEl.querySelectorAll<HTMLElement>(':scope > ul > li > a').forEach((link) => {
+      link.addEventListener('pointerenter', () => moveTo(link));
+      link.addEventListener('focus', () => link.matches(':focus-visible') && moveTo(link));
+    });
+    navEl.addEventListener('pointerleave', hide);
+    navEl.addEventListener('focusout', (e) => { if (!navEl.contains(e.relatedTarget as Node | null)) hide(); });
+  }
 </script>

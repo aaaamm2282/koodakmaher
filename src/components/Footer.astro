@@ -21,7 +21,7 @@ const places = units.filter((u) => u.address);
       <ul class="mt-4 space-y-4 text-sm leading-7">
         {places.map((u) => (
           <li>
-            <a href={`/units/${u.slug}/`} class="font-medium text-white underline-offset-4 hover:underline">{u.name}</a>
+            <a href={`/units/${u.slug}/`} class="foot-link font-medium text-white"><span>{u.name}</span></a>
             <p class="text-white/65">{u.address}</p>
             {u.phone && <a href={`tel:${u.phone.tel}`} class="num inline-flex min-h-8 items-center text-white/80 transition-colors hover:text-white" dir="ltr">{u.phone.display}</a>}
           </li>
@@ -33,17 +33,22 @@ const places = units.filter((u) => u.address);
       <nav aria-label="پیوندهای سریع">
         <h2 class="font-sans text-sm font-medium text-white">دسترسی سریع</h2>
         <ul class="mt-3 text-sm">
-          {footerLinks.map((i) => <li><a class="inline-flex min-h-9 items-center transition-colors hover:text-white" href={i.href}>{i.label}</a></li>)}
+          {footerLinks.map((i) => <li><a class="foot-link inline-flex min-h-9 items-center transition-colors hover:text-white" href={i.href}><span>{i.label}</span></a></li>)}
         </ul>
       </nav>
       <div>
         <h2 class="font-sans text-sm font-medium text-white">ما را دنبال کنید</h2>
         <ul class="mt-3 text-sm">
-          {social.slice(4).map((s) => <li><a href={s.href} class="inline-flex min-h-9 items-center transition-colors hover:text-white" rel="noopener" target="_blank">{s.label}</a></li>)}
-          <li><a href="/contact/#social" class="inline-flex min-h-9 items-center transition-colors hover:text-white">صفحه‌های اینستاگرام</a></li>
+          {social.slice(4).map((s) => <li><a href={s.href} class="foot-link inline-flex min-h-9 items-center transition-colors hover:text-white" rel="noopener" target="_blank"><span>{s.label}</span></a></li>)}
+          <li><a href="/contact/#social" class="foot-link inline-flex min-h-9 items-center transition-colors hover:text-white"><span>صفحه‌های اینستاگرام</span></a></li>
         </ul>
       </div>
     </div>
+  </div>
+  <!-- The name in a gold hairline, written once when the footer comes into view and cut by the line below it
+       (after "Motion Footer" on 21st.dev, docs/21st-elements.md). Decoration: the name is above, in text. -->
+  <div class="container-x overflow-hidden" aria-hidden="true">
+    <svg class="foot-mark" focusable="false" data-inview><text x="50%" y="84%" text-anchor="middle">{site.brand}</text></svg>
   </div>
   <div class="border-t border-white/10">
     <div class="container-x flex flex-col gap-3 py-5 text-xs text-white/55 sm:flex-row sm:items-center sm:justify-between">

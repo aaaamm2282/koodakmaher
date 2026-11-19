@@ -24,7 +24,7 @@ const values = [
 ];
 const team = units.filter((u) => u.manager).map((u) => ({ name: u.manager!, role: `مدیر ${u.name}`, href: `/units/${u.slug}/` }));
 ---
-<Base title={seo.title} description={seo.description} crumbs={crumbs}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs} progress>
   <PageHero title={seo.h1} crumbs={crumbs} />
 
   <section class="container-x py-14 sm:py-20">

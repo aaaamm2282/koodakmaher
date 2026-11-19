@@ -1,0 +1,11 @@
+---
+// A statement that inks in word by word as it is read (after "Text Reveal" on 21st.dev, docs/21st-elements.md).
+// The text is cut at spaces only: a Persian word keeps its half-spaces (ZWNJ) and stays whole, so its letters
+// always join. Screen readers and copy-paste get the same sentence; without JS it is plain ink (global.css).
+interface Props { text: string; class?: string; style?: string }
+const { text, class: cls, style } = Astro.props;
+const words = text.trim().split(/\s+/);
+---
+<p class={cls} style={`--n:${words.length};${style ?? ''}`} data-ink>{words.map((w, i) => (
+  <Fragment><span class="ink-w" style={`--i:${i}`}>{w}</span>{i < words.length - 1 ? ' ' : ''}</Fragment>
+))}</p>

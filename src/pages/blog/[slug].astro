@@ -72,7 +72,7 @@ const isDraft = d.draft;
             <Picture src={cover} alt={d.coverAlt ?? ''} formats={['avif', 'webp']} widths={[480, 800, 1200]} sizes="(min-width: 1024px) 760px, 100vw" class="h-auto w-full" />
           </figure>
         )}
-        <div class="prose-fa">
+        <div class="prose-fa" data-progress-target>
           <Content />
         </div>
 

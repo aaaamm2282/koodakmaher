@@ -52,7 +52,7 @@ const cover = coverSrc ? { src: coverSrc, alt: u.gallery[0].alt } : null;
 const lede = subtitle ?? (u.officialName && !h1.includes(u.officialName) ? u.officialName : u.short) ?? undefined;
 const tel = u.phone ? `tel:${u.phone.tel}` : null;
 ---
-<Base title={seo.title} description={seo.description} crumbs={crumbs} schema={schema}>
+<Base title={seo.title} description={seo.description} crumbs={crumbs} schema={schema} progress={!u.soon}>
   <PageHero title={h1} subtitle={lede} crumbs={crumbs} image={cover}>
     {(u.ages || u.hours || u.address) && (
       <ul class="rise mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft" style="--i:3" aria-label="خلاصه">

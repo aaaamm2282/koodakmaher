@@ -32,6 +32,26 @@ if ('IntersectionObserver' in window) {
   targets.forEach(reveal);
 }
 
+// Things that are never hidden but play once on screen (a marker pass, a hand-drawn stroke, the footer name):
+// they wait until they are well inside the screen, so the reader sees them happen.
+const inview = document.querySelectorAll('[data-inview]');
+if ('IntersectionObserver' in window) {
+  const io2 = new IntersectionObserver(
+    (entries) => {
+      for (const en of entries) {
+        if (en.isIntersecting || en.boundingClientRect.top < 0) {
+          reveal(en.target);
+          io2.unobserve(en.target);
+        }
+      }
+    },
+    { rootMargin: '0px 0px -18% 0px' },
+  );
+  inview.forEach((el) => io2.observe(el));
+} else {
+  inview.forEach(reveal);
+}
+
 // Keyboard: focus never sits on something invisible. A block that has not come in yet shows at once,
 // and one still fading in (a group that came in a moment ago, the hero just after load) finishes now.
 const HIDDEN = '[data-reveal]:not(.is-in), [data-stagger]:not(.is-in)';

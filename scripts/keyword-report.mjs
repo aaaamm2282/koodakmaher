@@ -32,7 +32,9 @@ const decode = (s) => s
   .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;|&#x27;/g, "'")
   .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&#(\d+);/g, (_m, n) => String.fromCodePoint(+n))
   .replace(/&#x([0-9a-f]+);/gi, (_m, n) => String.fromCodePoint(parseInt(n, 16)));
-const strip = (html) => decode(html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
+// Inline tags (a marked phrase in a heading, a link) join their text with no space, so «است</span>؛» stays «است؛»
+const INLINE = /<\/?(?:span|a|em|strong|b|i|mark|small|abbr|svg|path|g|use)\b[^>]*>/gi;
+const strip = (html) => decode(html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(INLINE, '').replace(/<[^>]+>/g, ' ')).replace(/\s+/g, ' ').trim();
 /** For matching only: Arabic → Persian letters, Latin digits, no ZWNJ/spaces/punctuation, so «مهد کودک» = «مهدکودک». */
 const norm = (s) => s
   .replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/[ۀة]/g, 'ه')

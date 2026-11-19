@@ -6,6 +6,8 @@ import Icon from '../components/Icon.astro';
 import Section from '../components/Section.astro';
 import CycleOrbit from '../components/CycleOrbit.astro';
 import UnitCards from '../components/UnitCards.astro';
+import InkText from '../components/InkText.astro';
+import StackCards from '../components/StackCards.astro';
 import CTA from '../components/CTA.astro';
 import { units, workshops } from '../data/site';
 import { pageSeo } from '../data/keywords';
@@ -26,16 +28,17 @@ const places = units.filter((u) => u.address);
   <!-- 01 The problem -->
   <Section id="problem">
     <div class="mt-4 grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
-      <h2 id="problem-title" class="section-title" data-reveal>انتخاب آگاهانه یک مهارت است؛ باید از کودکی تمرین شود.</h2>
+      <h2 id="problem-title" class="section-title" data-reveal>انتخاب آگاهانه <span class="mark-sweep" data-inview>یک مهارت است</span>؛ باید از کودکی تمرین شود.</h2>
       <div class="space-y-5" data-reveal>
-        <p class="font-serif text-xl leading-[2] sm:text-lede">بسیاری از نوجوان‌ها در ۱۵ سالگی رشته‌ای را انتخاب می‌کنند که خودشان آن را نیازموده‌اند. انتخاب‌ها اغلب بر پایه نمره، حرف دیگران یا تصویری کلی از یک شغل است.</p>
+        <!-- Inks in word by word as it is read (InkText.astro) -->
+        <InkText class="font-serif text-xl leading-[2] sm:text-lede" text="بسیاری از نوجوان‌ها در ۱۵ سالگی رشته‌ای را انتخاب می‌کنند که خودشان آن را نیازموده‌اند. انتخاب‌ها اغلب بر پایه نمره، حرف دیگران یا تصویری کلی از یک شغل است." />
         <p class="lead">نتیجه‌اش را بعدها در دانشگاه و کار می‌بینیم: تغییر رشته، بی‌انگیزگی و سال‌هایی که دوباره باید جبران شود. نباید این تصمیم یک‌باره در پایه نهم از نوجوان خواسته شود.</p>
       </div>
     </div>
   </Section>
 
   <!-- 02 The method -->
-  <Section id="steps" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" tone="white">
+  <Section id="steps" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" mark="سه قدم ساده" tone="white">
     <div class="mt-12"><CycleOrbit /></div>
     <p class="mt-6" data-reveal><a href="/method/" class="link inline-flex items-center gap-1">بیشتر درباره متد<Icon name="arrow" size={16} /></a></p>
   </Section>
@@ -74,7 +77,7 @@ const places = units.filter((u) => u.address);
   <Section id="day" tone="sand">
     <div class="mt-4 grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
       <div data-reveal>
-        <h2 id="day-title" class="section-title">درس رسمی، یک جلسه مهارت، یک کارگاه</h2>
+        <h2 id="day-title" class="section-title">درس رسمی، <span class="mark-sweep" data-inview>یک جلسه مهارت</span>، یک کارگاه</h2>
         <p class="lead mt-5">در همه مراکز، در کنار برنامه درسی رسمی، دانش‌آموزان هر روز یک جلسه مهارت‌های نرم و یک جلسه کارگاه دارند. کارگاه برای ما فقط سرگرمی نیست؛ جایی است که کودک تجربه می‌کند، و قبل و بعد از آن چند دقیقه درباره حدس و نتیجه‌اش فکر می‌کند.</p>
         <p class="mt-6"><a href="/workshops/" class="link">درباره کارگاه‌ها</a></p>
       </div>
@@ -95,16 +98,18 @@ const places = units.filter((u) => u.address);
     </div>
   </Section>
 
-  <!-- 05 Why -->
-  <Section id="why" title="آنچه ما را متفاوت می‌کند">
-    <ul class="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
-      {pillars.map((p) => (
-        <li class="marked">
-          <h3 class="text-xl">{p.t}</h3>
-          <p class="mt-3 text-ink-soft">{p.d}</p>
-        </li>
-      ))}
-    </ul>
+  <!-- 05 Why: the heading stays while the four cards settle on top of each other (StackCards.astro); the short
+       gold ticks under it count the cards that have arrived -->
+  <Section id="why">
+    <div class="mt-4 grid gap-10 lg:grid-cols-[1fr_1.45fr] lg:gap-16" data-stack-root>
+      <div class="lg:sticky lg:top-28 lg:self-start">
+        <h2 id="why-title" class="section-title" data-reveal>آنچه ما را <span class="mark-sweep" data-inview>متفاوت</span> می‌کند</h2>
+        <ol class="mt-8 hidden gap-2 lg:flex" aria-hidden="true">
+          {pillars.map(() => <li class="stack-tick h-0.5 w-8 rounded-full bg-line-strong" data-stack-tick></li>)}
+        </ol>
+      </div>
+      <StackCards items={pillars} />
+    </div>
   </Section>
 
   <!-- 06 Places -->

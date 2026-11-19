@@ -6,6 +6,7 @@
  */
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
+import Stroke from '../components/Stroke.astro';
 import { units, nav, footerLinks } from '../data/site';
 import { normalizeRule, checkRedirects, pathKey } from '../lib/redirects.mjs';
 import redirectsJson from '../content/settings/redirects.json';
@@ -33,7 +34,7 @@ const moved = Object.fromEntries(rules.filter((r) => r.status === 301).map((r) =
     <div class="mx-auto max-w-2xl text-center">
       <p class="num text-7xl text-ink-mute" aria-hidden="true">۴۰۴</p>
       <h1 class="mt-6 text-3xl">این صفحه پیدا نشد</h1>
-      <span class="page-line mx-auto mt-5 block h-0.5 w-14 rounded-full bg-gold" aria-hidden="true"></span>
+      <Stroke class="mx-auto mt-5 h-2.5 w-16" delay="0.25s" />
       <p class="lead mt-3">سایت کودک ماهر تازه شده و نشانی بعضی صفحه‌ها عوض شده است. اگر از لینکی قدیمی آمده‌اید، صفحه‌ی تازه‌اش را از فهرست زیر پیدا کنید.</p>
       <p class="mt-8 rounded-xl border border-line bg-sand px-5 py-4" data-nf-suggest hidden>
         <span class="text-ink-mute">شاید دنبال این صفحه بودید:</span>

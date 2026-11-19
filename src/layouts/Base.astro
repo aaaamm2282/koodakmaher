@@ -21,6 +21,9 @@ interface Props {
   noindex?: boolean;
   /** false on the 404 page: it is served at many addresses, so it has no address of its own */
   canonical?: boolean;
+  /** A long page: a gold line along the bottom of the header shows how much of it has been read (fx.ts).
+      Articles mark their own text instead, so the line follows the text and not the whole page. */
+  progress?: boolean;
 }
 
 const defaultDescription = `مؤسسه آموزشی مهارت‌محور${site.city ? ` در ${site.city}` : ''}: کودکستان، دبستان، متوسطه اول، آموزشگاه زبان و فنی‌وحرفه‌ای.`;
@@ -33,6 +36,7 @@ const {
   schema = [],
   noindex: noindexProp = false,
   canonical: hasCanonical = true,
+  progress = false,
 } = Astro.props;
 // Builds that show drafts or placeholder photos are for review only: keep every page out of search.
 const reviewBuild = process.env.SHOW_DRAFTS === '1' || process.env.PREVIEW_PHOTOS === '1';
@@ -98,7 +102,7 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
   <body class="overflow-x-hidden">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
     <Header />
-    <main id="main">
+    <main id="main" data-progress-target={progress ? '' : undefined}>
       <slot />
     </main>
     <Footer />
@@ -112,6 +116,7 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     </nav>
     <script>
       import '../scripts/reveal';
+      import '../scripts/fx';
       const qb = document.getElementById('quickbar');
       if (qb && !location.pathname.startsWith('/register')) {
         const on = () => (qb.dataset.show = String(scrollY > innerHeight * 0.8 && innerHeight + scrollY < document.body.scrollHeight - 200));
