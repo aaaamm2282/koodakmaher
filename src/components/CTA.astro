@@ -13,6 +13,8 @@ const {
 ---
 <section class="cta-band container-x py-16 sm:py-24" aria-labelledby="cta-title">
   <!-- Stacked like a page heading (heading, gold line, text, actions), so the heading keeps one line on wide screens -->
+  <!-- The outer box stands up from a slight backward lean as it scrolls into view (.cta-tilt, CSS only) -->
+  <div class="cta-tilt">
   <div class="rounded-2xl bg-accent px-6 py-10 text-white sm:px-12 sm:py-14" data-reveal>
     <div class="max-w-3xl">
       <h2 id="cta-title" class="text-title text-white sm:text-[2.25rem]" style="line-height:1.45">{title}</h2>
@@ -23,5 +25,6 @@ const {
       <a href={href} class="btn-light focus-visible:outline-white" data-cta="page-end" data-magnetic>{button}<Icon name="arrow" size={18} /></a>
       <a href="/contact/" class="btn-ghost-light focus-visible:outline-white">تماس با مراکز</a>
     </div>
+  </div>
   </div>
 </section>

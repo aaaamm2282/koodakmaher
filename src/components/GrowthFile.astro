@@ -1,0 +1,17 @@
+---
+// The growth file (پرونده رشد) on /parents/, drawn as a navy folder whose front flap opens in perspective when it
+// comes into view, and three sheets slide up out of it, one after another (after "3D Folder" on 21st.dev, idea
+// only; docs/21st-elements.md). The sheets are the three things the paragraph next to it says the file keeps.
+// Decorative: the paragraph carries the same words, so screen readers skip it.
+// Without JS or with reduced motion it is simply open.
+import Logo from './Logo.astro';
+const sheets = ['آرزوها و علاقه‌ها', 'حدس‌ها و نتیجه‌ها', 'تجربه‌ها'];
+const tilt = [-1.2, 0.8, -0.5];
+---
+<div class="gfile" aria-hidden="true" data-inview>
+  <div class="gfile-back"><span class="gfile-tab">پرونده رشد</span></div>
+  {sheets.map((s, k) => (
+    <div class="gfile-sheet" style={`--k:${k};--top:${15 + k * 9.5}%;rotate:${tilt[k]}deg`}><span>{s}</span></div>
+  ))}
+  <div class="gfile-front"><Logo variant="mark" class="gfile-mark" /></div>
+</div>

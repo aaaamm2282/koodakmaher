@@ -1,0 +1,18 @@
+---
+// The top of an address card: a strip of squared map paper laid back in perspective, with a navy pin standing on
+// it (after "3D Animated Pin" on 21st.dev, docs/21st-elements.md). The pin drops in once when the card comes into
+// view; pointing at the card's map button ([data-pin-link]) lifts it and sends gold rings across the paper.
+// pending = the unit has no map link yet: the pin is only a dashed outline and nothing moves.
+// Decorative: the address under it is the information.
+interface Props { pending?: boolean }
+const { pending = false } = Astro.props;
+---
+<div class:list={['pin3d', pending && 'is-pending']} aria-hidden="true" data-inview>
+  <div class="pin3d-floor"></div>
+  {!pending && <><span class="pin3d-ring"></span><span class="pin3d-ring" style="--k:1"></span></>}
+  <span class="pin3d-shadow"></span>
+  <svg class="pin3d-pin" viewBox="0 0 28 37" focusable="false">
+    <path class="pin3d-body" d="M14 35.5C14 35.5 2.2 22.8 2.2 13.6a11.8 11.8 0 0 1 23.6 0C25.8 22.8 14 35.5 14 35.5Z" />
+    <circle class="pin3d-dot" cx="14" cy="13.4" r="4.4" />
+  </svg>
+</div>

@@ -5,6 +5,7 @@ import Pending from '../../components/Pending.astro';
 import FormShell from '../../components/FormShell.astro';
 import Field from '../../components/Field.astro';
 import Icon from '../../components/Icon.astro';
+import PlacePin from '../../components/PlacePin.astro';
 import { social, units } from '../../data/site';
 import { pageSeo } from '../../data/keywords';
 const seo = pageSeo('/contact/');
@@ -17,6 +18,7 @@ const list = units.filter((u) => !u.soon);
     <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3" data-stagger>
       {list.map((c) => (
         <li class="card flex flex-col p-6">
+          <PlacePin pending={!c.mapUrl} />
           <h2 class="text-xl">{c.name}</h2>
           {c.officialName && <p class="mt-0.5 text-sm text-ink-mute">{c.officialName}</p>}
           <dl class="mt-5 space-y-3 text-sm">
@@ -25,7 +27,7 @@ const list = units.filter((u) => !u.soon);
             <div class="flex gap-2.5"><dt><Icon name="clock" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">ساعت کار</span></dt><dd>{c.hours ?? <Pending inline label="ساعت پاسخگویی" />}</dd></div>
             {c.manager && <div class="flex gap-2.5"><dt><Icon name="users" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">مدیر</span></dt><dd>مدیر: {c.manager}</dd></div>}
           </dl>
-          {c.mapUrl && <div class="mt-auto pt-6"><a href={c.mapUrl} class="btn-ghost w-full" target="_blank" rel="noopener" data-track="click_map" data-unit={c.slug}><Icon name="pin" size={18} />مسیریابی در نشان</a></div>}
+          {c.mapUrl && <div class="mt-auto pt-6"><a href={c.mapUrl} class="btn-ghost w-full" target="_blank" rel="noopener" data-track="click_map" data-unit={c.slug} data-pin-link><Icon name="pin" size={18} />مسیریابی در نشان</a></div>}
         </li>
       ))}
     </ul>

@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import NewsBar from '../components/NewsBar.astro';
 import Icon from '../components/Icon.astro';
+import PlacePin from '../components/PlacePin.astro';
 import Section from '../components/Section.astro';
 import CycleOrbit from '../components/CycleOrbit.astro';
 import UnitCards from '../components/UnitCards.astro';
@@ -117,6 +118,7 @@ const places = units.filter((u) => u.address);
     <ul class="mt-10 grid gap-5 md:grid-cols-3" data-stagger>
       {places.map((u) => (
         <li class="card flex flex-col p-6">
+          <PlacePin pending={!u.mapUrl} />
           <h3 class="text-xl">{u.officialName ?? u.name}</h3>
           <p class="mt-1 text-sm text-ink-mute">{u.name}</p>
           <dl class="mt-5 space-y-2.5 text-sm">
@@ -124,7 +126,7 @@ const places = units.filter((u) => u.address);
             {u.phone && <div class="flex gap-2.5"><dt><Icon name="phone" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">تلفن</span></dt><dd><a href={`tel:${u.phone.tel}`} class="num" dir="ltr">{u.phone.display}</a></dd></div>}
             {u.hours && <div class="flex gap-2.5"><dt><Icon name="clock" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">ساعت</span></dt><dd>{u.hours}</dd></div>}
           </dl>
-          {u.mapUrl && <div class="mt-auto pt-6"><a href={u.mapUrl} class="btn-ghost w-full" target="_blank" rel="noopener" data-track="click_map" data-unit={u.slug}><Icon name="pin" size={18} />مسیریابی در نشان</a></div>}
+          {u.mapUrl && <div class="mt-auto pt-6"><a href={u.mapUrl} class="btn-ghost w-full" target="_blank" rel="noopener" data-track="click_map" data-unit={u.slug} data-pin-link><Icon name="pin" size={18} />مسیریابی در نشان</a></div>}
         </li>
       ))}
     </ul>

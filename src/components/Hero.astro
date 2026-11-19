@@ -42,8 +42,11 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
         </p>
       </div>
 
-      <!-- Brand panel: logo mark + rotating method word; with a consented photo/video behind it when there is one -->
-      <div class:list={['relative isolate overflow-hidden rounded-2xl bg-accent p-7 text-white sm:p-9', heroImg ? 'hero-photo' : 'rise']} style="--i:2" data-hero-panel>
+      <!-- Brand panel: logo mark + rotating method word; with a consented photo/video behind it when there is one.
+           The outer box carries the entrance and the perspective; the panel itself turns a few degrees toward a mouse
+           over it, and the logo, slogan and word drift at different depths (data-tilt, data-depth in fx.ts). -->
+      <div class:list={['tilt-stage flex', !heroImg && 'rise']} style="--i:2">
+      <div class:list={['relative isolate w-full overflow-hidden rounded-2xl bg-accent p-7 text-white sm:p-9', heroImg && 'hero-photo']} data-hero-panel data-tilt>
         {heroImg && (
           <Picture src={heroImg} alt={heroAlt} formats={['avif', 'webp']} widths={[480, 800, 1200, 1600]} sizes="(min-width: 1024px) 42vw, 100vw"
             loading="eager" fetchpriority="high" class="absolute inset-0 -z-20 h-full w-full object-cover" />
@@ -62,12 +65,13 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
         )}
         <div class="flex h-full min-h-[15rem] flex-col justify-between gap-10 sm:min-h-[19rem]">
           <div class="flex items-start justify-between gap-6">
-            <p class="max-w-[14rem] font-serif text-lg leading-8 text-gold">{site.slogan2}</p>
-            <span class="shrink-0 text-gold" data-logo-draw><Logo variant="mark" class="h-12 w-auto sm:h-14" /></span>
+            <p class="max-w-[14rem] font-serif text-lg leading-8 text-gold" data-depth="5">{site.slogan2}</p>
+            <span class="shrink-0 text-gold" data-logo-draw data-depth="9"><Logo variant="mark" class="h-12 w-auto sm:h-14" /></span>
           </div>
-          <div data-cycle>
+          <div data-cycle data-depth="3">
             <p class="text-sm text-white/70">در هر کلاس و هر کارگاه، یک چرخه تکرار می‌شود:</p>
-            <p class="mt-3 font-serif text-[2.25rem] leading-tight sm:text-[2.75rem]" aria-live="off">
+            <!-- The word turns over on a horizontal hinge, like a page of a flip chart (Hero script below) -->
+            <p class="cycle-stage mt-3 font-serif text-[2.25rem] leading-tight sm:text-[2.75rem]" aria-live="off">
               <span class="cycle-word" data-cycle-word>{words[0]}</span>
             </p>
             <div class="mt-5 flex items-center gap-3">
@@ -88,6 +92,7 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
             </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
 
@@ -164,13 +169,27 @@ const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
     const toggle = cycle.querySelector<HTMLButtonElement>('[data-cycle-toggle]');
     const words = ['پیش‌بینی', 'تجربه', 'بازبینی'];
     let w = 0; let cycleTimer: number | undefined;
+    // The word turns over on a horizontal hinge set a little behind it, like a drum (after "Depth Flip Text" on
+    // 21st.dev): the old word rolls up and away, the new one rolls in from below. Whole words only, since
+    // Persian letters must stay joined.
+    const flipTo = (text: string) => {
+      if (!word) return;
+      for (const a of word.getAnimations()) a.cancel();
+      const rollIn = () => {
+        word.textContent = text;
+        word.animate([{ transform: 'rotateX(-82deg)', opacity: 0 }, { transform: 'rotateX(0deg)', opacity: 1 }],
+          { duration: 560, easing: 'cubic-bezier(0.23, 1, 0.32, 1)' });
+      };
+      if (word.textContent === text) { rollIn(); return; }
+      const out = word.animate([{ transform: 'rotateX(0deg)', opacity: 1 }, { transform: 'rotateX(82deg)', opacity: 0 }],
+        { duration: 240, easing: 'cubic-bezier(0.55, 0, 1, 0.45)', fill: 'forwards' });
+      out.finished.then(() => { rollIn(); out.cancel(); }, () => {}); // cancelled: a newer word took over
+    };
     const showWord = (i: number) => {
       bars.forEach((b, k) => { b.classList.toggle('is-done', k < i); b.classList.remove('is-active'); });
       void bars[i]?.offsetWidth; // restarts the bar when the same word is shown again after a pause
       bars[i]?.classList.add('is-active');
-      if (!word) return;
-      word.classList.remove('is-in'); void word.offsetWidth;
-      word.textContent = words[i]; word.classList.add('is-in');
+      flipTo(words[i]);
     };
     const start = () => { showWord(w); cycleTimer = window.setInterval(() => { w = (w + 1) % 3; showWord(w); }, 3000); };
     if (reduce) bars.forEach((b) => b.classList.add('is-done'));

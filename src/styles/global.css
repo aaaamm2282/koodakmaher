@@ -232,9 +232,9 @@
 }
 @keyframes logo-draw { from { stroke-dashoffset: 1; stroke-opacity: 1; } 80% { stroke-opacity: 1; } to { stroke-dashoffset: 0; stroke-opacity: 0; } }
 @keyframes logo-fill { from { fill-opacity: 0; } to { fill-opacity: 1; } }
-.cycle-word { display: inline-block; }
-.cycle-word.is-in { animation: word-in 0.5s var(--ease-out); }
-@keyframes word-in { from { opacity: 0; transform: translateY(10px); filter: blur(3px); } }
+/* The method word turns over on a hinge 0.45em behind it (Hero.astro script), so it rolls like a drum */
+.cycle-stage { perspective: 32rem; }
+.cycle-word { display: inline-block; transform-origin: 50% 55% -0.45em; backface-visibility: hidden; }
 .cycle-bar { transform: scaleX(0); }
 .cycle-bar.is-done { transform: scaleX(1); }
 .cycle-bar.is-active { animation: bar 3s linear forwards; }
@@ -341,7 +341,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cycle-word.is-in, .stop-content.is-in { animation: none; }
+  .stop-content.is-in { animation: none; }
   .orbit-marker, .orbit-text { transition: none; }
   /* Still: each workshop once, wrapped onto as many lines as the screen needs. */
   .marquee-track { animation: none; display: block; width: auto; }
@@ -483,4 +483,124 @@ html:not(.js) .stroke-draw[data-inview] { clip-path: none; }
   .stack-item { position: static; }
   .js .foot-mark.is-in text { animation: none; }
   .js .foot-mark:not(.is-in) text { stroke-dashoffset: 0; }
+}
+
+/* ==========================================================================
+   Depth: 3D elements after the 21st.dev catalogue (docs/21st-elements.md), in CSS perspective and a few lines of
+   TypeScript. Same rules as above, plus three of their own: a tilt that follows the mouse never passes 5 degrees;
+   every object that moves in depth is one the page is about (the brand panel, the age staircase, the growth file,
+   the map pin, the closing panel); and a dashed outline always means "not yet" (the high-school step, a unit
+   whose map link is still missing).
+   ========================================================================== */
+
+/* Tilt + 3D Card Effect: the home hero's brand panel turns toward a mouse over it (fx.ts, [data-tilt]). The outer
+   box holds the perspective; while the mouse is over it the panel casts a soft shadow, like a card lifted a little. */
+.tilt-stage { perspective: 1100px; }
+[data-tilt] { transition: box-shadow var(--dur-3) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  [data-tilt]:hover { box-shadow: 0 22px 44px -26px rgb(23 32 28 / 0.42); }
+}
+
+/* Isometric Steps: the age staircase on /path/ (path-story.ts). Steps already lived are navy, with a lighter top
+   and a darker side; the rest are paper outlines. The last step, high school, is dashed: it opens later. */
+.stairs .face { stroke: var(--color-line-strong); stroke-width: 1; stroke-linejoin: round; vector-effect: non-scaling-stroke; transition: fill var(--dur-3) var(--ease-out), stroke var(--dur-3) var(--ease-out); }
+.stairs .front { fill: var(--color-surface); }
+.stairs .top { fill: var(--color-sand); }
+.stairs .side { fill: #e8e2d6; }
+.stairs .label { font-family: var(--font-serif); font-size: 13px; fill: var(--color-ink-mute); text-anchor: middle; transition: fill var(--dur-3) var(--ease-out); }
+.stairs .is-on .front { fill: var(--color-accent); stroke: var(--color-accent); }
+.stairs .is-on .top { fill: #3a5296; stroke: #3a5296; }
+.stairs .is-on .side { fill: var(--color-forest); stroke: var(--color-forest); }
+.stairs .is-on .label { fill: #fff; }
+.stairs .is-soon .face { fill: transparent; stroke-dasharray: 3 2.5; }
+.stairs .is-soon.is-on .face { fill: transparent; stroke: var(--color-accent); }
+.stairs .is-soon.is-on .label { fill: var(--color-accent); }
+.stairs .token-ball { fill: var(--color-gold); stroke: var(--color-saffron); stroke-width: 1.2; }
+.stairs .token-shadow { fill: rgb(23 32 28 / 0.25); }
+
+/* 3D Folder (idea only): the growth file on /parents/ (GrowthFile.astro). A navy folder with its tab at the reading
+   side; the front flap is hinged at the bottom and opens toward the reader when the folder comes into view, then
+   three sheets slide up out of it, one after another. A mouse over it opens it a little further. */
+.gfile { position: relative; isolation: isolate; width: 100%; max-width: 16rem; aspect-ratio: 1; margin-inline: auto; perspective: 1000px; perspective-origin: 50% 0%; }
+/* Where the folder rests on the page */
+.gfile::after { content: ''; position: absolute; z-index: -1; inset: auto 8% -0.5rem; height: 1.25rem; border-radius: 50%; background: rgb(23 32 28 / 0.2); filter: blur(10px); }
+@media (width >= 64rem) { .gfile { max-width: 18rem; } }
+.gfile-back { position: absolute; inset: 1.75rem 0 0; border-radius: 0.75rem; border-start-start-radius: 0; background: var(--color-forest); }
+.gfile-tab { position: absolute; bottom: 100%; inset-inline-start: 0; height: 1.75rem; padding-inline: 1rem 1.25rem; border-radius: 0.625rem 0.625rem 0 0; background: var(--color-forest); color: var(--color-gold); font-size: var(--text-xs); line-height: 1.75rem; white-space: nowrap; }
+.gfile-sheet {
+  position: absolute; inset-inline: 7%; top: var(--top); height: 62%; padding: 0.3rem 0.875rem; border: 1px solid var(--color-line); border-radius: 0.5rem;
+  background: var(--color-surface) linear-gradient(to bottom, transparent 1.95rem, rgb(1 35 122 / 0.1) 1.95rem, rgb(1 35 122 / 0.1) calc(1.95rem + 1px), transparent calc(1.95rem + 1px)) 0 0 / 100% 1.25rem repeat-y;
+  color: var(--color-ink-soft); font-size: var(--text-xs); line-height: 1.6;
+  transition: translate 0.8s var(--ease-out) calc(0.3s + var(--k) * 0.12s);
+}
+.gfile-front {
+  position: absolute; inset: 40% 0 0; border-radius: 0.75rem; background: var(--color-accent); border-top: 1px solid rgb(255 255 255 / 0.14);
+  transform-origin: 50% 100%; transform: rotateX(-24deg);
+  box-shadow: 0 -10px 22px -14px rgb(1 26 92 / 0.6);
+  transition: transform 0.9s var(--ease-out) 0.1s;
+}
+.gfile-mark { position: absolute; inset-inline-start: 1.25rem; top: 1.125rem; height: 1.75rem; width: auto; color: var(--color-gold); }
+.js .gfile:not(.is-in) .gfile-front { transform: none; }
+.js .gfile:not(.is-in) .gfile-sheet { translate: 0 62%; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .gfile.is-in:hover .gfile-front { transform: rotateX(-34deg); transition-duration: 0.5s; transition-delay: 0s; }
+  .gfile.is-in:hover .gfile-sheet { translate: 0 -7%; transition-duration: 0.5s; transition-delay: calc(var(--k) * 0.05s); }
+}
+
+/* 3D Animated Pin: the top of each address card (PlacePin.astro). Squared map paper laid back in perspective, a
+   navy pin standing on it. The pin drops in once when the card comes into view; pointing at the card's map button
+   lifts it and sends gold rings across the paper. No map link yet: a dashed pin that stays still. */
+.pin3d {
+  position: relative; height: 5rem; margin: -1.5rem -1.5rem 1.25rem; overflow: hidden;
+  border-bottom: 1px solid var(--color-line); border-radius: calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px) 0 0;
+  background: var(--color-sand); perspective: 18rem; perspective-origin: 50% 0%;
+}
+@media (width >= 40rem) { .pin3d { height: 5.5rem; } }
+.pin3d-floor {
+  position: absolute; inset: -120% -60% 0; transform-origin: 50% 100%; transform: rotateX(66deg);
+  background-image: linear-gradient(rgb(23 32 28 / 0.08) 1px, transparent 1px), linear-gradient(90deg, rgb(23 32 28 / 0.08) 1px, transparent 1px);
+  background-size: 26px 26px; background-position: center bottom;
+  mask-image: linear-gradient(to top, #000 30%, transparent 75%);
+}
+/* The pin's tip and its rings sit on one point of the paper, 70% down and in the middle */
+.pin3d-pin, .pin3d-shadow, .pin3d-ring { position: absolute; left: 50%; top: 70%; }
+.pin3d-pin { width: 1.75rem; height: 2.3rem; margin: -2.3rem 0 0 -0.875rem; overflow: visible; transition: translate var(--dur-3) var(--ease-out); }
+.pin3d-body { fill: var(--color-accent); }
+.pin3d-dot { fill: var(--color-gold); }
+.pin3d-shadow { width: 1.5rem; height: 0.45rem; margin: -0.225rem 0 0 -0.75rem; border-radius: 50%; background: rgb(23 32 28 / 0.3); filter: blur(1.5px); transition: scale var(--dur-3) var(--ease-out), opacity var(--dur-3) var(--ease-out); }
+.pin3d-ring { width: 4rem; height: 1.5rem; margin: -0.75rem 0 0 -2rem; border: 2px solid #c09a47; border-radius: 50%; opacity: 0; scale: 0.3; }
+.is-pending .pin3d-body { fill: none; stroke: var(--color-ink-mute); stroke-width: 1.4; stroke-dasharray: 3 2.4; }
+.is-pending .pin3d-dot { fill: none; stroke: var(--color-ink-mute); stroke-width: 1.4; }
+.is-pending .pin3d-shadow { opacity: 0.4; }
+.js .pin3d:not(.is-in) :is(.pin3d-pin, .pin3d-shadow) { opacity: 0; }
+.js .pin3d.is-in .pin3d-pin { animation: pin-drop 0.75s 0.15s var(--ease-out) backwards; }
+.js .pin3d.is-in .pin3d-shadow { animation: pin-shadow 0.75s 0.15s var(--ease-out) backwards; }
+@keyframes pin-drop { from { translate: 0 -2.25rem; opacity: 0; } 40% { opacity: 1; } }
+@keyframes pin-shadow { from { scale: 0.3; opacity: 0; } }
+@media (prefers-reduced-motion: no-preference) {
+  .card:has([data-pin-link]:is(:hover, :focus-visible)) .pin3d-pin { translate: 0 -0.375rem; }
+  .card:has([data-pin-link]:is(:hover, :focus-visible)) .pin3d-shadow { scale: 0.75; opacity: 0.6; }
+  .card:has([data-pin-link]:is(:hover, :focus-visible)) .pin3d-ring { animation: pin-ring 1.6s cubic-bezier(0.2, 0.6, 0.35, 1) infinite; animation-delay: calc(var(--k, 0) * 0.8s); }
+}
+@keyframes pin-ring { from { scale: 0.3; opacity: 0; } 12% { opacity: 1; } to { scale: 1.6; opacity: 0; } }
+
+/* Container Scroll Animation + Tilt Scroll: the closing panel stands up from a slight backward lean as it scrolls
+   into view, tied to the scroll itself (a CSS scroll-driven animation). Browsers without it show it upright. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    /* Longhands on purpose: the CSS minifier folds a full set into the animation shorthand with the timeline inside,
+       which browsers do not accept, so duration and the rest stay at their defaults. */
+    .cta-tilt { transform-origin: 50% 100%; animation-name: cta-stand; animation-timing-function: linear; animation-fill-mode: both; animation-timeline: view(); animation-range: entry 0% entry 100%; }
+  }
+}
+@keyframes cta-stand { from { transform: perspective(1200px) rotateX(18deg) scale(0.96); } to { transform: perspective(1200px) rotateX(0deg) scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .stairs .face, .stairs .label { transition: none; }
+  .gfile-front, .gfile-sheet { transition: none; }
+  .js .gfile:not(.is-in) .gfile-front { transform: rotateX(-24deg); }
+  .js .gfile:not(.is-in) .gfile-sheet { translate: none; }
+  .js .pin3d:not(.is-in) :is(.pin3d-pin, .pin3d-shadow) { opacity: 1; }
+  .js .pin3d.is-in :is(.pin3d-pin, .pin3d-shadow) { animation: none; }
+  .is-pending .pin3d-shadow, .js .pin3d:not(.is-in).is-pending .pin3d-shadow { opacity: 0.4; }
 }

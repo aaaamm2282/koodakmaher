@@ -1,6 +1,7 @@
 /**
  * Small interactive pieces rebuilt from the 21st.dev catalogue (docs/21st-elements.md), with no library:
  * - [data-magnetic]          a call to action that leans toward a mouse that comes near   (Magnetic Button)
+ * - [data-tilt]              a panel that turns a few degrees toward the mouse, in depth   (Tilt, 3D Card Effect)
  * - [data-ink]               a statement that inks in word by word as it is read           (Text Reveal)
  * - [data-stack]             cards that settle on top of each other while scrolling        (Stacking cards)
  * - [data-progress-target]   the gold reading line along the bottom of the header          (Scroll Progress)
@@ -52,6 +53,37 @@ if (finePointer && !reduce) {
     addEventListener('scroll', later, { passive: true }); // the page moves under a still mouse
     document.addEventListener('pointerout', (e) => { if (!e.relatedTarget) { x = y = -1e4; later(); } }); // mouse left the window
   }
+}
+
+// ---------- Tilt ----------
+// [data-tilt] turns up to 5 degrees toward a mouse over it: the side under the pointer comes forward, like a card
+// tilted in the hand. Its [data-depth] layers drift the other way by up to that many pixels, so a deeper layer seems
+// to float above the panel. It eases after the pointer and back to flat when the pointer leaves.
+if (finePointer && !reduce) {
+  document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((card) => {
+    const MAX = 5;
+    const layers = [...card.querySelectorAll<HTMLElement>('[data-depth]')].map((el) => ({ el, d: Number(el.dataset.depth) || 0 }));
+    let tx = 0, ty = 0, x = 0, y = 0, raf = 0;
+    const step = () => {
+      x += (tx - x) * 0.12;
+      y += (ty - y) * 0.12;
+      const still = Math.abs(tx - x) < 0.002 && Math.abs(ty - y) < 0.002;
+      if (still) { x = tx; y = ty; }
+      const flat = x === 0 && y === 0;
+      card.style.transform = flat ? '' : `rotateX(${(y * MAX).toFixed(2)}deg) rotateY(${(-x * MAX).toFixed(2)}deg)`;
+      for (const { el, d } of layers) el.style.translate = flat ? '' : `${(-x * d).toFixed(2)}px ${(-y * d).toFixed(2)}px`;
+      raf = still ? 0 : requestAnimationFrame(step);
+    };
+    const run = () => { if (!raf) raf = requestAnimationFrame(step); };
+    card.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const r = card.getBoundingClientRect();
+      tx = clamp(((e.clientX - r.left) / r.width) * 2 - 1, -1, 1);
+      ty = clamp(((e.clientY - r.top) / r.height) * 2 - 1, -1, 1);
+      run();
+    });
+    card.addEventListener('pointerleave', () => { tx = ty = 0; run(); });
+  });
 }
 
 // ---------- Text Reveal ----------
