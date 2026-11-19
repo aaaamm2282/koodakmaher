@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unslopovich"
+  short_description: "Find and fix AI-looking UI in mobile and web apps, user friction first"
+  default_prompt: "Use $unslopovich to review this app's main screens."
