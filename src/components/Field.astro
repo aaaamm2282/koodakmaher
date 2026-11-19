@@ -1,5 +1,6 @@
 ---
 import { fieldId } from '../lib/field-id';
+import Icon from './Icon.astro';
 /** A select option: plain text, or a value with the unit slug that `?unit=` in the address can pick (`param`). */
 type Option = string | { value: string; slug?: string };
 interface Props {
@@ -26,19 +27,21 @@ const { label, name, type = 'text', required = false, options = [], param, place
 const maxlength = Astro.props.maxlength ?? ({ text: 100, tel: 20, email: 120, textarea: 1500 } as Record<string, number>)[type];
 const id = fieldId(Astro.request, name);
 const describedBy = hint ? `${id}-hint` : undefined;
-const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg-surface px-3.5 text-base text-ink outline-none transition-[border-color,box-shadow] duration-150 focus:border-accent focus:ring-3 focus:ring-accent/15 placeholder:text-ink-mute/70 aria-[invalid=true]:border-danger';
+// File field: the browser's own button speaks the browser's language («Choose File»), so a Persian label button
+// stands in for it. The real input stays focusable (visually hidden): keyboard and screen readers work as usual.
+const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg-surface px-3.5 text-base text-ink outline-none transition-[border-color,box-shadow] duration-150 focus:border-accent focus:ring-3 focus:ring-accent/20 placeholder:text-ink-mute/70 aria-[invalid=true]:border-danger';
 ---
 {type === 'checkbox' ? (
   <div class:list={[full && 'sm:col-span-2']}>
-    <label class="flex cursor-pointer items-start gap-3 text-[0.95rem]" for={id}>
-      <input id={id} type="checkbox" name={name} required={required} class="peer mt-1 h-5 w-5 shrink-0 cursor-pointer accent-accent" />
+    <label class="flex cursor-pointer items-start gap-3 text-sm" for={id}>
+      <input id={id} type="checkbox" name={name} required={required} class="peer mt-1 size-5 shrink-0 cursor-pointer accent-accent" />
       <span>{label}{required && <span class="text-danger" aria-hidden="true"> *</span>}</span>
     </label>
     <p id={`${id}-err`} class="field-error mt-1 hidden text-sm text-danger" aria-live="polite"></p>
   </div>
 ) : (
   <div class:list={[full && 'sm:col-span-2']}>
-    <label for={id} class="block text-[0.95rem] font-medium">
+    <label for={id} class="block text-sm font-medium">
       {label}
       {required ? <span class="text-danger" aria-hidden="true"> *</span> : <span class="text-sm font-normal text-ink-mute"> (اختیاری)</span>}
     </label>
@@ -50,8 +53,13 @@ const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg
     ) : type === 'textarea' ? (
       <textarea id={id} name={name} required={required} rows="4" placeholder={placeholder} maxlength={maxlength} class={base + ' py-3'} data-maxwords={maxwords} aria-describedby={describedBy}></textarea>
     ) : type === 'file' ? (
-      <input id={id} name={name} type="file" required={required} accept={accept} data-accept-label={acceptLabel} data-max-mb={maxMb} aria-describedby={describedBy}
-        class={base + ' py-2.5 file:ml-3 file:rounded-md file:border-0 file:bg-sand file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-ink'} />
+      <div class="relative mt-2 flex min-h-12 items-center gap-3 rounded-lg border border-line-strong bg-surface py-1.5 ps-1.5 pe-3.5 transition-[border-color,box-shadow] duration-150 focus-within:border-accent focus-within:ring-3 focus-within:ring-accent/20" data-file>
+        <input id={id} name={name} type="file" required={required} accept={accept} data-accept-label={acceptLabel} data-max-mb={maxMb} aria-describedby={describedBy} class="sr-only" />
+        <label for={id} class="inline-flex min-h-9 shrink-0 cursor-pointer items-center gap-2 rounded-md bg-sand px-3 text-sm font-medium transition-colors hover:bg-line-strong/60 active:bg-line-strong">
+          <Icon name="upload" size={16} />انتخاب فایل
+        </label>
+        <span class="min-w-0 truncate text-sm text-ink-mute" data-file-name aria-hidden="true">فایلی انتخاب نشده</span>
+      </div>
     ) : (
       <input id={id} name={name} type={type} required={required} placeholder={placeholder} autocomplete={autocomplete ?? 'off'} maxlength={maxlength} class={base}
         spellcheck={type === 'tel' || type === 'email' ? 'false' : undefined}
@@ -64,3 +72,19 @@ const base = 'mt-2 block w-full min-h-12 rounded-lg border border-line-strong bg
     <p id={`${id}-err`} class="field-error mt-1 hidden text-sm text-danger" aria-live="polite"></p>
   </div>
 )}
+
+<script>
+  // Show the chosen file's name next to the Persian «انتخاب فایل» button
+  document.querySelectorAll<HTMLElement>('[data-file]').forEach((box) => {
+    const input = box.querySelector<HTMLInputElement>('input[type=file]');
+    const out = box.querySelector<HTMLElement>('[data-file-name]');
+    if (!input || !out) return;
+    const empty = out.textContent ?? '';
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      out.textContent = file ? file.name : empty;
+      out.classList.toggle('text-ink', Boolean(file));
+      out.classList.toggle('text-ink-mute', !file);
+    });
+  });
+</script>

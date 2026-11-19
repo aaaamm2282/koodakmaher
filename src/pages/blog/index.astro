@@ -23,7 +23,7 @@ const blogSchema = posts.length
   : [];
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs} schema={blogSchema}>
-  <PageHero title="دفتر اندیشه‌های کودک ماهر" kicker="مقاله‌های تربیتی برای والدین" crumbs={crumbs}
+  <PageHero title="دفتر اندیشه‌های کودک ماهر" tagline="مقاله‌های تربیتی برای والدین" crumbs={crumbs}
     subtitle="یادداشت‌های کوتاه و کاربردی برای والدین و معلمان، درباره شناخت کودک، مهارت‌های زندگی و انتخاب مسیر." />
   <section class="container-x py-14 sm:py-20">
     <h2 class="sr-only">دسته‌ها</h2>
@@ -32,7 +32,7 @@ const blogSchema = posts.length
     </ul>
 
     {posts.length === 0 ? (
-      <div class="mt-12 max-w-xl border-r-2 border-saffron pr-6" data-reveal>
+      <div class="card mt-12 max-w-xl p-6 sm:p-8" data-reveal>
         <p class="font-serif text-2xl font-semibold">به‌زودی</p>
         <p class="mt-2 text-ink-soft">اولین یادداشت‌ها به‌زودی منتشر می‌شوند.</p>
       </div>

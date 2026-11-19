@@ -1,4 +1,6 @@
 ---
+// The page's closing panel. The one navy block a reader meets at the end of a page, so the last step is never
+// lost in the text above it: one main action (white) and one quieter one.
 import Icon from './Icon.astro';
 interface Props { title?: string; text?: string; button?: string; href?: string }
 const {
@@ -8,15 +10,17 @@ const {
   href = '/register/',
 } = Astro.props;
 ---
-<section class="container-x py-16 sm:py-20" aria-labelledby="cta-title">
-  <div class="grid gap-8 border-t border-ink pt-10 md:grid-cols-[1fr_auto] md:items-end" data-reveal>
-    <div class="max-w-2xl">
-      <h2 id="cta-title" class="text-[1.625rem] sm:text-[2rem]">{title}</h2>
-      <p class="lead mt-3">{text}</p>
+<section class="cta-band container-x py-16 sm:py-24" aria-labelledby="cta-title">
+  <!-- Stacked like a page heading (heading, gold line, text, actions), so the heading keeps one line on wide screens -->
+  <div class="rounded-2xl bg-accent px-6 py-10 text-white sm:px-12 sm:py-14" data-reveal>
+    <div class="max-w-3xl">
+      <h2 id="cta-title" class="text-title text-white sm:text-[2.25rem]" style="line-height:1.45">{title}</h2>
+      <span class="mt-5 block h-0.5 w-14 rounded-full bg-gold" aria-hidden="true"></span>
+      <p class="mt-5 text-md text-white/80 sm:text-lg" style="line-height:1.9">{text}</p>
     </div>
-    <div class="flex flex-wrap gap-3">
-      <a href={href} class="btn-primary" data-cta="page-end">{button}<Icon name="arrow" size={18} /></a>
-      <a href="/contact/" class="btn-ghost">تماس با مراکز</a>
+    <div class="mt-8 grid gap-3 sm:flex sm:flex-wrap">
+      <a href={href} class="btn-light focus-visible:outline-white" data-cta="page-end">{button}<Icon name="arrow" size={18} /></a>
+      <a href="/contact/" class="btn-ghost-light focus-visible:outline-white">تماس با مراکز</a>
     </div>
   </div>
 </section>

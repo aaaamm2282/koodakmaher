@@ -7,25 +7,25 @@ const nodes = [[160, 40], [264, 220], [56, 220]];
 <div class="grid items-center gap-10 lg:grid-cols-[1fr_1.15fr] lg:gap-16" data-orbit>
   <div class="mx-auto w-full max-w-[17rem] sm:max-w-[22rem]" aria-hidden="true">
     <svg viewBox="0 0 320 320" class="w-full overflow-visible">
-      <circle cx="160" cy="160" r="120" fill="none" stroke="rgb(23 32 28 / .12)" stroke-width="1.5" />
-      <circle cx="160" cy="160" r="120" fill="none" stroke="#01237a" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round" class="orbit-dash" />
+      <circle cx="160" cy="160" r="120" fill="none" class="stroke-line-strong" stroke-width="1.5" />
+      <circle cx="160" cy="160" r="120" fill="none" class="stroke-accent" stroke-width="2" stroke-dasharray="4 10" stroke-linecap="round" />
       <g class="orbit-marker" data-orbit-marker style="transform-origin:160px 160px">
-        <circle cx="160" cy="40" r="30" fill="#d9b25a" opacity=".25" />
+        <circle cx="160" cy="40" r="30" class="fill-gold" opacity=".3" />
       </g>
       {nodes.map(([x, y], i) => (
         <g class="orbit-node" data-orbit-node={i}>
-          <circle cx={x} cy={y} r="22" fill="#fff" stroke="#01237a" stroke-width="2" />
-          <text x={x} y={y + 7} text-anchor="middle" font-size="20" font-family="var(--font-serif)" fill="#01237a">{(i + 1).toLocaleString('fa-IR')}</text>
+          <circle cx={x} cy={y} r="22" class="fill-surface stroke-accent" stroke-width="2" />
+          <text x={x} y={y + 7} text-anchor="middle" font-size="20" class="fill-accent font-serif">{(i + 1).toLocaleString('fa-IR')}</text>
         </g>
       ))}
-      <text x="160" y="152" text-anchor="middle" font-size="13" fill="#6b736f" font-family="var(--font-sans)">چرخه متد</text>
-      <text x="160" y="186" text-anchor="middle" font-size="30" fill="#17201c" font-family="var(--font-serif)" data-orbit-label>{cycle[0].title}</text>
+      <text x="160" y="152" text-anchor="middle" font-size="13" class="fill-ink-mute font-sans">چرخه متد</text>
+      <text x="160" y="186" text-anchor="middle" font-size="30" class="fill-ink font-serif" data-orbit-label>{cycle[0].title}</text>
     </svg>
   </div>
   <ol class="border-t border-line" role="list">
     {cycle.map((c, i) => (
       <li class="border-b border-line">
-        <button type="button" class:list={['orbit-step flex w-full items-start gap-5 py-6 text-right', i === 0 && 'is-active']} data-orbit-step={i} aria-pressed={i === 0 ? 'true' : 'false'}>
+        <button type="button" class:list={['orbit-step flex w-full items-start gap-5 py-6 text-start transition-colors hover:bg-paper/60', i === 0 && 'is-active']} data-orbit-step={i} aria-pressed={i === 0 ? 'true' : 'false'}>
           <span class="num text-[2rem] leading-none text-ink-mute transition-colors duration-300">{(i + 1).toLocaleString('fa-IR')}</span>
           <span class="flex-1">
             <span class="block font-serif text-2xl font-semibold" data-orbit-title>{c.title}</span>

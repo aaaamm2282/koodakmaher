@@ -12,9 +12,9 @@ const umami = /^https:\/\//.test((import.meta.env.PUBLIC_UMAMI_SRC ?? '').trim()
 const services = [ga && 'Google Analytics', umami && 'Umami'].filter(Boolean).join(' و ');
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
-  <PageHero title="حریم خصوصی" kicker="حریم خصوصی" crumbs={crumbs} />
+  <PageHero title="حریم خصوصی" crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20">
-    <div class="max-w-3xl space-y-5 text-[1.0625rem] leading-[2]" data-reveal>
+    <div class="max-w-3xl space-y-5 text-md leading-[2]" data-reveal>
       <Pending label="این متن پیش از انتشار باید توسط مشاور حقوقی بررسی شود." />
       <p>اطلاعاتی که در فرم‌های این سایت وارد می‌کنید فقط برای پاسخ دادن به شما و فرایند ثبت‌نام استفاده می‌شود و در اختیار هیچ شخص یا سازمان دیگری قرار نمی‌گیرد.</p>
       <p>همراه هر فرم، نشانی صفحه‌ای که فرم را از آن فرستاده‌اید و اینکه از کجا به سایت آمده‌اید (مثلاً جست‌وجو، نقشه یا اینستاگرام) هم ثبت می‌شود تا بدانیم خانواده‌ها از چه راهی با ما آشنا می‌شوند. پیش از فرستادن فرم، این اطلاعات فقط در همان زبانه مرورگر خودتان نگه داشته می‌شود (کوکی نیست) و با بستن زبانه پاک می‌شود.</p>

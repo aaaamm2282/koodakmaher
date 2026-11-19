@@ -21,9 +21,9 @@ const places = units.filter((u) => u.address);
       <ul class="mt-4 space-y-4 text-sm leading-7">
         {places.map((u) => (
           <li>
-            <a href={`/units/${u.slug}/`} class="font-medium text-white hover:underline">{u.name}</a>
+            <a href={`/units/${u.slug}/`} class="font-medium text-white underline-offset-4 hover:underline">{u.name}</a>
             <p class="text-white/65">{u.address}</p>
-            {u.phone && <a href={`tel:${u.phone.tel}`} class="num text-white/80 hover:text-white" dir="ltr">{u.phone.display}</a>}
+            {u.phone && <a href={`tel:${u.phone.tel}`} class="num inline-flex min-h-8 items-center text-white/80 transition-colors hover:text-white" dir="ltr">{u.phone.display}</a>}
           </li>
         ))}
       </ul>
@@ -32,15 +32,15 @@ const places = units.filter((u) => u.address);
     <div class="grid grid-cols-2 gap-8 md:col-span-3 md:grid-cols-1">
       <nav aria-label="پیوندهای سریع">
         <h2 class="font-sans text-sm font-medium text-white">دسترسی سریع</h2>
-        <ul class="mt-4 space-y-2 text-sm">
-          {footerLinks.map((i) => <li><a class="hover:text-white" href={i.href}>{i.label}</a></li>)}
+        <ul class="mt-3 text-sm">
+          {footerLinks.map((i) => <li><a class="inline-flex min-h-9 items-center transition-colors hover:text-white" href={i.href}>{i.label}</a></li>)}
         </ul>
       </nav>
       <div>
         <h2 class="font-sans text-sm font-medium text-white">ما را دنبال کنید</h2>
-        <ul class="mt-4 space-y-2 text-sm">
-          {social.slice(4).map((s) => <li><a href={s.href} class="hover:text-white" rel="noopener" target="_blank">{s.label}</a></li>)}
-          <li><a href="/contact/#social" class="hover:text-white">صفحه‌های اینستاگرام</a></li>
+        <ul class="mt-3 text-sm">
+          {social.slice(4).map((s) => <li><a href={s.href} class="inline-flex min-h-9 items-center transition-colors hover:text-white" rel="noopener" target="_blank">{s.label}</a></li>)}
+          <li><a href="/contact/#social" class="inline-flex min-h-9 items-center transition-colors hover:text-white">صفحه‌های اینستاگرام</a></li>
         </ul>
       </div>
     </div>

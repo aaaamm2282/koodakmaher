@@ -14,13 +14,13 @@ const schema = [faqPage(faqs)];
 const unitFaqs = units.filter((u) => u.faqs.length).map((u) => ({ href: `/units/${u.slug}/#unit-faq-title`, label: u.name, n: u.faqs.length }));
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs} schema={schema}>
-  <PageHero title={seo.h1} kicker="پرسش و پاسخ" crumbs={crumbs} />
+  <PageHero title={seo.h1} crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20">
     <div class="mx-auto grid max-w-5xl gap-12 lg:grid-cols-[1fr_15rem] lg:gap-16">
       <FaqList items={faqs} />
       <aside class="h-fit lg:sticky lg:top-24" data-reveal aria-labelledby="unit-faqs">
         <h2 id="unit-faqs" class="font-sans text-base font-semibold">پرسش‌های هر واحد</h2>
-        <ul class="mt-3 border-t border-line text-[0.95rem]">
+        <ul class="mt-3 border-t border-line text-sm">
           {unitFaqs.map((x) => (
             <li class="border-b border-line"><a href={x.href} class="flex items-center justify-between gap-3 py-3 hover:text-accent">{x.label}<span class="num text-sm text-ink-mute">{x.n.toLocaleString('fa-IR')}</span></a></li>
           ))}

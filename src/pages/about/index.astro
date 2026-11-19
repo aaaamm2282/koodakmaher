@@ -1,12 +1,18 @@
 ---
+import { Picture } from 'astro:assets';
 import Base from '../../layouts/Base.astro';
 import PageHero from '../../components/PageHero.astro';
 import Section from '../../components/Section.astro';
 import Pending from '../../components/Pending.astro';
 import CTA from '../../components/CTA.astro';
+import Icon from '../../components/Icon.astro';
 import { site, units } from '../../data/site';
 import { pageSeo } from '../../data/keywords';
+import { resolveImage } from '../../lib/images';
 const seo = pageSeo('/about/');
+// The founder's own message and photo come from the CMS (Settings → site); until then each shows «در حال تکمیل».
+const founderImg = site.founderPhoto ? resolveImage(site.founderPhoto) : null;
+const founderParas = site.founderMessage ? site.founderMessage.split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean) : [];
 
 const crumbs = [{ label: 'درباره ما' }];
 const values = [
@@ -19,12 +25,12 @@ const values = [
 const team = units.filter((u) => u.manager).map((u) => ({ name: u.manager!, role: `مدیر ${u.name}`, href: `/units/${u.slug}/` }));
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
-  <PageHero title={seo.h1} kicker="درباره ما" crumbs={crumbs} />
+  <PageHero title={seo.h1} crumbs={crumbs} />
 
   <section class="container-x py-14 sm:py-20">
     <div class="grid gap-12 lg:grid-cols-[1.5fr_1fr] lg:gap-16">
       <div class="space-y-5" data-reveal>
-        <p class="font-serif text-[1.25rem] leading-[2] sm:text-[1.375rem]">کودک ماهر مانا را با یک باور ساده راه انداختیم: آموزش نباید فقط به دانستن و موفقیت در امتحان محدود شود؛ باید انسان را برای زندگی آماده کند.</p>
+        <p class="font-serif text-xl leading-[2] sm:text-lede">کودک ماهر مانا را با یک باور ساده راه انداختیم: آموزش نباید فقط به دانستن و موفقیت در امتحان محدود شود؛ باید انسان را برای زندگی آماده کند.</p>
         <p class="lead">می‌خواهیم کودکان و نوجوانان از کودکی تا ورود به زندگی حرفه‌ای خودشان را بشناسند، توانایی‌هایشان را کشف کنند، درست فکر کردن و تصمیم گرفتن را یاد بگیرند، مسئولیت‌پذیر و خلاق شوند و بتوانند مسئله‌های واقعی زندگی را حل کنند.</p>
         <p class="lead">امروز مؤسسه شامل کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای است. برخی از دانش‌آموزان امروز ما از کودکستان با ما بوده‌اند.</p>
       </div>
@@ -37,38 +43,53 @@ const team = units.filter((u) => u.manager).map((u) => ({ name: u.manager!, role
     </div>
   </section>
 
-  <Section id="values" kicker="ارزش‌ها" title="آنچه به آن پایبندیم" tone="white">
-    <ol class="mt-10 border-t border-line" data-stagger>
-      {values.map((v, i) => (
-        <li class="grid gap-2 border-b border-line py-6 sm:grid-cols-[3rem_16rem_1fr] sm:gap-8">
-          <span class="num text-lg text-saffron">{(i + 1).toLocaleString('fa-IR', { minimumIntegerDigits: 2 })}</span>
+  <Section id="values" title="آنچه به آن پایبندیم" tone="white">
+    <ul class="mt-10 border-t border-line" data-stagger>
+      {values.map((v) => (
+        <li class="grid gap-2 border-b border-line py-6 sm:grid-cols-[18rem_1fr] sm:items-baseline sm:gap-10 sm:py-7">
           <h3 class="text-xl">{v.t}</h3>
           <p class="text-ink-soft">{v.d}</p>
         </li>
       ))}
-    </ol>
+    </ul>
   </Section>
 
-  <Section id="founder" kicker="پیام مؤسس" title={`${site.founder}، بنیان‌گذار`}>
-    <figure class="mt-8 grid gap-8 md:grid-cols-[180px_1fr]" data-reveal>
-      <div class="grid aspect-[4/5] w-full max-w-[180px] place-items-center rounded-xl border border-dashed border-line-strong bg-sand text-sm text-ink-soft" role="img" aria-label="جای عکس مؤسس">جای عکس</div>
-      <div>
-        <blockquote><Pending label="متن کوتاه به قلم خود مؤسس، ۱۰۰ تا ۱۵۰ کلمه: چرا کودک ماهر را ساختید، چه چیزی در تجربه آموزش مهارتی شما را به این راه رساند، و از خانواده‌ها چه انتظاری دارید." /></blockquote>
-        <figcaption class="mt-5">
-          <p class="font-serif text-xl font-semibold">{site.founder}</p>
-          <p class="text-ink-soft">بنیان‌گذار {site.name}</p>
-          <Pending inline class="mt-2" label="عنوان‌ها و سوابقی که مؤسس می‌خواهد عمومی شود" />
+  <Section id="founder" title={`${site.founder}، بنیان‌گذار`}>
+    <figure class:list={['mt-8 grid gap-8', founderImg && 'md:grid-cols-[13rem_1fr] md:gap-12']} data-reveal>
+      {founderImg && (
+        <Picture src={founderImg} alt={`${site.founder}، بنیان‌گذار ${site.name}`} formats={['avif', 'webp']} widths={[208, 416]} sizes="13rem"
+          class="aspect-[4/5] w-full max-w-[13rem] rounded-xl border border-line object-cover" />
+      )}
+      <div class="max-w-3xl">
+        {founderParas.length > 0
+          ? <blockquote class="space-y-4 font-serif text-xl leading-[2]">{founderParas.map((x) => <p>{x}</p>)}</blockquote>
+          : <blockquote><Pending label="متن کوتاه به قلم خود مؤسس، ۱۰۰ تا ۱۵۰ کلمه: چرا کودک ماهر را ساختید، چه چیزی در تجربه آموزش مهارتی شما را به این راه رساند، و از خانواده‌ها چه انتظاری دارید." /></blockquote>}
+        <figcaption class="mt-6 flex items-center gap-3">
+          <span class="h-px w-8 shrink-0 bg-gold" aria-hidden="true"></span>
+          <span>
+            <span class="block font-serif text-xl font-semibold">{site.founder}</span>
+            <span class="block text-ink-soft">بنیان‌گذار {site.name}</span>
+          </span>
         </figcaption>
+        <p class="mt-4 flex flex-wrap gap-x-6 gap-y-2">
+          <Pending inline label="عنوان‌ها و سوابقی که مؤسس می‌خواهد عمومی شود" />
+          {!founderImg && <Pending inline label="عکس مؤسس" />}
+        </p>
       </div>
     </figure>
   </Section>
 
-  <Section id="team" kicker="تیم ما" title="مدیران واحدها" tone="sand">
+  <Section id="team" title="مدیران واحدها" tone="sand">
     <ul class="mt-10 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-3" data-stagger>
       {team.map((m) => (
-        <li class="border-t border-line-strong py-5">
-          <p class="font-serif text-xl font-semibold">{m.name}</p>
-          <a href={m.href} class="mt-1 block text-ink-soft hover:text-accent">{m.role}</a>
+        <li class="border-t border-line-strong">
+          <a href={m.href} class="group flex items-center justify-between gap-4 py-5 transition-colors active:text-accent">
+            <span>
+              <span class="block font-serif text-xl font-semibold">{m.name}</span>
+              <span class="mt-1 block text-ink-soft transition-colors group-hover:text-accent">{m.role}</span>
+            </span>
+            <Icon name="arrow" size={18} class="shrink-0 text-ink-mute transition-[color,translate] group-hover:-translate-x-1 group-hover:text-accent" />
+          </a>
         </li>
       ))}
     </ul>

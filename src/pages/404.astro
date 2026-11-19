@@ -5,6 +5,7 @@
  * and if the host could not run the redirect itself, sends the visitor on to the new page.
  */
 import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
 import { units, nav, footerLinks } from '../data/site';
 import { normalizeRule, checkRedirects, pathKey } from '../lib/redirects.mjs';
 import redirectsJson from '../content/settings/redirects.json';
@@ -32,10 +33,11 @@ const moved = Object.fromEntries(rules.filter((r) => r.status === 301).map((r) =
     <div class="mx-auto max-w-2xl text-center">
       <p class="num text-7xl text-ink-mute" aria-hidden="true">۴۰۴</p>
       <h1 class="mt-6 text-3xl">این صفحه پیدا نشد</h1>
+      <span class="page-line mx-auto mt-5 block h-0.5 w-14 rounded-full bg-gold" aria-hidden="true"></span>
       <p class="lead mt-3">سایت کودک ماهر تازه شده و نشانی بعضی صفحه‌ها عوض شده است. اگر از لینکی قدیمی آمده‌اید، صفحه‌ی تازه‌اش را از فهرست زیر پیدا کنید.</p>
-      <p class="mt-8 rounded-2xl border border-line bg-sand px-5 py-4" data-nf-suggest hidden>
+      <p class="mt-8 rounded-xl border border-line bg-sand px-5 py-4" data-nf-suggest hidden>
         <span class="text-ink-mute">شاید دنبال این صفحه بودید:</span>
-        <a href="/" class="mt-2 block text-lg font-bold text-accent underline decoration-gold decoration-2 underline-offset-8 hover:decoration-accent sm:mt-0 sm:inline sm:ms-2" data-nf-link></a>
+        <a href="/" class="mt-2 block text-lg font-semibold text-accent underline decoration-gold decoration-2 underline-offset-8 hover:decoration-accent sm:mt-0 sm:inline sm:ms-2" data-nf-link></a>
       </p>
     </div>
 
@@ -44,12 +46,12 @@ const moved = Object.fromEntries(rules.filter((r) => r.status === 301).map((r) =
       <ul class="mt-5 grid gap-3 sm:grid-cols-2">
         {main.map((l) => (
           <li>
-            <a href={l.href} class="group flex min-h-14 items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-5 py-3 transition-colors hover:border-accent">
+            <a href={l.href} class="group flex min-h-14 items-center justify-between gap-3 rounded-xl border border-line bg-surface px-5 py-3 transition-colors hover:border-accent active:bg-sand">
               <span>
-                <span class="block font-bold">{l.label}</span>
+                <span class="block font-medium">{l.label}</span>
                 {l.text && <span class="block text-sm text-ink-mute">{l.text}</span>}
               </span>
-              <span aria-hidden="true" class="text-accent transition-transform group-hover:-translate-x-1">←</span>
+              <Icon name="arrow" size={18} class="shrink-0 text-accent transition-transform group-hover:-translate-x-1" />
             </a>
           </li>
         ))}

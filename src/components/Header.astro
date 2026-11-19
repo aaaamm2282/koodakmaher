@@ -10,7 +10,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     <a href="/" class="flex items-center gap-3">
       <Logo class="h-10 w-10 shrink-0" decorative />
       <span class="flex flex-col leading-tight">
-        <span class="font-serif text-[1.0625rem] font-semibold">{site.brand}</span>
+        <span class="font-serif text-md font-semibold">{site.brand}</span>
         <span class="text-xs text-ink-mute">مؤسسه آموزشی کودک ماهر مانا</span>
       </span>
       <span class="sr-only">، صفحه اول</span>
@@ -20,14 +20,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       <ul class="flex items-center gap-1">
         {nav.map((item) => item.children ? (
           <li class="group relative">
-            <a href={item.href} class:list={['flex items-center gap-1 px-3 py-2 text-[0.9375rem] transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft']} aria-haspopup="true">
-              {item.label}<Icon name="chevron" size={15} class="transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+            <a href={item.href} class:list={['relative flex min-h-11 items-center gap-1 rounded-lg px-3 text-sm transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft']} aria-haspopup="true">
+              {item.label}<Icon name="chevron" size={15} class="transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+              {isActive(item.href) && <span class="nav-line" aria-hidden="true"></span>}
             </a>
-            <div class="invisible absolute top-full right-0 pt-2 opacity-0 transition-[opacity,visibility] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+            <div class="invisible absolute top-full start-0 translate-y-1 pt-2 opacity-0 transition-[opacity,visibility,translate] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
               <ul class="w-72 rounded-xl border border-line bg-surface p-1.5 shadow-soft">
                 {units.map((u) => (
                   <li>
-                    <a href={`/units/${u.slug}/`} class="flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-[0.9375rem] hover:bg-sand">
+                    <a href={`/units/${u.slug}/`} class="flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-sand">
                       <span>{u.name}</span>
                       {u.soon ? <span class="text-xs text-ink-mute">به‌زودی</span> : u.ages && <span class="truncate text-xs text-ink-mute">{u.ages.split('،')[0]}</span>}
                     </a>
@@ -38,15 +39,15 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
           </li>
         ) : (
           <li>
-            <a href={item.href} class:list={['relative block px-3 py-2 text-[0.9375rem] transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium after:absolute after:inset-x-3 after:-bottom-[0.95rem] after:h-0.5 after:bg-gold' : 'text-ink-soft after:absolute after:inset-x-3 after:bottom-0.5 after:h-px after:origin-right after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:after:scale-x-100']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
+            <a href={item.href} class:list={['relative flex min-h-11 items-center rounded-lg px-3 text-sm transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft after:absolute after:inset-x-3 after:bottom-2 after:h-px after:origin-right after:scale-x-0 after:bg-accent after:transition-transform after:duration-300 hover:after:scale-x-100']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}{isActive(item.href) && <span class="nav-line" aria-hidden="true"></span>}</a>
           </li>
         ))}
       </ul>
     </nav>
 
     <div class="flex items-center gap-2">
-      <a href="/register/" class="btn-primary hidden !min-h-10 !px-4 text-sm sm:inline-flex" data-cta="header">پیش‌ثبت‌نام و مشاوره</a>
-      <button id="menu-btn" type="button" class="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface xl:hidden" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-menu">
+      <a href="/register/" class="btn-primary hidden !min-h-11 !px-4 sm:inline-flex" data-cta="header">پیش‌ثبت‌نام و مشاوره</a>
+      <button id="menu-btn" type="button" class="grid size-11 place-items-center rounded-lg border border-line bg-surface transition-colors active:bg-sand xl:hidden" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-menu">
         <Icon name="menu" size={22} />
       </button>
     </div>
@@ -55,20 +56,20 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   <!-- Closed: inert, so its links are not Tab stops and screen readers skip it. Open: a modal; the rest of the page is inert. -->
   <div id="mobile-menu" class="pointer-events-none fixed inset-0 z-50 opacity-0 transition-opacity duration-200 xl:hidden data-[open=true]:pointer-events-auto data-[open=true]:opacity-100" data-open="false" role="dialog" aria-modal="true" aria-label="منو" inert>
     <div class="absolute inset-0 bg-ink/30" data-close></div>
-    <nav aria-label="منوی موبایل" class="absolute inset-y-0 right-0 flex w-[min(22rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-paper p-5 shadow-soft">
+    <nav aria-label="منوی موبایل" class="menu-sheet absolute inset-y-0 start-0 flex w-[min(22rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-paper p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-raised">
       <div class="mb-4 flex items-center justify-between">
         <span class="font-serif text-lg font-semibold">منو</span>
-        <button type="button" class="grid h-11 w-11 place-items-center rounded-lg border border-line bg-surface" aria-label="بستن منو" data-close>
+        <button type="button" class="grid size-11 place-items-center rounded-lg border border-line bg-surface transition-colors active:bg-sand" aria-label="بستن منو" data-close>
           <Icon name="close" size={22} />
         </button>
       </div>
       <ul class="divide-y divide-line border-y border-line">
         {nav.map((item) => (
           <li>
-            <a href={item.href} class:list={['block py-3 text-[1.0625rem]', isActive(item.href) && 'font-medium text-accent']} data-close>{item.label}</a>
+            <a href={item.href} class:list={['flex min-h-12 items-center justify-between gap-3 py-2 text-md', isActive(item.href) && 'font-medium text-accent']} aria-current={isActive(item.href) ? 'page' : undefined} data-close>{item.label}{isActive(item.href) && <span class="h-0.5 w-5 rounded-full bg-gold" aria-hidden="true"></span>}</a>
             {item.children && (
-              <ul class="mb-3 space-y-0.5 border-r border-line pr-3">
-                {units.map((u) => <li><a href={`/units/${u.slug}/`} class="block py-1.5 text-ink-soft" data-close>{u.name}{u.soon && ' (به‌زودی)'}</a></li>)}
+              <ul class="mb-3 border-s border-line ps-3">
+                {units.map((u) => <li><a href={`/units/${u.slug}/`} class="flex min-h-11 items-center text-ink-soft" data-close>{u.name}{u.soon && ' (به‌زودی)'}</a></li>)}
               </ul>
             )}
           </li>

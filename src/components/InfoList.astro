@@ -4,13 +4,15 @@ import Icon from './Icon.astro';
 interface Props { title?: string; items: { label: string; value?: string; href?: string; pending?: string; ltr?: boolean }[]; cta?: { href: string; label: string } | null }
 const { title = 'اطلاعات ثبت‌نام', items, cta = { href: '/register/', label: 'پیش‌ثبت‌نام و مشاوره' } } = Astro.props;
 ---
-<aside class="card h-fit p-6 lg:sticky lg:top-24" data-reveal>
+<!-- Sticky beside the page on wide screens. When the list is taller than the screen it scrolls inside itself,
+     so its last item and the button stay reachable (a sticky box taller than the screen hides its end). -->
+<aside class="card h-fit p-6 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-contain" data-reveal>
   <h2 class="font-sans text-base font-semibold">{title}</h2>
   <dl class="mt-2 divide-y divide-line">
     {items.map((i) => (
       <div class="py-3.5">
         <dt class="text-sm text-ink-mute">{i.label}</dt>
-        <dd class="mt-1 text-[0.95rem]">
+        <dd class="mt-1 text-sm font-medium">
           {i.value && (i.href ? <a href={i.href} class="link" dir={i.ltr ? 'ltr' : undefined} target={i.href.startsWith('http') ? '_blank' : undefined} rel={i.href.startsWith('http') ? 'noopener' : undefined}>{i.value}</a> : <span>{i.value}</span>)}
           {i.pending && <> <Pending inline label={i.pending} /></>}
         </dd>

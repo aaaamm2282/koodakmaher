@@ -34,7 +34,7 @@ const schema = {
 };
 ---
 <Base title={`${d.title} | کودک ماهر`} description={d.summary} type="article" crumbs={crumbs} schema={[schema]} noindex={d.draft || showDrafts}>
-  <PageHero title={d.title} kicker="اطلاعیه" crumbs={crumbs} subtitle={d.summary}>
+  <PageHero title={d.title} crumbs={crumbs} subtitle={d.summary}>
     <p class="rise mt-6 text-sm text-ink-mute" style="--i:3"><time datetime={isoDate(d.date)}>{faDate(d.date)}</time></p>
   </PageHero>
   <article class="container-x py-12 sm:py-16">

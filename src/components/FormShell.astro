@@ -56,7 +56,7 @@ const meta = ['page', 'landing', 'referrer', 'utm_source', 'utm_medium', 'utm_ca
       </noscript>
     )}
     <button type="submit" class="btn-primary mt-6 w-full" data-submit>
-      <span data-submit-label>{submit}</span><Icon name="send" size={20} />
+      <span data-submit-label>{submit}</span><Icon name="send" size={20} class="-scale-x-100" />
     </button>
     <div class="mt-4 rounded-lg border border-accent/25 bg-accent-soft p-4 text-center" role="status" data-form-preview hidden>
       <p class="font-medium">فرم درست پر شده است.</p>
@@ -66,7 +66,7 @@ const meta = ['page', 'landing', 'referrer', 'utm_source', 'utm_medium', 'utm_ca
   <div class="py-6 text-center outline-none" tabindex="-1" data-form-done hidden></div>
   <!-- The thank-you screen waits in a template, so its heading is not part of the page until the form is sent. -->
   <template data-form-done-template>
-    <span class="mx-auto grid size-14 place-items-center rounded-full bg-accent-soft text-accent"><Icon name="check" size={28} /></span>
+    <span class="form-done-check mx-auto grid size-14 place-items-center rounded-full bg-accent-soft text-accent"><Icon name="check" size={28} /></span>
     <h2 class="mt-5 text-2xl">{success.title}</h2>
     <p class="mx-auto mt-3 max-w-md leading-8 text-ink-soft">{success.text}</p>
     <a href="/" class="link mt-6 inline-block">بازگشت به صفحه اول</a>

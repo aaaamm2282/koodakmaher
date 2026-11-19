@@ -1,14 +1,15 @@
 ---
-interface Props { id?: string; title?: string; kicker?: string; intro?: string; class?: string; tone?: 'paper' | 'sand' | 'white' }
-const { id, title, kicker, intro, class: cls = '', tone = 'paper' } = Astro.props;
+// A page section: heading, optional intro, content. No label above the heading: the heading carries the section
+// on its own, and the breadcrumb or the page title already says where the reader is.
+interface Props { id?: string; title?: string; intro?: string; class?: string; tone?: 'paper' | 'sand' | 'white' }
+const { id, title, intro, class: cls = '', tone = 'paper' } = Astro.props;
 const hid = id ? `${id}-title` : undefined;
 ---
 <section id={id} class:list={['scroll-mt-4', tone === 'sand' && 'bg-sand', tone === 'white' && 'border-y border-line bg-surface']} aria-labelledby={title ? hid : undefined}>
   <div class:list={['container-x py-16 sm:py-24', cls]}>
-    {(title || kicker) && (
-      <div class="max-w-2xl" data-reveal>
-        {kicker && <p class="kicker">{kicker}</p>}
-        {title && <h2 id={hid} class="section-title mt-3">{title}</h2>}
+    {title && (
+      <div class="max-w-2xl">
+        <h2 id={hid} class="section-title">{title}</h2>
         {intro && <p class="lead mt-4">{intro}</p>}
       </div>
     )}

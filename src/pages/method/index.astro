@@ -29,9 +29,9 @@ const principles = [
 ];
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
-  <PageHero title="متد کودک ماهر: پیش‌بینی، تجربه، بازبینی" subtitle="روشی برای اینکه کودک خودش را با شاهد بشناسد، نه با حدس دیگران." kicker="متد" crumbs={crumbs} />
+  <PageHero title="متد کودک ماهر: پیش‌بینی، تجربه، بازبینی" subtitle="روشی برای اینکه کودک خودش را با شاهد بشناسد، نه با حدس دیگران." crumbs={crumbs} />
 
-  <Section id="goal" kicker="هدف" title="دو نقطه انتخاب آگاهانه">
+  <Section id="goal" title="دو نقطه انتخاب آگاهانه">
     <div class="mt-10 grid gap-5 md:grid-cols-2" data-stagger>
       <div class="card flex gap-6 p-7"><span class="num text-[3.5rem] leading-none text-accent">۱۵</span><div><h3 class="text-xl">۱۵ سالگی (پایه نهم)</h3><p class="mt-1 text-ink-soft">اولین انتخاب رشته تحصیلی.</p></div></div>
       <div class="card flex gap-6 p-7"><span class="num text-[3.5rem] leading-none text-accent">۱۸</span><div><h3 class="text-xl">۱۸ سالگی</h3><p class="mt-1 text-ink-soft">بازنگری و انتخاب نهایی برای دانشگاه یا ورود به کار.</p></div></div>
@@ -42,22 +42,23 @@ const principles = [
     </div>
   </Section>
 
-  <Section id="cycle" kicker="هسته متد" title="یک چرخه ساده" tone="white">
+  <Section id="cycle" title="یک چرخه ساده" tone="white">
     <div class="mt-12"><CycleSteps items={cycleItems} /></div>
-    <blockquote class="mt-10 max-w-3xl border-r-2 border-accent pr-6" data-reveal>
-      <p class="font-serif text-[1.1875rem] leading-[2]">انتخاب رشته هم در اصل یک پیش‌بینی درباره خود است: «فکر می‌کنم در این رشته موفق و راضی خواهم بود.» کودکی که سال‌ها حدس زدن و سنجیدن حدسش را تمرین کرده، در ۱۵ سالگی این پیش‌بینی بزرگ را دقیق‌تر انجام می‌دهد.</p>
+    <blockquote class="mt-10 max-w-3xl" data-reveal>
+      <Icon name="quote" size={24} class="text-gold" />
+      <p class="mt-3 font-serif text-lg leading-[2] sm:text-xl">انتخاب رشته هم در اصل یک پیش‌بینی درباره خود است: «فکر می‌کنم در این رشته موفق و راضی خواهم بود.» کودکی که سال‌ها حدس زدن و سنجیدن حدسش را تمرین کرده، در ۱۵ سالگی این پیش‌بینی بزرگ را دقیق‌تر انجام می‌دهد.</p>
       <p class="mt-3 font-medium">این فرضیه اصلی ماست و با پرونده رشد بچه‌ها آن را می‌سنجیم.</p>
     </blockquote>
   </Section>
 
-  <Section id="pillars" kicker="ارکان" title="چهار رکن رشد">
-    <ul class="mt-12 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
-      {pillars.map((p) => <li class="border-t-2 border-ink py-5"><h3 class="text-xl">{p.t}</h3><p class="mt-2 text-ink-soft">{p.d}</p></li>)}
+  <Section id="pillars" title="چهار رکن رشد">
+    <ul class="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+      {pillars.map((p) => <li class="marked"><h3 class="text-xl">{p.t}</h3><p class="mt-3 text-ink-soft">{p.d}</p></li>)}
     </ul>
-    <p class="lead mt-8 max-w-3xl" data-reveal>وقتی این چهار با هم در حل یک مسئله واقعی به کار می‌روند، «شایستگی» ساخته می‌شود. منش کودک را نمره نمی‌دهیم؛ فقط با مشاهده طولانی و گفت‌وگو آن را دنبال می‌کنیم.</p>
+    <p class="lead mt-12 max-w-3xl" data-reveal>وقتی این چهار با هم در حل یک مسئله واقعی به کار می‌روند، «شایستگی» ساخته می‌شود. منش کودک را نمره نمی‌دهیم؛ فقط با مشاهده طولانی و گفت‌وگو آن را دنبال می‌کنیم.</p>
   </Section>
 
-  <Section id="principles" kicker="اجرا" title="اصول اجرا" tone="sand">
+  <Section id="principles" title="اصول اجرا" tone="sand">
     <ul class="mt-10 border-t border-line-strong" data-stagger>
       {principles.map((p) => (
         <li class="grid gap-1 border-b border-line-strong py-5 sm:grid-cols-[18rem_1fr] sm:gap-8">
@@ -67,14 +68,14 @@ const principles = [
     </ul>
   </Section>
 
-  <Section id="roots" kicker="پشتوانه" title="ریشه‌ها و آنچه سهم ماست">
+  <Section id="roots" title="ریشه‌ها و آنچه سهم ماست">
     <div class="mt-10 grid gap-10 lg:grid-cols-2" data-stagger>
       <p class="lead">ایده پیش‌بینی، تجربه و بازبینی در آموزش سابقه دارد؛ مثلاً در الگوی «برنامه‌ریزی، انجام، مرور» در آموزش پیش‌دبستانی، الگوی «پیش‌بینی، مشاهده، توضیح» در آموزش علوم، و چرخه یادگیری تجربی کولب. ما از این پشتوانه استفاده می‌کنیم.</p>
-      <p class="text-[1.0625rem] leading-[1.9] sm:text-lg">آنچه کودک ماهر به آن اضافه می‌کند این است که این چرخه را به ستون فقرات پیوسته‌ای از ۳ تا ۱۸ سالگی تبدیل کرده، آن را به هدف مشخص انتخاب آگاهانه در ۱۵ و ۱۸ سالگی گره زده، و «خطای پیش‌بینی درباره خود» را سال‌به‌سال در پرونده رشد هر کودک ثبت می‌کند.</p>
+      <p class="text-md leading-[1.9] sm:text-lg">آنچه کودک ماهر به آن اضافه می‌کند این است که این چرخه را به ستون فقرات پیوسته‌ای از ۳ تا ۱۸ سالگی تبدیل کرده، آن را به هدف مشخص انتخاب آگاهانه در ۱۵ و ۱۸ سالگی گره زده، و «خطای پیش‌بینی درباره خود» را سال‌به‌سال در پرونده رشد هر کودک ثبت می‌کند.</p>
     </div>
   </Section>
 
-  <Section id="status" kicker="وضعیت" title="وضعیت فعلی متد" tone="white">
+  <Section id="status" title="وضعیت فعلی متد" tone="white">
     <p class="lead mt-6 max-w-3xl" data-reveal>متد کودک ماهر در حال اجرای آزمایشی و بهبود است. اجرای منظم آن در همه مقطع‌ها از <strong class="text-ink">۱ آذر ۱۴۰۵</strong> آغاز می‌شود. نتایج را با پرونده رشد بچه‌ها دنبال می‌کنیم و هر سال گزارشش را با خانواده‌ها در میان می‌گذاریم.</p>
     <p class="mt-8" data-reveal><a href="/path/" class="btn-ghost">مسیر رشد ۳ تا ۱۸ سال<Icon name="arrow" size={18} /></a></p>
   </Section>

@@ -4,6 +4,7 @@ import PageHero from '../../components/PageHero.astro';
 import Pending from '../../components/Pending.astro';
 import FormShell from '../../components/FormShell.astro';
 import Field from '../../components/Field.astro';
+import Icon from '../../components/Icon.astro';
 import { registerSteps, documents } from '../../data/site';
 import { pageSeo } from '../../data/keywords';
 const seo = pageSeo('/register/');
@@ -20,7 +21,7 @@ const unitOptions = [
 ];
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
-  <PageHero title="پیش‌ثبت‌نام و رزرو جلسه مشاوره" kicker="پیش‌ثبت‌نام" crumbs={crumbs}
+  <PageHero title="پیش‌ثبت‌نام و رزرو جلسه مشاوره" crumbs={crumbs}
     subtitle="فرم زیر را پر کنید. همکاران ما برای هماهنگی جلسه مشاوره و بازدید با شما تماس می‌گیرند. پر کردن این فرم به معنای ثبت‌نام قطعی نیست." />
   <section class="container-x py-14 sm:py-20">
     <div class="grid gap-12 lg:grid-cols-[1.4fr_1fr] lg:gap-16">
@@ -53,11 +54,11 @@ const unitOptions = [
           <div class="mt-5 space-y-3">
             {documents.map((d, i) => (
               <details class="card group" open={i === 0}>
-                <summary class="flex cursor-pointer list-none items-center justify-between gap-3 px-5 py-4 font-medium [&::-webkit-details-marker]:hidden">
-                  {d.unit}<span class="text-xl leading-none text-ink-mute transition-transform duration-200 group-open:rotate-45" aria-hidden="true">+</span>
+                <summary class="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 px-5 py-3 font-medium transition-colors hover:text-accent [&::-webkit-details-marker]:hidden">
+                  {d.unit}<Icon name="plus" size={18} class="shrink-0 text-ink-mute transition-transform duration-200 group-open:rotate-45" />
                 </summary>
                 <ul class="space-y-2 border-t border-line px-5 py-4 text-sm text-ink-soft">
-                  {d.items.map((it) => <li class="flex gap-2"><span class="mt-2.5 h-1 w-1 shrink-0 rounded-full bg-ink-mute"></span>{it}</li>)}
+                  {d.items.map((it) => <li class="flex gap-2.5"><span class="mt-[0.7rem] size-1 shrink-0 rounded-full bg-saffron" aria-hidden="true"></span>{it}</li>)}
                   {d.pending && <li><Pending inline label={d.pending} /></li>}
                 </ul>
               </details>
