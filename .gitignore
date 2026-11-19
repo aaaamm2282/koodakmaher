@@ -19,3 +19,6 @@ lighthouse-reports/
 
 # Monthly reports (counts from the forms and Search Console; kept on this computer)
 reports/
+
+# Founder skills working files (business numbers, simulated buyer panel); private, this repository is public
+/founder/
