@@ -63,7 +63,8 @@ const meta = ['page', 'landing', 'referrer', 'utm_source', 'utm_medium', 'utm_ca
       <p class="mt-1 text-sm text-ink-soft">ارسال فرم‌ها هنوز راه‌اندازی نشده، پس اطلاعات شما فرستاده نشد. تا آن وقت از صفحه <a href="/contact/" class="link">تماس با مراکز</a> با ما در ارتباط باشید.</p>
     </div>
   </div>
-  <div class="py-6 text-center outline-none" tabindex="-1" data-form-done hidden></div>
+  <!-- Focus moves here once the form is sent, so a screen reader reads the thank-you. The ring stays: someone who sent the form with the keyboard sees where focus went; after a mouse click :focus-visible shows none. -->
+  <div class="rounded-xl py-6 text-center" tabindex="-1" data-form-done hidden></div>
   <!-- The thank-you screen waits in a template, so its heading is not part of the page until the form is sent. -->
   <template data-form-done-template>
     <span class="form-done-check mx-auto grid size-14 place-items-center rounded-full bg-accent-soft text-accent"><Icon name="check" size={28} /></span>
