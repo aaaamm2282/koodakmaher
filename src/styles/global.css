@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+/* class names are read from the site only: the skill kits in .claude hold thousands of demo files */
+@source not "../../.claude";
 
 /* One file per family: Persian letters and digits, the punctuation Persian uses and basic Latin, weights
    400 to 600 (scripts/subset-fonts.py; SIL Open Font License, see src/assets/fonts/). Preloaded in Base.astro. */

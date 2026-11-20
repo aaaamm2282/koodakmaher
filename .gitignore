@@ -22,3 +22,6 @@ reports/
 
 # Founder skills working files (business numbers, simulated buyer panel); private, this repository is public
 /founder/
+
+# Taste skill working files (palette and layout deal history, finish gate state, Chrome profiles)
+.taste-skill/
