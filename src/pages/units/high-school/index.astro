@@ -15,10 +15,10 @@ const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: 'متوسط
 const schema = [faqPage(u.faqs)];
 ---
 <Base title={seo.title} description={seo.description} crumbs={crumbs} schema={schema}>
-  <PageHero title={seo.h1} badge="به‌زودی" crumbs={crumbs} />
+  <PageHero title={seo.h1} badge="به‌زودی" crumbs={crumbs} paper={{ tone: 'soon', art: 'unit-high-school' }} />
   <section class="container-x py-14 sm:py-20">
     <div class="grid gap-12 lg:grid-cols-2 lg:gap-16">
-      <div class="space-y-8" data-reveal>
+      <div class="space-y-8">
         <p class="font-serif text-xl leading-[2]">برای ادامه مسیر از ۱۵ تا ۱۸ سالگی، راه‌اندازی متوسطه دوم در دست برنامه‌ریزی است. در این دوره نوجوان انتخاب اولش را در عمل می‌آزماید، خود و دنیای کار را دوباره واکاوی می‌کند و برای انتخاب نهایی در ۱۸ سالگی آماده می‌شود.</p>
         <div><h2 class="font-sans text-base font-semibold">وضعیت</h2><Pending class="mt-3" label="زمان احتمالی شروع، رشته‌ها و وضعیت مجوز" /></div>
         <p class="note text-ink-soft">این واحد هنوز ثبت‌نام ندارد. اگر می‌خواهید وقتی ثبت‌نام آغاز شد خبردار شوید، فرم «خبرم کنید» را پر کنید.</p>
@@ -35,7 +35,7 @@ const schema = [faqPage(u.faqs)];
   {u.faqs.length > 0 && (
     <section class="border-t border-line bg-surface" aria-labelledby="unit-faq-title">
       <div class="container-x grid gap-8 py-14 sm:py-20 lg:grid-cols-[1fr_1.8fr] lg:gap-16">
-        <h2 id="unit-faq-title" class="text-2xl sm:text-title" data-reveal>پرسش‌های پرتکرار درباره {u.name}</h2>
+        <h2 id="unit-faq-title" class="text-2xl sm:text-title">پرسش‌های پرتکرار درباره {u.name}</h2>
         <FaqList items={u.faqs} level="h3" />
       </div>
     </section>

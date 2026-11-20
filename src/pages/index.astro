@@ -2,15 +2,15 @@
 import Base from '../layouts/Base.astro';
 import Hero from '../components/Hero.astro';
 import NewsBar from '../components/NewsBar.astro';
+import PathStops from '../components/PathStops.astro';
 import Icon from '../components/Icon.astro';
 import PlacePin from '../components/PlacePin.astro';
 import Section from '../components/Section.astro';
-import CycleOrbit from '../components/CycleOrbit.astro';
+import CycleSteps from '../components/CycleSteps.astro';
 import UnitCards from '../components/UnitCards.astro';
 import InkText from '../components/InkText.astro';
-import StackCards from '../components/StackCards.astro';
 import CTA from '../components/CTA.astro';
-import { units, workshops } from '../data/site';
+import { cycle, units, workshops } from '../data/site';
 import { pageSeo } from '../data/keywords';
 const seo = pageSeo('/');
 
@@ -26,70 +26,47 @@ const places = units.filter((u) => u.address);
   <Hero />
   <NewsBar />
 
-  <!-- 01 The problem -->
+  <!-- The path from 3 to 18: the hero's drawing, told in words, one stop per stage -->
+  <PathStops />
+
+  <!-- The problem: the page's one statement, which inks in word by word as it is read (InkText.astro) -->
   <Section id="problem">
     <div class="mt-4 grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
-      <h2 id="problem-title" class="section-title" data-reveal>انتخاب آگاهانه <span class="mark-sweep" data-inview>یک مهارت است</span>؛ باید از کودکی تمرین شود.</h2>
-      <div class="space-y-5" data-reveal>
-        <!-- Inks in word by word as it is read (InkText.astro) -->
+      <h2 id="problem-title" class="section-title">انتخاب آگاهانه <span class="mark-sweep">یک مهارت است</span>؛ باید از کودکی تمرین شود.</h2>
+      <div class="space-y-5">
         <InkText class="font-serif text-xl leading-[2] sm:text-lede" text="بسیاری از نوجوان‌ها در ۱۵ سالگی رشته‌ای را انتخاب می‌کنند که خودشان آن را نیازموده‌اند. انتخاب‌ها اغلب بر پایه نمره، حرف دیگران یا تصویری کلی از یک شغل است." />
         <p class="lead">نتیجه‌اش را بعدها در دانشگاه و کار می‌بینیم: تغییر رشته، بی‌انگیزگی و سال‌هایی که دوباره باید جبران شود. نباید این تصمیم یک‌باره در پایه نهم از نوجوان خواسته شود.</p>
       </div>
     </div>
   </Section>
 
-  <!-- 02 The method -->
-  <Section id="steps" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" mark="سه قدم ساده" tone="white">
-    <div class="mt-12"><CycleOrbit /></div>
-    <p class="mt-6" data-reveal><a href="/method/" class="link inline-flex items-center gap-1">بیشتر درباره متد<Icon name="arrow" size={16} /></a></p>
+  <!-- The method: the cycle every class and workshop repeats -->
+  <Section id="steps" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" mark="سه قدم ساده" intro="در هر کلاس و هر کارگاه، یک چرخه تکرار می‌شود:" tone="white">
+    <CycleSteps items={cycle} class="mt-12 sm:mt-14" />
+    <p class="mt-12"><a href="/method/" class="link inline-flex items-center gap-1">بیشتر درباره متد<Icon name="arrow" size={16} /></a></p>
   </Section>
 
-  <!-- 03 Units -->
+  <!-- Units: one sheet of coloured paper each -->
   <Section id="units" title="از کودکستان تا آموزشگاه" intro="کودک ماهر مانا یک مدرسه مهارت‌محور است. امروز مؤسسه شامل کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای است.">
-    <div class="mt-10"><UnitCards /></div>
+    <div class="mt-12 sm:mt-14"><UnitCards /></div>
   </Section>
 
-  <!-- Workshops marquee. The whole band links to /workshops/ (a stretched link with its own name); the moving
-       names are decoration. It pauses on hover, on keyboard focus and with its button (WCAG 2.2.2), and does not
-       move at all with reduced motion. -->
-  <div class="marquee relative overflow-hidden bg-accent py-5 text-white" data-marquee>
-    <div class="marquee-fade" aria-hidden="true"><div class="marquee-track">
-      {[0, 1].map(() => (
-        <ul class="flex shrink-0 items-center">
-          {[...workshops, ...workshops].map((w, i) => (
-            <li class="flex items-center gap-3 px-8 font-serif text-xl sm:text-2xl" data-dup={i >= workshops.length ? '' : undefined}>
-              <Icon name={w.icon} size={22} class="text-gold" />{w.n}
-              {w.age && <span class="font-sans text-sm text-white/60">{w.age}</span>}
-              <span class="ms-8 h-1.5 w-1.5 rounded-full bg-gold/60" data-sep></span>
-            </li>
-          ))}
-        </ul>
-      ))}
-    </div></div>
-    <a href="/workshops/" class="absolute inset-0 z-0 outline-offset-[-6px] focus-visible:outline-2 focus-visible:outline-white"><span class="sr-only">کارگاه‌های مهارتی: خلاقیت، کار با چوب، نقاشی خلاق، هوش مصنوعی، الکترونیک و مهارت‌های نرم</span></a>
-    <button type="button" class="marquee-toggle group absolute inset-y-0 end-3 z-10 my-auto grid size-11 place-items-center rounded-full bg-accent text-white ring-1 ring-white/35 transition-colors hover:bg-accent-hover hover:ring-white/60 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:hidden" aria-pressed="false" data-marquee-toggle>
-      <span class="sr-only">توقف نوار کارگاه‌ها</span>
-      <Icon name="pause" size={16} class="group-aria-pressed:hidden" />
-      <Icon name="play" size={16} class="hidden group-aria-pressed:block" />
-    </button>
-  </div>
-
-  <!-- 04 A day -->
+  <!-- A day -->
   <Section id="day" tone="sand">
     <div class="mt-4 grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
-      <div data-reveal>
-        <h2 id="day-title" class="section-title">درس رسمی، <span class="mark-sweep" data-inview>یک جلسه مهارت</span>، یک کارگاه</h2>
+      <div>
+        <h2 id="day-title" class="section-title">درس رسمی، <span class="mark-sweep">یک جلسه مهارت</span>، یک کارگاه</h2>
         <p class="lead mt-5">در همه مراکز، در کنار برنامه درسی رسمی، دانش‌آموزان هر روز یک جلسه مهارت‌های نرم و یک جلسه کارگاه دارند. کارگاه برای ما فقط سرگرمی نیست؛ جایی است که کودک تجربه می‌کند، و قبل و بعد از آن چند دقیقه درباره حدس و نتیجه‌اش فکر می‌کند.</p>
         <p class="mt-6"><a href="/workshops/" class="link">درباره کارگاه‌ها</a></p>
       </div>
-      <div class="card" data-reveal>
+      <div class="card overflow-hidden shadow-soft">
         <table class="w-full text-start">
           <caption class="sr-only">کارگاه‌ها و سن مناسب</caption>
           <thead><tr class="border-b border-line text-sm text-ink-mute"><th scope="col" class="px-5 py-3 text-start font-normal">کارگاه</th><th scope="col" class="px-5 py-3 text-start font-normal">سن مناسب</th></tr></thead>
           <tbody class="divide-y divide-line">
             {workshops.map((w) => (
               <tr>
-                <th scope="row" class="px-5 py-3.5 font-medium"><span class="flex items-center gap-3"><Icon name={w.icon} size={18} class="text-accent" />{w.n}</span></th>
+                <th scope="row" class="px-5 py-3.5 font-medium"><span class="flex items-center gap-3"><Icon name={w.icon} size={18} class="shrink-0 text-accent" />{w.n}</span></th>
                 <td class="num px-5 py-3.5 text-ink-soft">{w.age ?? 'جلسه روزانه'}</td>
               </tr>
             ))}
@@ -99,23 +76,19 @@ const places = units.filter((u) => u.address);
     </div>
   </Section>
 
-  <!-- 05 Why: the heading stays while the four cards settle on top of each other (StackCards.astro); the short
-       gold ticks under it count the cards that have arrived -->
+  <!-- Why us: four short statements side by side -->
   <Section id="why">
-    <div class="mt-4 grid gap-10 lg:grid-cols-[1fr_1.45fr] lg:gap-16" data-stack-root>
-      <div class="lg:sticky lg:top-28 lg:self-start">
-        <h2 id="why-title" class="section-title" data-reveal>آنچه ما را <span class="mark-sweep" data-inview>متفاوت</span> می‌کند</h2>
-        <ol class="mt-8 hidden gap-2 lg:flex" aria-hidden="true">
-          {pillars.map(() => <li class="stack-tick h-0.5 w-8 rounded-full bg-line-strong" data-stack-tick></li>)}
-        </ol>
-      </div>
-      <StackCards items={pillars} />
+    <div class="mt-4 grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+      <h2 id="why-title" class="section-title">آنچه ما را <span class="mark-sweep">متفاوت</span> می‌کند</h2>
+      <ul class="grid gap-x-10 gap-y-10 sm:grid-cols-2" role="list">
+        {pillars.map((p) => <li class="marked"><h3 class="text-2xl">{p.t}</h3><p class="mt-3 text-ink-soft sm:text-lg" style="line-height:1.9">{p.d}</p></li>)}
+      </ul>
     </div>
   </Section>
 
-  <!-- 06 Places -->
+  <!-- Places -->
   <Section id="places" title="برای بازدید به ما سر بزنید" tone="white">
-    <ul class="mt-10 grid gap-5 md:grid-cols-3" data-stagger>
+    <ul class="mt-10 grid gap-5 md:grid-cols-3" role="list">
       {places.map((u) => (
         <li class="card flex flex-col p-6">
           <PlacePin pending={!u.mapUrl} />
@@ -134,15 +107,3 @@ const places = units.filter((u) => u.address);
 
   <CTA />
 </Base>
-
-<script>
-  // Pause or restart the workshops band.
-  document.querySelectorAll<HTMLElement>('[data-marquee]').forEach((band) => {
-    const button = band.querySelector<HTMLButtonElement>('[data-marquee-toggle]');
-    button?.addEventListener('click', () => {
-      const paused = button.getAttribute('aria-pressed') !== 'true';
-      button.setAttribute('aria-pressed', String(paused));
-      band.toggleAttribute('data-paused', paused);
-    });
-  });
-</script>

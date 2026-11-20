@@ -27,12 +27,12 @@ const blogSchema = posts.length
     subtitle="یادداشت‌های کوتاه و کاربردی برای والدین و معلمان، درباره شناخت کودک، مهارت‌های زندگی و انتخاب مسیر." />
   <section class="container-x py-14 sm:py-20">
     <h2 class="sr-only">دسته‌ها</h2>
-    <ul class="flex flex-wrap gap-x-6 gap-y-2 border-b border-line pb-4 text-ink-soft" data-stagger>
+    <ul class="flex flex-wrap gap-x-6 gap-y-2 border-b border-line pb-4 text-ink-soft">
       {groups.map(({ c, items }) => <li>{items.length ? <a href={`#cat-${blogCategories.indexOf(c)}`} class="hover:text-accent">{c} <span class="num text-ink-mute">({faNum(items.length)})</span></a> : c}</li>)}
     </ul>
 
     {posts.length === 0 ? (
-      <div class="card mt-12 max-w-xl p-6 sm:p-8" data-reveal>
+      <div class="card mt-12 max-w-xl p-6 sm:p-8">
         <p class="font-serif text-2xl font-semibold">به‌زودی</p>
         <p class="mt-2 text-ink-soft">اولین یادداشت‌ها به‌زودی منتشر می‌شوند.</p>
       </div>

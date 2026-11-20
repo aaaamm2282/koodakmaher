@@ -21,7 +21,7 @@ const photos = (
 {photos.length > 0 && (
   <section class="container-x py-12 sm:py-16" aria-labelledby={`${id}-title`} data-gallery>
     <h2 id={`${id}-title`} class="text-2xl sm:text-title">{title}</h2>
-    <ul class="mt-6 grid auto-rows-[9rem] grid-cols-2 gap-3 sm:auto-rows-[12rem] md:grid-cols-4" data-stagger>
+    <ul class="mt-6 grid auto-rows-[9rem] grid-cols-2 gap-3 sm:auto-rows-[12rem] md:grid-cols-4">
       {photos.map((p, i) => (
         <li class:list={[i === 0 && 'col-span-2 row-span-2']}>
           <figure class="relative h-full">

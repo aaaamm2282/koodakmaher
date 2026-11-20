@@ -13,7 +13,7 @@ const unitName = (slug: string) => units.find((u) => u.slug === slug)?.name ?? s
   <PageHero title="اطلاعیه‌ها و اخبار" crumbs={crumbs} subtitle="زمان ثبت‌نام، رویدادها و خبرهای واحدهای کودک ماهر." />
   <section class="container-x py-14 sm:py-20">
     {items.length === 0 ? (
-      <div class="card max-w-xl p-6 sm:p-8" data-reveal>
+      <div class="card max-w-xl p-6 sm:p-8">
         <p class="font-serif text-2xl font-semibold">فعلاً اطلاعیه‌ای نیست</p>
         <p class="mt-2 text-ink-soft">برای باخبر شدن از زمان ثبت‌نام، فرم پیش‌ثبت‌نام را پر کنید یا صفحه‌های ما را در شبکه‌های اجتماعی دنبال کنید.</p>
         <a href="/register/" class="link mt-4 inline-flex items-center gap-1">پیش‌ثبت‌نام<Icon name="arrow" size={16} /></a>

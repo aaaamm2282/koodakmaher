@@ -1,8 +1,7 @@
 ---
 // A page section: heading, optional intro, content. No label above the heading: the heading carries the section
 // on its own, and the breadcrumb or the page title already says where the reader is.
-//   mark = one phrase of the title that gets a marker pass once the heading is on screen (.mark-sweep,
-//          after "Text Highlighter" on 21st.dev). The words stay exactly as written.
+//   mark = one phrase of the title set in a gold marker (.mark-sweep). The words stay exactly as written.
 interface Props { id?: string; title?: string; intro?: string; class?: string; tone?: 'paper' | 'sand' | 'white'; mark?: string }
 const { id, title, intro, class: cls = '', tone = 'paper', mark } = Astro.props;
 const hid = id ? `${id}-title` : undefined;
@@ -12,7 +11,7 @@ const cut = title && mark ? title.indexOf(mark) : -1;
   <div class:list={['container-x py-16 sm:py-24', cls]}>
     {title && (
       <div class="max-w-2xl">
-        <h2 id={hid} class="section-title">{cut >= 0 ? <>{title.slice(0, cut)}<span class="mark-sweep" data-inview>{mark}</span>{title.slice(cut + mark!.length)}</> : title}</h2>
+        <h2 id={hid} class="section-title">{cut >= 0 ? <>{title.slice(0, cut)}<span class="mark-sweep">{mark}</span>{title.slice(cut + mark!.length)}</> : title}</h2>
         {intro && <p class="lead mt-4">{intro}</p>}
       </div>
     )}

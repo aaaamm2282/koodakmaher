@@ -1,0 +1,18 @@
+---
+// The method's three steps in order, each under a square of navy paper with its drawing: predict (a thought
+// with a question mark), experience (a paper plane on its first flight), review (a magnifier over the page where
+// the guess was written). All three in sight at once; nothing moves by itself.
+import Art from './Art.astro';
+interface Props { items: readonly { title: string; text: string }[]; class?: string }
+const { items, class: cls } = Astro.props;
+const drawings = ['step-predict', 'step-experience', 'step-review'];
+---
+<ol class:list={['grid gap-10 md:grid-cols-3 md:gap-8 lg:gap-12', cls]} role="list">
+  {items.map((c, i) => (
+    <li>
+      <span class="step-art"><Art name={drawings[i]} /></span>
+      <h3 class="mt-6 flex items-baseline gap-3 text-2xl"><span class="num text-saffron">{(i + 1).toLocaleString('fa-IR')}</span>{c.title}</h3>
+      <p class="mt-3 max-w-md text-ink-soft sm:text-lg" style="line-height:1.9">{c.text}</p>
+    </li>
+  ))}
+</ol>

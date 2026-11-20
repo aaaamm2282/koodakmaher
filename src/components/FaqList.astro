@@ -6,7 +6,7 @@ interface Props { items: { q: string; a?: string | null; pending?: string | null
 const { items, level = 'h2', openFirst = true, class: cls = '' } = Astro.props;
 const H = level;
 ---
-<div class:list={['border-t border-line', cls]} data-stagger>
+<div class:list={['border-t border-line', cls]}>
   {items.map((f, i) => (
     <details class="group border-b border-line" open={openFirst && i === 0}>
       <summary class="flex min-h-11 cursor-pointer list-none items-start justify-between gap-6 py-5 transition-colors hover:text-accent [&::-webkit-details-marker]:hidden">

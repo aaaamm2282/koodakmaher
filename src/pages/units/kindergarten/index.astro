@@ -14,11 +14,11 @@ const day = [
 ];
 ---
 <UnitPage unit={u} day={day} related={related.kindergarten}>
-  <div class="space-y-4" data-reveal>
+  <div class="space-y-4">
     <p class="font-serif text-xl leading-[2]">در سنین ۳ تا ۵ سال، کودک با بازی یاد می‌گیرد. در کودکستان ما بچه‌ها پیش از هر بازی یا فعالیت، به زبان خودشان حدس می‌زنند، بعد امتحان می‌کنند و با هم نگاه می‌کنند که چه شد.</p>
     <p class="lead">در این سن دقت حدس مهم نیست و آن را نمی‌سنجیم. کودکان کوچک معمولاً خوش‌بینانه حدس می‌زنند و این طبیعی است. ما فقط عادت «حدس بزن، امتحان کن، ببین چه شد» را می‌سازیم.</p>
   </div>
-  <ol class="grid border-y border-line sm:grid-cols-3" data-stagger aria-label="یک فعالیت نمونه">
+  <ol class="grid border-y border-line sm:grid-cols-3" aria-label="یک فعالیت نمونه">
     {steps.map(([t, d], i) => (
       <li class:list={['py-6 sm:px-6', i > 0 && 'border-t border-line sm:border-t-0 sm:border-s', i === 0 && 'sm:ps-0']}>
         <span class="num text-2xl text-saffron">{(i + 1).toLocaleString('fa-IR')}</span>
@@ -27,7 +27,7 @@ const day = [
       </li>
     ))}
   </ol>
-  <div data-reveal>
+  <div>
     <h2 class="text-2xl">آنچه کودک تجربه می‌کند</h2>
     <ul class="mt-5 grid gap-x-8 sm:grid-cols-2">
       {experiences.map((e) => <li class="border-t border-line py-3.5">{e}</li>)}

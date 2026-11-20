@@ -82,9 +82,6 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     {allSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
 
     <script is:inline>
-      document.documentElement.classList.add('js');
-      // If the animation script never starts (blocked, offline, old browser), show everything after 3 s.
-      setTimeout(function () { if (!window.__animReady) document.documentElement.classList.remove('js'); }, 3000);
       // Where this visit started: first page, the site it came from and its UTM tags, kept for this tab only
       // (sessionStorage, no cookie). Forms send it with the fields so the institute knows which channel
       // brought a request, even without any statistics service (src/components/FormShell.astro).
@@ -115,7 +112,6 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
       </div>
     </nav>
     <script>
-      import '../scripts/reveal';
       import '../scripts/fx';
       const qb = document.getElementById('quickbar');
       if (qb && !location.pathname.startsWith('/register')) {

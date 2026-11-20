@@ -16,7 +16,7 @@ const crumbs = [{ label: 'کارگاه‌ها' }];
   <section class="container-x py-14 sm:py-20">
     <!-- An index of the workshops, like the units list: name and age, what happens there, and a photo only
          when one with consent exists. No empty picture frames, and no hover lift on rows that are not links. -->
-    <ul class="border-t border-line" data-stagger>
+    <ul class="border-t border-line">
       {workshops.map((w) => {
         const img = w.photo ? resolveImage(w.photo.image) : null;
         return (
@@ -37,7 +37,7 @@ const crumbs = [{ label: 'کارگاه‌ها' }];
         );
       })}
     </ul>
-    <div class="note mt-12 grid gap-3 md:grid-cols-[1fr_1.6fr] md:gap-10" data-reveal>
+    <div class="note mt-12 grid gap-3 md:grid-cols-[1fr_1.6fr] md:gap-10">
       <h2 class="text-xl">آیا کارگاه‌ها برای کودکان بیرون از مؤسسه هم هست؟</h2>
       <p class="text-ink-soft">بله. کودکانی که دانش‌آموز ما نیستند هم می‌توانند در نوبت عصر در کارگاه‌ها شرکت کنند. برای اطلاع از زمان‌بندی، فرم پیش‌ثبت‌نام را پر کنید یا با مراکز تماس بگیرید.</p>
     </div>

@@ -19,8 +19,9 @@ const stages = [
 const ticks = [3, 6, 9, 12, 15, 18];
 // Age dial as a staircase (after "Isometric Steps" on 21st.dev, docs/21st-elements.md): one step per tick, rising
 // from right to left in reading direction, each a box seen from the front with its top and right side drawn back
-// at (DX, DY). Drawn tallest first so each lower step covers the foot of the one behind it. The last step, high
-// school (15 to 18), is dashed: it opens later.
+// at (DX, DY). Drawn tallest first so each lower step covers the foot of the one behind it. Each step takes the
+// paper colour of its stretch on the home page once reached; the last step, high school (15 to 18), is dashed: it
+// opens later.
 const W = 29, H0 = 22, RISE = 20, DX = 24, DY = -14, BASE = 158;
 const steps = ticks.map((t, k) => {
   const l = 4 + (ticks.length - 1 - k) * W, r = l + W, top = BASE - (H0 + k * RISE);
@@ -31,6 +32,7 @@ const steps = ticks.map((t, k) => {
     riser: `${r},${top} ${r + DX},${top + DY} ${r + DX},${BASE + DY} ${r},${BASE}`,
     cx: (l + r + DX) / 2, cy: top + DY / 2,
     soon: t === 18,
+    tone: ({ 3: 'saffron', 6: 'red', 9: 'red', 12: 'teal', 15: 'gold' } as Record<number, string>)[t],
   };
 });
 ---
@@ -44,7 +46,7 @@ const steps = ticks.map((t, k) => {
         <div class="sticky top-28">
           <svg viewBox="0 0 206 162" class="stairs block w-full overflow-visible" focusable="false" data-stairs>
             {[...steps].reverse().map((s) => (
-              <g class:list={['stair', s.k === 0 && 'is-on', s.soon && 'is-soon']} data-step={s.k} data-age={s.t} data-cx={s.cx} data-cy={s.cy}>
+              <g class:list={['stair', s.k === 0 && 'is-on', s.soon && 'is-soon']} data-tone={s.tone} data-step={s.k} data-age={s.t} data-cx={s.cx} data-cy={s.cy}>
                 <polygon class="face side" points={s.riser} />
                 <polygon class="face top" points={s.tread} />
                 <polygon class="face front" points={s.front} />
@@ -67,7 +69,7 @@ const steps = ticks.map((t, k) => {
         <span class="absolute top-3 bottom-3 start-[5.5rem] w-px bg-line-strong sm:start-[7.5rem]" aria-hidden="true"></span>
         <span class="absolute top-3 bottom-3 start-[5.5rem] w-0.5 origin-top translate-x-[0.5px] bg-accent sm:start-[7.5rem]" data-timeline-line aria-hidden="true"></span>
         {stages.map((s) => (
-          <li class="path-item relative grid grid-cols-[4.5rem_1fr] gap-x-8 pb-12 last:pb-0 sm:grid-cols-[6.5rem_1fr]" data-path-item data-age={s.from} data-stage={s.stage} data-reveal>
+          <li class="path-item relative grid grid-cols-[4.5rem_1fr] gap-x-8 pb-12 last:pb-0 sm:grid-cols-[6.5rem_1fr]" data-path-item data-age={s.from} data-stage={s.stage}>
             <p class="num pt-0.5 text-end text-lede leading-tight sm:text-title">{s.age}<span class="block font-sans text-xs text-ink-mute">سال</span></p>
             <span class:list={['path-dot absolute top-2 start-[5.5rem] size-3.5 translate-x-1/2 rounded-full border-2 border-accent sm:start-[7.5rem]', s.milestone ? 'bg-accent' : 'bg-paper']} aria-hidden="true"></span>
             <div class:list={['ps-2', s.milestone && 'rounded-xl bg-forest p-5 text-white']}>
@@ -87,7 +89,7 @@ const steps = ticks.map((t, k) => {
   </section>
 
   <section class="border-y border-line bg-sand" aria-labelledby="early-title">
-    <div class="container-x grid gap-6 py-14 sm:py-20 lg:grid-cols-[1fr_1.6fr] lg:gap-16" data-reveal>
+    <div class="container-x grid gap-6 py-14 sm:py-20 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
       <h2 id="early-title" class="section-title">یک نکته مهم برای سال‌های اول</h2>
       <p class="lead">تا حدود ۱۲ سالگی هدف ما «انتخاب» نیست؛ هدف این است که نقشه آنچه کودک ممکن است بشود وسیع بماند. کودکان در سال‌های اول، گزینه‌های زیادی را زود و بی‌آنکه امتحانشان کنند کنار می‌گذارند. ما می‌خواهیم قبل از کنار گذاشتن، تجربه کنند.</p>
     </div>

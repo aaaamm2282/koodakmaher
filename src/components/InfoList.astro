@@ -6,7 +6,7 @@ const { title = 'اطلاعات ثبت‌نام', items, cta = { href: '/registe
 ---
 <!-- Sticky beside the page on wide screens. When the list is taller than the screen it scrolls inside itself,
      so its last item and the button stay reachable (a sticky box taller than the screen hides its end). -->
-<aside class="card h-fit p-6 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-contain" data-reveal>
+<aside class="card h-fit p-6 lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-contain">
   <h2 class="font-sans text-base font-semibold">{title}</h2>
   <dl class="mt-2 divide-y divide-line">
     {items.map((i) => (

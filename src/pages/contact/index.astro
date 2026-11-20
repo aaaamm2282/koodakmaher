@@ -15,7 +15,7 @@ const list = units.filter((u) => !u.soon);
 <Base title={seo.title} description={seo.description} crumbs={crumbs}>
   <PageHero title={seo.h1} subtitle="نشانی و تلفن کودک ماهر" crumbs={crumbs} />
   <section class="container-x py-14 sm:py-20" aria-label="نشانی واحدها">
-    <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3" data-stagger>
+    <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {list.map((c) => (
         <li class="card flex flex-col p-6">
           <PlacePin pending={!c.mapUrl} />
@@ -35,8 +35,8 @@ const list = units.filter((u) => !u.soon);
 
   <section id="social" class="scroll-mt-4 border-y border-line bg-surface" aria-labelledby="social-title">
     <div class="container-x grid gap-8 py-14 lg:grid-cols-[1fr_2fr] lg:gap-16">
-      <h2 id="social-title" class="section-title" data-reveal>شبکه‌های اجتماعی</h2>
-      <ul class="grid gap-x-10 sm:grid-cols-2" data-stagger>
+      <h2 id="social-title" class="section-title">شبکه‌های اجتماعی</h2>
+      <ul class="grid gap-x-10 sm:grid-cols-2">
         {social.map((s) => (
           <li class="border-t border-line">
             <a href={s.href} target="_blank" rel="noopener" class="flex min-h-14 items-baseline justify-between gap-4 py-4 transition-colors hover:text-accent">
