@@ -1,0 +1,109 @@
+---
+// Home "method" block: the cycle every class and workshop repeats, drawn as a little paper board game. A dashed
+// track, three numbered stops cut from paper (a cream disc laid on a navy one), and a gold paper token that stands
+// under the current stop; the stop's name sits in the middle. Beside it (under it on phones) the three steps in full.
+// - All three texts are always shown: the circle only marks which step is in view, so nothing is hidden behind a tap.
+// - When the circle first comes into view, the token walks the loop once (1, 2, 3 and back to 1) and stops: about
+//   four seconds, never again by itself. Choosing a step (or tapping a stop) sends the token there, always forward
+//   round the loop, the way the cycle runs. With reduced motion it does not walk and jumps instead of travelling.
+// - Without JavaScript: step 1 is marked and every text is there.
+// The circle is decoration (aria-hidden); the list carries the content, each title a heading with a button inside.
+// Brought back on 2026-11-20 at the client's request (it was replaced by three drawings in the paper redesign).
+import { cut, ellipse } from '../../scripts/art/paper.mjs';
+interface Props { items: readonly { title: string; text: string }[]; class?: string }
+const { items, class: cls } = Astro.props;
+const fa = (n: number) => n.toLocaleString('fa-IR');
+
+// The board is drawn in a 320 x 320 box: track of radius 120 round the middle; stop 1 at the top, then clockwise
+// (2 at the lower right, 3 at the lower left), so the bottom row reads 2 then 3 from right to left.
+const R = 120, C = 160;
+const stops = [-90, 30, 150].map((deg) => {
+  const a = (deg * Math.PI) / 180;
+  return { x: ((C + R * Math.cos(a)) / 320) * 100, y: ((C + R * Math.sin(a)) / 320) * 100 };
+});
+// Paper shapes, cut with a slightly uneven edge (scripts/art/paper.mjs); same seed, same shape on every build
+const token = cut(ellipse(32, 32, 30, 30, 48), { seed: 81, amp: 0.8, step: 5 });
+const rims = [0, 1, 2].map((i) => cut(ellipse(24, 24, 22, 22, 44), { seed: 90 + i, amp: 0.35, step: 4 }));
+const faces = [0, 1, 2].map((i) => cut(ellipse(24, 24, 19.5, 19.5, 40), { seed: 95 + i, amp: 0.3, step: 4 }));
+const chip = cut(ellipse(24, 24, 21, 21, 40), { seed: 84, amp: 0.6, step: 4 });
+---
+<div class:list={['orbit grid items-center gap-y-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] md:gap-x-12 lg:gap-x-16', cls]} data-orbit>
+  <div class="mx-auto w-full max-w-[18.5rem] md:max-w-[22rem] lg:max-w-[25rem]">
+    <div class="orbit-dial" data-orbit-dial aria-hidden="true">
+      <svg class="orbit-ring" viewBox="0 0 320 320" focusable="false">
+        <circle cx={C} cy={C} r={R} class="orbit-track" />
+        <circle cx={C} cy={C} r={R} class="orbit-dash" pathLength="756" transform={`rotate(-90 ${C} ${C})`} />
+      </svg>
+      <span class="orbit-arm" data-orbit-arm>
+        <span class="orbit-token" data-orbit-token><svg viewBox="0 0 64 64" focusable="false"><path d={token} /></svg></span>
+      </span>
+      {stops.map((p, i) => (
+        <span class:list={['orbit-node', i === 0 && 'is-on']} data-orbit-node={i} style={`left:${p.x.toFixed(3)}%;top:${p.y.toFixed(3)}%`}>
+          <svg class="orbit-disc" viewBox="0 0 48 48" focusable="false"><path class="orbit-rim" d={rims[i]} /><path class="orbit-face" d={faces[i]} /></svg>
+          <svg class="orbit-digit" viewBox="0 0 48 48" focusable="false"><text x="24" y="31" text-anchor="middle">{fa(i + 1)}</text></svg>
+        </span>
+      ))}
+      <span class="orbit-hub">
+        <span class="orbit-label">چرخه متد</span>
+        <span class="orbit-titles">
+          {items.map((c, i) => <span class:list={['orbit-title', i === 0 && 'is-on']} data-orbit-title>{c.title}</span>)}
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <ol class="orbit-steps" role="list">
+    {items.map((c, i) => (
+      <li class:list={['orbit-step', i === 0 && 'is-on']} data-orbit-item>
+        <span class="orbit-num" aria-hidden="true"><svg viewBox="0 0 48 48" focusable="false"><path d={chip} /></svg><span>{fa(i + 1)}</span></span>
+        <h3 class="orbit-name"><button type="button" data-orbit-step={i} aria-pressed={i === 0 ? 'true' : 'false'}>{c.title}</button></h3>
+        <p class="orbit-text">{c.text}</p>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<script>
+  // Titles and texts are in the page already; the script only moves the token and the marks.
+  document.querySelectorAll<HTMLElement>('[data-orbit]').forEach((root) => {
+    const dial = root.querySelector<HTMLElement>('[data-orbit-dial]')!;
+    const arm = root.querySelector<HTMLElement>('[data-orbit-arm]')!;
+    const token = root.querySelector<HTMLElement>('[data-orbit-token]')!;
+    const nodes = [...root.querySelectorAll<HTMLElement>('[data-orbit-node]')];
+    const titles = [...root.querySelectorAll<HTMLElement>('[data-orbit-title]')];
+    const items = [...root.querySelectorAll<HTMLElement>('[data-orbit-item]')];
+    const buttons = [...root.querySelectorAll<HTMLButtonElement>('[data-orbit-step]')];
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let current = 0, turns = 0, touched = false, timers: number[] = [];
+
+    const set = (i: number) => {
+      if (i === current) return;
+      // Always forward round the loop: from 2 back to 1 goes on through 3, as the cycle does
+      const steps = (i - current + 3) % 3;
+      turns += steps; current = i;
+      // One stop takes 640 ms, two take 900 ms; the stop's colour and the name in the middle follow the token
+      dial.style.setProperty('--travel', still.matches ? '0ms' : steps === 1 ? '640ms' : '900ms');
+      arm.style.transform = `rotate(${turns * 120}deg)`;
+      token.style.transform = `translate(-50%, -50%) rotate(${turns * -120}deg)`;
+      [nodes, titles, items].forEach((list) => list.forEach((el, k) => el.classList.toggle('is-on', k === i)));
+      buttons.forEach((b, k) => b.setAttribute('aria-pressed', String(k === i)));
+    };
+    const stop = () => { touched = true; timers.forEach(clearTimeout); timers = []; };
+
+    buttons.forEach((b, i) => b.addEventListener('click', () => { stop(); set(i); }));
+    // The stops on the circle answer a tap too (the buttons in the list do the same for the keyboard)
+    nodes.forEach((n, i) => n.addEventListener('click', () => { stop(); set(i); }));
+    // Someone on the steps with the keyboard: the walk never moves the mark under them. (Not on pointerdown: on a
+    // phone that fires when a finger starts to scroll over the block, which is not a choice.)
+    root.addEventListener('focusin', stop);
+
+    if (still.matches) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      if (touched) return;
+      [1, 2, 0].forEach((k, n) => timers.push(window.setTimeout(() => { if (!touched) set(k); }, 450 + n * 1350)));
+    }, { threshold: 0.6 });
+    io.observe(dial);
+  });
+</script>

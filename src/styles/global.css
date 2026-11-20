@@ -378,6 +378,72 @@
 .step-art { display: grid; width: 6.5rem; height: 6.5rem; place-items: center; border-radius: var(--radius-2xl); background: var(--color-accent); box-shadow: var(--shadow-paper); }
 .step-art svg { width: 82%; height: 82%; }
 
+/* ==========================================================================
+   The method's cycle on the home page (CycleOrbit.astro): a small paper board game. The track is printed (a faint
+   line under navy dashes); the three stops are cut paper, a cream disc laid on a navy one so the navy shows as a
+   rim; a gold paper token stands under the current stop, and that stop turns navy when the token lands on it.
+   The token travels on the cycle's own curve (ease-in-out: it moves across the board, it does not enter).
+   ========================================================================== */
+.orbit-dial { position: relative; aspect-ratio: 1; container-type: inline-size; --travel: 640ms; }
+.orbit-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.orbit-track { fill: none; stroke: var(--color-line-strong); stroke-width: 1.5; }
+.orbit-dash { fill: none; stroke: var(--color-accent); stroke-width: 2; stroke-dasharray: 4 10; stroke-linecap: round; }
+/* The token rides on an arm turned round the middle and turns back by the same angle on it, so the paper's shadow
+   keeps falling the same way (down, toward the reading start) wherever it stands */
+.orbit-arm { position: absolute; inset: 0; transition: transform var(--travel) var(--ease-in-out); }
+.orbit-token { position: absolute; left: 50%; top: 12.5%; width: 20%; aspect-ratio: 1; transform: translate(-50%, -50%); transition: transform var(--travel) var(--ease-in-out); }
+.orbit-token svg, .orbit-disc, .orbit-num svg { overflow: visible; filter: drop-shadow(1px 2px 1.5px rgb(10 20 51 / 0.22)); }
+.orbit-token svg { display: block; width: 100%; height: 100%; fill: var(--color-gold-soft); }
+.orbit-node { position: absolute; width: 15%; aspect-ratio: 1; transform: translate(-50%, -50%); cursor: pointer; }
+.orbit-node svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orbit-rim { fill: var(--color-accent); }
+.orbit-face { fill: var(--color-paper); transform-box: fill-box; transform-origin: center; transition: scale 260ms var(--ease-in-out); }
+.orbit-digit text { font-family: var(--font-serif); font-size: 20px; font-weight: 600; fill: var(--color-accent); transition: fill var(--dur-2) var(--ease-out); }
+/* The stop the token comes to: its cream layer closes like an iris and the navy fills it, timed to the landing,
+   not to the click (a fade would pass through a muddy grey-blue); the stop it leaves opens again at once */
+.orbit-node.is-on .orbit-face { scale: 0; transition-delay: calc(var(--travel) * 0.55); }
+.orbit-node.is-on .orbit-digit text { fill: var(--color-gold); transition-delay: calc(var(--travel) * 0.55 + 120ms); }
+@media (hover: hover) and (pointer: fine) {
+  .orbit-disc { transition: translate var(--dur-out) var(--ease-out); }
+  .orbit-node:hover .orbit-disc { translate: 0 -1px; }
+}
+/* The middle: the loop's name, and the name of the stop the token is going to (a short blurred crossfade, so the
+   two words read as one changing word) */
+.orbit-hub { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center; }
+.orbit-label { font-size: 0.8125rem; font-size: clamp(0.75rem, 4.2cqi, 0.9375rem); line-height: 1.6; color: var(--color-ink-mute); }
+.orbit-titles { display: grid; }
+.orbit-title {
+  grid-area: 1 / 1; font-family: var(--font-serif); font-size: 1.75rem; font-size: 9.4cqi; line-height: 1.4; font-weight: 500;
+  color: var(--color-ink); opacity: 0; filter: blur(2px);
+  transition: opacity var(--dur-out) var(--ease-out), filter var(--dur-out) var(--ease-out); transition-delay: calc(var(--travel) * 0.4);
+}
+.orbit-title.is-on { opacity: 1; filter: none; transition-duration: var(--dur-2); transition-delay: calc(var(--travel) * 0.4 + 60ms); }
+/* The three steps: all texts always shown; the current one has the gold token under its number */
+.orbit-steps { border-top: 1px solid var(--color-line); }
+.orbit-step { position: relative; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1.125rem; padding: 1.375rem 0 1.5rem; border-bottom: 1px solid var(--color-line); transition: background-color var(--dur-out) ease; }
+.orbit-num { grid-row: 1 / span 2; position: relative; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; }
+.orbit-num svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--color-gold-soft); opacity: 0; scale: 0.8; transition: opacity var(--dur-2) var(--ease-out), scale var(--dur-2) var(--ease-out); }
+.orbit-num > span { position: relative; font-family: var(--font-serif); font-size: 1.625rem; line-height: 1; font-weight: 600; font-feature-settings: 'tnum'; color: var(--color-ink-mute); transition: color var(--dur-2) var(--ease-out); }
+.orbit-step.is-on .orbit-num svg { opacity: 1; scale: 1; }
+.orbit-step.is-on .orbit-num > span { color: var(--color-accent); }
+/* Titles at the page's one h3 size (the path's stops and the unit tiles are 20px too); the button is as tall as
+   the gold mark beside it, which also makes it a 44px target on its own */
+.orbit-name { font-size: 1.25rem; line-height: 1.5; }
+.orbit-name button { display: inline-flex; min-height: 2.75rem; align-items: center; text-align: start; }
+/* The whole row is the button's target */
+.orbit-name button::after { content: ''; position: absolute; inset: 0; }
+.orbit-text { grid-column: 2; margin-top: 0.125rem; max-width: 34rem; color: var(--color-ink-soft); }
+/* With a mouse the row tints on hover; on wider screens the tint reaches a little past the text, which stays on
+   the column's edges (on a narrow window that would take the lines to the screen's edge) */
+@media (hover: hover) and (pointer: fine) { .orbit-step:hover { background-color: rgb(247 241 227 / 0.7); } }
+@media (hover: hover) and (pointer: fine) and (width >= 48rem) {
+  .orbit-steps { margin-inline: -0.75rem; }
+  .orbit-step { padding-inline: 0.75rem; }
+}
+.orbit-step:active { background-color: var(--color-paper); }
+/* Keyboard: the site's usual ring on the title, and the row it stands for tinted as on hover */
+.orbit-step:has(button:focus-visible) { background-color: rgb(247 241 227 / 0.7); }
+
 /* Cut-paper hills at the foot of a page heading and of the closing panel (src/assets/art/hills.svg) */
 .hills { display: block; width: 100%; height: 4.5rem; pointer-events: none; }
 @media (width >= 40rem) { .hills { height: 6.5rem; } }
@@ -639,4 +705,10 @@
   .btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light, .tile, .tile-art, .tile-go, .lift, .row-wipe::before,
   .link, .foot-link > span, .nav-hover, .ink-w, .path-dot, .stairs .face, .stairs .label, .gfile-front, .gfile-sheet { transition: none; }
   :is(.btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light):is(:hover, :active), .tile:has(a:active) { transform: none; }
+  /* The cycle on the home page: no walk (CycleOrbit.astro), and a chosen step is marked at once; only the name in
+     the middle and the gold mark in the list still fade */
+  .orbit-arm, .orbit-token, .orbit-face, .orbit-digit text, .orbit-disc { transition: none; }
+  .orbit-title { filter: none; transition-delay: 0s; }
+  .orbit-title.is-on { transition-delay: 0s; }
+  .orbit-num svg { scale: 1; transition-property: opacity; }
 }

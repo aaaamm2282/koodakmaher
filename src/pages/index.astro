@@ -6,7 +6,7 @@ import PathStops from '../components/PathStops.astro';
 import Icon from '../components/Icon.astro';
 import PlacePin from '../components/PlacePin.astro';
 import Section from '../components/Section.astro';
-import CycleSteps from '../components/CycleSteps.astro';
+import CycleOrbit from '../components/CycleOrbit.astro';
 import UnitCards from '../components/UnitCards.astro';
 import InkText from '../components/InkText.astro';
 import CTA from '../components/CTA.astro';
@@ -40,9 +40,9 @@ const places = units.filter((u) => u.address);
     </div>
   </Section>
 
-  <!-- The method: the cycle every class and workshop repeats -->
+  <!-- The method: the cycle every class and workshop repeats, as a circle with a gold token (CycleOrbit.astro) -->
   <Section id="steps" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" mark="سه قدم ساده" intro="در هر کلاس و هر کارگاه، یک چرخه تکرار می‌شود:" tone="white">
-    <CycleSteps items={cycle} class="mt-12 sm:mt-14" />
+    <CycleOrbit items={cycle} class="mt-12 sm:mt-14" />
     <p class="mt-12"><a href="/method/" class="link inline-flex items-center gap-1">بیشتر درباره متد<Icon name="arrow" size={16} /></a></p>
   </Section>
 
