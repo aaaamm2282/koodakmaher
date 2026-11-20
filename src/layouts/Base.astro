@@ -104,7 +104,8 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
     </main>
     <Footer />
     <!-- Mobile: quick actions stay within thumb reach once the visitor has scrolled past the first screen -->
-    <!-- While it is off screen it is also invisible, so keyboard and screen-reader users never land on hidden links. -->
+    <!-- While it is off screen it is also invisible, so keyboard and screen-reader users never land on hidden links;
+         and it never leaves while it holds keyboard focus, so focus is never dropped or left on a bar that slid away. -->
     <nav id="quickbar" aria-label="دسترسی سریع" class="quickbar invisible fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-line bg-paper/95 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-[translate,visibility] duration-300 data-[show=true]:visible data-[show=true]:translate-y-0 sm:hidden" data-show="false">
       <div class="flex gap-2">
         <a href="/register/" class="btn-primary flex-1 !min-h-11" data-cta="quickbar">پیش‌ثبت‌نام و مشاوره</a>
@@ -115,8 +116,11 @@ const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...
       import '../scripts/fx';
       const qb = document.getElementById('quickbar');
       if (qb && !location.pathname.startsWith('/register')) {
-        const on = () => (qb.dataset.show = String(scrollY > innerHeight * 0.8 && innerHeight + scrollY < document.body.scrollHeight - 200));
+        // Up past the first screen, down near the end (it would cover the footer), but up whenever focus is in it
+        const on = () => (qb.dataset.show = String(qb.contains(document.activeElement) || (scrollY > innerHeight * 0.8 && innerHeight + scrollY < document.body.scrollHeight - 200)));
         on(); addEventListener('scroll', on, { passive: true });
+        qb.addEventListener('focusin', on);
+        qb.addEventListener('focusout', () => setTimeout(on)); // once focus has landed: still in the bar, or gone
       }
     </script>
   </body>
