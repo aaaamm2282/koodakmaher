@@ -72,31 +72,167 @@ function cloud(cx, cy, w, seed, fill) {
 // The home hero: a sheet of night-blue paper; a cream path climbs the hills from 3 (bottom, right: where reading starts)
 // to 18, past the sun. 720 x 900, cut from its foot (xMidYMax slice): every age stays inside x 130-640 and below
 // y 380, so all five show whole from a tall column (aspect 0.62, sides cut) to a square sheet (sky cut).
-function hero() {
-  const W = 720, H = 900, box = [W, H], p = [], dy = 120;
+// heroParts() cuts every piece once; hero() lays them flat in one drawing (hero-path.svg, the still picture), and
+// heroScene() stands them in a paper box at their own depths (hero-scene.json, the page's moving scene).
+function heroParts() {
+  const W = 720, H = 900, box = [W, H], dy = 120;
   const hill2 = (h, seed) => cut(hill(h[0], h[1], h[2] + dy, h[3] + dy, { lean: h[4], floor: H + 60, n: 40 }), { seed, amp: 1.6, step: 8, box });
-  p.push(`<rect width="${W}" height="${H}" fill="${C.navy}"/>`);
-  p.push(`<g class="a-cloud a-cloud-hi">${layer(cloud(560, 196, 150, 81, C.sky), 1)}</g>`);
-  p.push(`<g class="a-sun">${layer(piece(cut(ellipse(176, 182 + dy, 64), { seed: 3, amp: 1.2, step: 7 }), C.gold), 2)}</g>`);
-  p.push(`<g class="a-cloud" style="--d:.3s">${layer(cloud(150, 250, 132, 82, C.sky), 1)}</g>`);
-  p.push(`<g class="a-kite">${kite(520, 214 + dy, 1, 51)}</g>`);
   const hFar = [-120, 330, 600, 330, 0.6], hT = [-60, 520, 760, 402, 0.5], hV = [200, 700, 840, 482, 0.5], hS = [420, 900, 880, 586, 0.42];
-  const on = (h) => { const f = hillY(h[0], h[1], h[2] + dy, h[3] + dy, h[4]); return (x) => f(x); };
-  p.push(`<g class="a-far"><path d="${hill2(hFar, 21)}" fill="${C.night}" stroke="${C.cream}" stroke-opacity=".6" stroke-width="2" stroke-dasharray="7 7"/></g>`);
-  p.push(`<g class="a-hill" style="--d:.14s">${layer(piece(hill2(hT, 22), C.turquoise), 3)}${layer(cypress(64, on(hT)(64) + 6, 92, 62) + cypress(100, on(hT)(100) + 6, 66, 63, '#356b3a', -1), 2)}</g>`);
-  p.push(`<g class="a-hill" style="--d:.24s">${layer(piece(hill2(hV, 23), C.vermilion), 3)}${layer(cypress(520, on(hV)(520) + 6, 84, 64) + cypress(552, on(hV)(552) + 6, 58, 65, '#356b3a', -1), 2)}</g>`);
-  p.push(`<g class="a-hill" style="--d:.31s">${layer(piece(hill2(hS, 24), C.saffron), 3)}</g>`);
+  // the top edge of a hill at x, and whether a point lies on that hill
+  const edge = (h) => hillY(h[0], h[1], h[2] + dy, h[3] + dy, h[4]);
+  const covers = (h) => { const f = edge(h); return (x, y) => x >= h[0] && x <= h[1] && y > f(x); };
+  const tree = (h, x, size, seed, tone, curl) => cypress(x, edge(h)(x) + 6, size, seed, tone, curl);
   // the path: a cream paper strip from the bottom edge up to the sun
   const way = [[650, 930], [606, 844], [532, 792], [458, 726], [390, 680], [312, 630], [236, 582], [186, 532], [156, 480], [158, 430], [172, 388]];
-  p.push(`<g class="a-path">${layer(piece(cut(ribbon(spline(way, 5), 20, 0.5), { seed: 31, amp: 0.8, wave: 20, step: 5, box }), C.cream), 2)}</g>`);
-  // stops on the path: ages as paper discs; the two choice points are gold. --d: when the climbing path reaches
-  // each one (its reveal runs .52s + 1.1s on the in-out curve in global.css; worked out from that curve)
-  const stops = [[604, 844, '۳', 0, 0.83], [458, 726, '۶', 0, 0.96], [312, 630, '۱۲', 0, 1.03], [186, 532, '۱۵', 1, 1.11], [160, 420, '۱۸', 1, 1.29]];
-  stops.forEach(([x, y, t, gold, d], i) => {
-    p.push(`<g class="a-stop" style="--d:${d}s">${layer(piece(cut(ellipse(x, y, 27, 27, 44), { seed: 40 + i, amp: 0.9, step: 5 }), gold ? C.gold : C.cream), 2)}` +
-      `<text x="${x}" y="${y + 9}" text-anchor="middle" font-size="27" ${naskh} fill="${C.navy}">${t}</text></g>`);
+  return {
+    W, H, way, hills: { far: hFar, teal: hT, red: hV, saffron: hS }, covers,
+    cloudHi: layer(cloud(560, 196, 150, 81, C.sky), 1),
+    sun: layer(piece(cut(ellipse(176, 182 + dy, 64), { seed: 3, amp: 1.2, step: 7 }), C.gold), 2),
+    cloudLo: layer(cloud(150, 250, 132, 82, C.sky), 1),
+    kite: kite(520, 214 + dy, 1, 51),
+    far: hill2(hFar, 21), teal: hill2(hT, 22), red: hill2(hV, 23), saffron: hill2(hS, 24),
+    farStroke: `fill="${C.night}" stroke="${C.cream}" stroke-opacity=".6" stroke-width="2" stroke-dasharray="7 7"`,
+    tealTrees: [tree(hT, 64, 92, 62), tree(hT, 100, 66, 63, '#356b3a', -1)],
+    redTrees: [tree(hV, 520, 84, 64), tree(hV, 552, 58, 65, '#356b3a', -1)],
+    ribbon: cut(ribbon(spline(way, 5), 20, 0.5), { seed: 31, amp: 0.8, wave: 20, step: 5, box }),
+    // stops on the path: ages as paper discs; the two choice points are gold
+    stops: [[604, 844, '۳', 0], [458, 726, '۶', 0], [312, 630, '۱۲', 0], [186, 532, '۱۵', 1], [160, 420, '۱۸', 1]].map(([x, y, age, gold], i) => ({
+      x, y, age, gold,
+      disc: layer(piece(cut(ellipse(x, y, 27, 27, 44), { seed: 40 + i, amp: 0.9, step: 5 }), gold ? C.gold : C.cream), 2) +
+        `<text x="${x}" y="${y + 9}" text-anchor="middle" font-size="27" ${naskh} fill="${C.navy}">${age}</text>`,
+    })),
+  };
+}
+
+function hero() {
+  const P = heroParts(), p = [];
+  p.push(`<rect width="${P.W}" height="${P.H}" fill="${C.navy}"/>`);
+  p.push(`<g class="a-cloud a-cloud-hi">${P.cloudHi}</g>`);
+  p.push(`<g class="a-sun">${P.sun}</g>`);
+  p.push(`<g class="a-cloud" style="--d:.3s">${P.cloudLo}</g>`);
+  p.push(`<g class="a-kite">${P.kite}</g>`);
+  p.push(`<g class="a-far"><path d="${P.far}" ${P.farStroke}/></g>`);
+  p.push(`<g class="a-hill" style="--d:.14s">${layer(piece(P.teal, C.turquoise), 3)}${layer(P.tealTrees.join(''), 2)}</g>`);
+  p.push(`<g class="a-hill" style="--d:.24s">${layer(piece(P.red, C.vermilion), 3)}${layer(P.redTrees.join(''), 2)}</g>`);
+  p.push(`<g class="a-hill" style="--d:.31s">${layer(piece(P.saffron, C.saffron), 3)}</g>`);
+  p.push(`<g class="a-path">${layer(piece(P.ribbon, C.cream), 2)}</g>`);
+  const delays = [0.83, 0.96, 1.03, 1.11, 1.29];
+  P.stops.forEach((s, i) => p.push(`<g class="a-stop" style="--d:${delays[i]}s">${s.disc}</g>`));
+  return svg(P.W, P.H, p.join(''), ' preserveAspectRatio="xMidYMax slice"');
+}
+
+// ---------------------------------------------------------------- the home hero as a paper box (hero-scene.json)
+// The same pieces as hero(), each on a sheet of its own standing at a depth in the box: the nearer the hill, the
+// younger the child (3 on the front hill, 18 at the back, under the sun). src/components/HeroScene.astro places
+// every piece by its box in drawing units, so at rest the scene looks exactly like hero-path.svg; the pieces only
+// part when the box tilts. Depth (z) is in drawing units toward the viewer (the camera's distance: global.css).
+const numbers = (s) => (s.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+// The box around every point of the given path data (cut() writes M/L/Z only; the kite adds plain M/L lines)
+function bounds(markup, pad = 0) {
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const [, d] of markup.matchAll(/ d="([^"]+)"/g)) {
+    const n = numbers(d);
+    for (let i = 0; i + 1 < n.length; i += 2) { x0 = Math.min(x0, n[i]); x1 = Math.max(x1, n[i]); y0 = Math.min(y0, n[i + 1]); y1 = Math.max(y1, n[i + 1]); }
+  }
+  return [Math.floor(x0 - pad), Math.floor(y0 - pad), Math.ceil(x1 - x0 + 2 * pad), Math.ceil(y1 - y0 + 2 * pad)];
+}
+// The path's centre line as cubic curves (the Catmull-Rom curve spline() samples, written exactly), and points along
+// it every ~1 unit with the distance walked, to find where it meets each age and each hill
+function centreLine(way) {
+  const segs = [];
+  for (let i = 0; i < way.length - 1; i++) {
+    const p0 = way[i - 1] || way[i], p1 = way[i], p2 = way[i + 1], p3 = way[i + 2] || p2;
+    segs.push([p1, [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6], [p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6], p2]);
+  }
+  // and on 10 units past the end along its last direction, so the mask drawn along it never trims the strip's cut end
+  const [pa, pb] = [way[way.length - 2], way[way.length - 1]], len = Math.hypot(pb[0] - pa[0], pb[1] - pa[1]);
+  const tip = [pb[0] + ((pb[0] - pa[0]) / len) * 10, pb[1] + ((pb[1] - pa[1]) / len) * 10];
+  segs.push([pb, pb, tip, tip]);
+  const r = (v) => +v.toFixed(1);
+  const d = `M${way[0].join(' ')}` + segs.map(([, a, b, c]) => `C${r(a[0])} ${r(a[1])} ${r(b[0])} ${r(b[1])} ${r(c[0])} ${r(c[1])}`).join('');
+  const pts = [];
+  let walked = 0, prev = null;
+  for (const [a, b, c, e] of segs) {
+    for (let k = prev ? 1 : 0; k <= 200; k++) {
+      const t = k / 200, u = 1 - t;
+      const pt = [0, 1].map((j) => u * u * u * a[j] + 3 * u * u * t * b[j] + 3 * u * t * t * c[j] + t * t * t * e[j]);
+      if (prev) walked += Math.hypot(pt[0] - prev[0], pt[1] - prev[1]);
+      pts.push({ x: pt[0], y: pt[1], s: walked });
+      prev = pt;
+    }
+  }
+  return { d, pts, length: walked };
+}
+
+function heroScene() {
+  const P = heroParts(), line = centreLine(P.way), L = line.length;
+  const f = (s) => +(s / L).toFixed(4);
+  const svgOf = (box, body) => `<svg viewBox="${box.join(' ')}">${body}</svg>`;
+  // Which sheet each point of the path lies on: the nearest hill that covers it, else the far sheet (and the sky)
+  const sheetAt = (x, y) => (P.covers(P.hills.saffron)(x, y) ? 'saffron' : P.covers(P.hills.red)(x, y) ? 'red' : P.covers(P.hills.teal)(x, y) ? 'teal' : 'far');
+  // The stretch of the path on each sheet, as a share of its length (lo, hi), and the box its strip needs there:
+  // 16 units of walk past each end (where the strip's edge still crosses onto the sheet) and 16 around the line
+  const stretch = {};
+  for (const p of line.pts) {
+    if (p.y > P.H + 12) continue; // under the bottom edge: never seen
+    const k = sheetAt(p.x, p.y);
+    (stretch[k] ??= { lo: p.s, hi: p.s }).hi = p.s;
+  }
+  const strip = (k) => {
+    const { lo, hi } = stretch[k];
+    const near = line.pts.filter((p) => p.s >= lo - 16 && p.s <= hi + 16 && p.y < P.H + 30);
+    const xs = near.map((p) => p.x), ys = near.map((p) => p.y);
+    const box = [Math.floor(Math.min(...xs) - 16), Math.floor(Math.min(...ys) - 16), 0, 0];
+    box[2] = Math.ceil(Math.max(...xs) + 16) - box[0];
+    box[3] = Math.ceil(Math.min(Math.max(...ys) + 16, P.H + 4)) - box[1];
+    return { box, from: f(Math.max(0, lo - 16)), to: f(Math.min(L, hi + 16)) };
+  };
+  // A sheet's strip of path: the one cream strip (defs below), cut to the sheet's hill and shown through a mask whose
+  // line the page draws from 3 to 18 (HeroScene.astro, hero-scene.ts)
+  const ribbonPiece = (k, clip) => {
+    const s = strip(k), [x, y, w, h] = s.box;
+    const mask = `<mask id="__ID__m-${k}" maskUnits="userSpaceOnUse" x="${x}" y="${y}" width="${w}" height="${h}"><path class="hs-line" d="${line.d}" pathLength="1000" fill="none" stroke="#fff" stroke-width="44" stroke-dasharray="1000 1000"/></mask>`;
+    const clipDef = clip ? `<clipPath id="__ID__c-${k}"><use href="#__ID__${k}"/></clipPath>` : '';
+    const body = `<defs>${mask}${clipDef}</defs><g${clip ? ` clip-path="url(#__ID__c-${k})"` : ''}><g filter="url(#__ID__s2)"><use href="#__ID__ribbon" mask="url(#__ID__m-${k})"/></g></g>`;
+    return { id: `path-${k}`, kind: 'path', box: s.box, from: s.from, to: s.to, svg: svgOf(s.box, body) };
+  };
+  // A hill stands up from the floor of the box: it folds on the sheet's bottom edge (origin, as a share of its box)
+  const hillPiece = (k, fill, flat = false, trees = []) => {
+    const d = P[k], box = bounds(` d="${d}"`, 0);
+    const body = `<path id="__ID__${k}" d="${d}" ${fill}/>`;
+    return { id: k, kind: 'hill', box, origin: [0.5, +((P.H - box[1]) / box[3]).toFixed(4)], svg: svgOf(box, flat ? body : layer(body, 3)), children: trees };
+  };
+  const treePiece = (id, markup) => {
+    const box = bounds(markup, 4), n = numbers(markup.match(/ d="([^"]+)"/)[1]);
+    let base = -Infinity, at = 0; // the tree folds at its foot
+    for (let i = 0; i + 1 < n.length; i += 2) if (n[i + 1] > base) { base = n[i + 1]; at = n[i]; }
+    return { id, kind: 'tree', box, origin: [+((at - box[0]) / box[2]).toFixed(4), +((base - box[1]) / box[3]).toFixed(4)], svg: svgOf(box, layer(markup, 2)) };
+  };
+  const skyPiece = (id, markup, pad) => { const box = bounds(markup, pad); return { id, kind: id.replace(/-.*/, ''), box, svg: svgOf(box, markup) }; };
+  // Where each age's name sits: beside its disc, on the side with room (left of 3, 6 and 12, which have the path on
+  // their right; right of 15 and 18, whose left is the far hill's edge), its middle a little under the disc's
+  const label = [['left', 14], ['left', 18], ['left', 18], ['right', -12], ['right', 0]];
+  const stopOn = (s) => sheetAt(s.x, s.y + 10); // 15 sits on the teal hill's ridge
+  const stopPieces = P.stops.map((s, i) => {
+    const near = line.pts.reduce((a, p) => (Math.hypot(p.x - s.x, p.y - s.y) < Math.hypot(a.x - s.x, a.y - s.y) ? p : a));
+    const box = [s.x - 32, s.y - 32, 64, 64];
+    return { id: `stop-${i}`, kind: 'stop', sheet: stopOn(s), box, at: f(near.s), age: s.age, gold: s.gold, x: s.x, y: s.y, side: label[i][0], dy: label[i][1], svg: svgOf(box, s.disc) };
   });
-  return svg(W, H, p.join(''), ' preserveAspectRatio="xMidYMax slice"');
+  const sheets = [
+    { id: 'sun', z: -220, pieces: [skyPiece('sun', P.sun, 6)] },
+    { id: 'cloud-hi', z: -170, pieces: [skyPiece('cloud-hi', P.cloudHi, 4)] },
+    { id: 'cloud-lo', z: -150, pieces: [skyPiece('cloud-lo', P.cloudLo, 4)] },
+    { id: 'far', z: -110, pieces: [hillPiece('far', P.farStroke, true), ribbonPiece('far', false)] },
+    { id: 'teal', z: -60, pieces: [hillPiece('teal', `fill="${C.turquoise}"`, false, P.tealTrees.map((t, i) => treePiece(`tree-${i}`, t))), ribbonPiece('teal', true)] },
+    { id: 'red', z: -15, pieces: [hillPiece('red', `fill="${C.vermilion}"`, false, P.redTrees.map((t, i) => treePiece(`tree-${i + 2}`, t))), ribbonPiece('red', true)] },
+    { id: 'saffron', z: 30, pieces: [hillPiece('saffron', `fill="${C.saffron}"`), ribbonPiece('saffron', true)] },
+    { id: 'kite', z: 70, pieces: [skyPiece('kite', P.kite, 6)] },
+  ];
+  for (const s of stopPieces) sheets.find((sh) => sh.id === s.sheet).pieces.push(s);
+  // Shared by every sheet: the paper shadows, the one strip of path (each sheet shows its own stretch of it)
+  const defs = shadows.replace('</defs>', `<path id="__ID__ribbon" d="${P.ribbon}" fill="${C.cream}"/></defs>`);
+  // enter: the share of the path walked where it comes up over the sheet's bottom edge
+  return { width: P.W, height: P.H, enter: f(stretch.saffron.lo), defs, sheets };
 }
 
 // ---------------------------------------------------------------- emblems of the units, 160 x 160, on the unit's paper
@@ -230,6 +366,7 @@ function hillsLow() {
   return svg(W, H, layer(far, 1) + layer(trees(0, 384, 24, 71) + trees(1, 1366, 22, 73), 1) + layer(mid, 2) + layer(near, 2), ' preserveAspectRatio="xMidYMax slice"');
 }
 
+fs.writeFileSync(path.join(out, 'hero-scene.json'), JSON.stringify(heroScene()) + '\n');
 const files = {
   'hero-path.svg': hero(),
   'unit-kindergarten.svg': blocks(), 'unit-primary.svg': bookPencil(), 'unit-middle-school.svg': compass(),
@@ -238,4 +375,4 @@ const files = {
   'hills.svg': hills(), 'hills-low.svg': hillsLow(),
 };
 for (const [name, s] of Object.entries(files)) fs.writeFileSync(path.join(out, name), s + '\n');
-console.log('art ->', Object.keys(files).map((n) => `${n} ${(fs.statSync(path.join(out, n)).size / 1024).toFixed(1)} KB`).join(', '));
+console.log('art ->', ['hero-scene.json', ...Object.keys(files)].map((n) => `${n} ${(fs.statSync(path.join(out, n)).size / 1024).toFixed(1)} KB`).join(', '));

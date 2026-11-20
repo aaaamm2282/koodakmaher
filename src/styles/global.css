@@ -201,7 +201,8 @@
 
 /* ==========================================================================
    Home hero: the heading beside a sheet of navy paper with the path from 3 to 18 cut out of coloured paper
-   (Hero.astro, src/assets/art/hero-path.svg). One screen tall on wide screens.
+   (Hero.astro, HeroScene.astro: the drawing of src/assets/art/hero-path.svg as a box of paper sheets). One screen
+   tall on wide screens.
    ========================================================================== */
 .hero-wrap { display: grid; gap: 2.5rem; padding-block: 2.5rem 3.5rem; }
 @media (width >= 64rem) {
@@ -213,9 +214,11 @@
 /* The phrase the page stands on, with a hand-drawn gold stroke under it (Stroke.astro) */
 .hero-mark { position: relative; display: inline-block; color: var(--color-accent); }
 .hero-stroke { position: absolute; inset-inline-start: -0.05em; bottom: -0.04em; width: calc(100% + 0.1em); height: 0.2em; }
-.hero-sheet { position: relative; isolation: isolate; overflow: clip; border-radius: var(--radius-3xl); background: var(--color-accent); min-height: 27.5rem; }
+/* A size container (its drawing is laid out in its units, below), so its height never comes from its content: fixed on
+   phones, square on tablets, the height of the heading's column on wide screens */
+.hero-sheet { position: relative; isolation: isolate; overflow: clip; border-radius: var(--radius-3xl); background: var(--color-accent); height: 27.5rem; container-type: size; }
 /* Stacked under the heading on tablets: a square, so the drawing (cut from its foot) keeps all five ages */
-@media (width >= 40rem) { .hero-sheet { min-height: 0; aspect-ratio: 1; } }
+@media (width >= 40rem) { .hero-sheet { height: auto; aspect-ratio: 1; } }
 @media (width >= 64rem) { .hero-sheet { aspect-ratio: auto; min-height: 34rem; } }
 .hero-scene, .hero-sheet > picture, .hero-sheet > picture > img, .hero-sheet > video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
 .hero-sheet > picture > img, .hero-sheet > video { object-fit: cover; }
@@ -224,29 +227,72 @@
 /* With a photo: navy shade behind the slogan only */
 .hero-scrim { position: absolute; inset: 0 0 auto; z-index: -1; height: 9rem; background: linear-gradient(rgb(1 35 122 / 0.85), rgb(1 35 122 / 0)); pointer-events: none; }
 
-/* Text fades up with CSS so the largest paint does not wait for a script. Choreography (the one authored moment
-   of the site): the heading leads; the lede, the buttons and the founding line overlap it at shrinking gaps; the
-   drawing assembles beside them, far hill to near, then the path climbs from 3 to 18 and each age lands as the
-   path reaches it (delays from the path's own curve). Every piece is clickable as soon as it shows. */
+/* Text fades up with CSS so the largest paint does not wait for a script: the heading leads, the lede, the buttons and
+   the founding line overlap it at shrinking gaps. Beside them the drawing opens once as a pop-up book (hero-scene.ts):
+   the authored moment of the site. Every piece is clickable as soon as it shows. */
 .rise { animation: rise 0.6s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 80ms); }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
-.hero-scene :is(.a-sun, .a-cloud, .a-kite, .a-far, .a-hill, .a-path, .a-stop) { transform-box: fill-box; }
-.hero-scene .a-sun { animation: art-sun 0.9s 0.12s var(--ease-out) both; }
-.hero-scene .a-cloud { animation: art-cloud 1.2s var(--d, 0.18s) var(--ease-out) both; }
+
+/* The drawing as a box of cut paper (HeroScene.astro). Each piece is placed by its box in drawing units (--x --y --w
+   --h, from hero-scene.json); --s is the size of one unit, the drawing filling the sheet from its foot (as
+   xMidYMax slice). Each sheet of the box stands at its depth (--z, units toward the reader, the camera --cam away) and is
+   scaled back by its distance, so at rest every piece lies exactly where the flat drawing has it; the sheets part only
+   when the box tilts. Hills, trees and the path's strips draw past their box (overflow), so no edge shows on a tilt.
+   A hill folds on the box's floor (.hs-fold, its origin on the bottom edge) and carries its cypresses, which stand a
+   little in front of it and spring up on their own. */
+.hero-scene {
+  --s: max(100cqw / 720, 100cqh / 900);
+  --ox: calc(50cqw - 360 * var(--s));
+  --oy: calc(100cqh - 900 * var(--s));
+  --cam: 1200;
+  perspective: calc(var(--cam) * var(--s));
+  pointer-events: none;
+}
+.hs-defs { position: absolute; }
+.hs-tilt, .hs-cam, .hs-sheet { position: absolute; inset: 0; transform-style: preserve-3d; }
+.hs-sheet { transform: translateZ(calc(var(--z) * var(--s))) scale(calc((var(--cam) - var(--z)) / var(--cam))); }
+.hs-piece {
+  position: absolute; left: calc(var(--ox) + var(--x) * var(--s)); top: calc(var(--oy) + var(--y) * var(--s));
+  width: calc(var(--w) * var(--s)); height: calc(var(--h) * var(--s)); transform-style: preserve-3d;
+}
+.hs-piece > svg, .hs-fold > svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: var(--o, 50% 50%); }
+.hs-hill { --bx: var(--x); --by: var(--y); }
+.hs-fold { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: var(--o); }
+.hs-fold > .hs-tree { left: calc((var(--x) - var(--bx)) * var(--s)); top: calc((var(--y) - var(--by)) * var(--s)); transform: translateZ(calc(6 * var(--s))); }
+.hs-stop { transform: translateZ(calc(2 * var(--s))); }
+.hs-kite > svg { transform-origin: 50.6% 21.3%; }
 /* On the square tablet sheet the high cloud would sit under the slogan, cut by the top edge */
-@media (width >= 40rem) and (width < 64rem) { .hero-scene .a-cloud-hi { display: none; } }
-.hero-scene .a-far { animation: art-fade 0.7s 0.08s ease both; }
-.hero-scene .a-hill { animation: art-hill 0.8s var(--d) var(--ease-out) both; }
-.hero-scene .a-path { animation: art-path 1.1s 0.52s var(--ease-in-out) both; }
-.hero-scene .a-stop { transform-origin: center; animation: art-stop 0.38s var(--d) var(--ease-out) both; }
-.hero-scene .a-kite { transform-origin: 50% 100%; animation: art-kite 1s 0.6s var(--ease-out) both; }
-@keyframes art-fade { from { opacity: 0; } }
-@keyframes art-sun { from { opacity: 0; transform: translateY(16px); } }
-@keyframes art-cloud { from { opacity: 0; transform: translateX(18px); } }
-@keyframes art-hill { from { transform: translateY(64px); } }
-@keyframes art-path { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0); } }
-@keyframes art-stop { from { opacity: 0; transform: scale(0.82); } }
-@keyframes art-kite { from { opacity: 0; transform: translate(-14px, 12px) rotate(-7deg); } }
+@media (width >= 40rem) and (width < 64rem) { [data-piece='cloud-hi'] { display: none; } }
+/* The name of each stretch on a strip of paper tucked under its age's disc: cream, gold at the two choice points.
+   Its outer end is cut in a V like a paper banner; it keeps the page's text size, between 12 and 15 px. */
+.hs-tag {
+  --tuck: calc(12 * var(--s));
+  position: absolute; top: calc(var(--oy) + var(--ay) * var(--s)); translate: 0 -50%;
+  font-size: clamp(0.75rem, 25 * var(--s), 0.9375rem); transform: translateZ(var(--s)); transform-style: preserve-3d;
+}
+.hs-tag-left { right: calc(100% - var(--ox) - var(--ax) * var(--s)); }
+.hs-tag-right { left: calc(var(--ox) + var(--ax) * var(--s)); }
+.hs-flap { display: block; filter: drop-shadow(1px 1.5px 1px rgb(10 20 51 / 0.3)); backface-visibility: hidden; }
+.hs-tag-left .hs-flap { transform-origin: 100% 50%; }
+.hs-tag-right .hs-flap { transform-origin: 0 50%; }
+.hs-label { display: block; padding-block: 0.15em 0.1em; white-space: nowrap; line-height: 1.6; font-weight: 600; color: var(--color-accent); background: var(--color-paper); }
+.is-gold .hs-label { background: var(--color-gold); }
+.hs-tag-left .hs-label { padding-inline: calc(var(--tuck) + 0.45em) 0.95em; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0.4em 50%); }
+.hs-tag-right .hs-label { padding-inline: 0.95em calc(var(--tuck) + 0.45em); clip-path: polygon(0 0, 100% 0, calc(100% - 0.4em) 50%, 100% 100%, 0 100%); }
+/* The gold ring that opens once around a choice point during the opening; never seen at rest */
+.hs-ring > i { position: absolute; inset: calc(5 * var(--s)); border: calc(2.5 * var(--s)) solid var(--color-gold); border-radius: 50%; opacity: 0; }
+/* The box before its opening (hero-scene.ts): the first frame of the same keyframes. The inline script sets
+   [data-enter] only when the opening will play; at rest the attribute is gone and this is the still picture. */
+.hero-scene[data-enter] .hs-cam { transform: rotateX(-12deg) rotateY(-6deg) scale(0.97); }
+.hero-scene[data-enter] .hs-fold { transform: rotateX(75deg); }
+.hero-scene[data-enter] .hs-tree > svg { transform: rotateX(85deg); opacity: 0; }
+.hero-scene[data-enter] .hs-cloud > svg { transform: translateX(22%); }
+.hero-scene[data-enter] :is(.hs-kite, .hs-stop) > svg { opacity: 0; }
+.hero-scene[data-enter] .hs-tag-left .hs-flap { transform: rotateY(115deg); }
+.hero-scene[data-enter] .hs-tag-right .hs-flap { transform: rotateY(-115deg); }
+.hero-scene[data-enter] .hs-line { stroke-dashoffset: 1000; }
+/* No lean with the scroll: while a transform animation runs on an ancestor (a scroll timeline counts), the browser
+   draws the whole box at a lower resolution and the names go soft on a phone; and the page scrolls plainly. */
 
 /* ==========================================================================
    Paper tiles: one sheet of coloured paper per unit (UnitCards.astro; the unit pages' heading panel).
@@ -588,7 +634,7 @@
 /* ---------- Reduced motion: the finished, still state of everything ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .rise, .stroke-draw, .hero-scene :is(.a-sun, .a-cloud, .a-kite, .a-far, .a-hill, .a-path, .a-stop) { animation: none; }
+  .rise, .stroke-draw { animation: none; }
   .stroke-draw { clip-path: none; }
   .btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light, .tile, .tile-art, .tile-go, .lift, .row-wipe::before,
   .link, .foot-link > span, .nav-hover, .ink-w, .path-dot, .stairs .face, .stairs .label, .gfile-front, .gfile-sheet { transition: none; }

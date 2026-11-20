@@ -4,14 +4,14 @@
 // The discs are cut from the paper of their stretch, as in the hero's drawing; 15 to 18 is dashed (still to come).
 import Icon from './Icon.astro';
 import PaperDisc from './PaperDisc.astro';
-import { units } from '../data/site';
+import { stages, units } from '../data/site';
 const u = (slug: string) => units.find((x) => x.slug === slug)!;
 const stops = [
-  { age: '۳', label: 'کودکستان', title: 'کودکستان', text: u('kindergarten').short!, meta: u('kindergarten').ages, href: '/units/kindergarten/', cta: 'آشنایی با کودکستان', tone: 'saffron' },
-  { age: '۶', label: 'دبستان', title: 'دبستان مهارت‌محور', text: u('primary').short!, meta: u('primary').ages, href: '/units/primary/', cta: 'آشنایی با دبستان', tone: 'red' },
-  { age: '۱۲', label: 'متوسطه اول', title: 'متوسطه اول پسرانه', text: u('middle-school').short!, meta: u('middle-school').ages, href: '/units/middle-school/', cta: 'آشنایی با متوسطه اول', tone: 'teal' },
-  { age: '۱۵', label: 'انتخاب اول', title: '۱۵ سالگی، پایه نهم', text: 'اولین انتخاب رشته تحصیلی، بر پایه تجربه‌ها و «پرونده انتخاب» خود دانش‌آموز.', meta: 'نقطه انتخاب', href: '/method/', cta: 'متد کودک ماهر', tone: 'gold', soonAfter: true },
-  { age: '۱۸', label: 'انتخاب نهایی', title: '۱۸ سالگی', text: 'بازنگری و انتخاب نهایی برای دانشگاه یا ورود به کار.', meta: 'نقطه انتخاب', href: '/path/', cta: 'مسیر رشد ۳ تا ۱۸ سال', tone: 'gold' },
+  { ...stages[0], title: 'کودکستان', text: u('kindergarten').short!, meta: u('kindergarten').ages, href: '/units/kindergarten/', cta: 'آشنایی با کودکستان', tone: 'saffron' },
+  { ...stages[1], title: 'دبستان مهارت‌محور', text: u('primary').short!, meta: u('primary').ages, href: '/units/primary/', cta: 'آشنایی با دبستان', tone: 'red' },
+  { ...stages[2], title: 'متوسطه اول پسرانه', text: u('middle-school').short!, meta: u('middle-school').ages, href: '/units/middle-school/', cta: 'آشنایی با متوسطه اول', tone: 'teal' },
+  { ...stages[3], title: '۱۵ سالگی، پایه نهم', text: 'اولین انتخاب رشته تحصیلی، بر پایه تجربه‌ها و «پرونده انتخاب» خود دانش‌آموز.', meta: 'نقطه انتخاب', href: '/method/', cta: 'متد کودک ماهر', tone: 'gold', soonAfter: true },
+  { ...stages[4], title: '۱۸ سالگی', text: 'بازنگری و انتخاب نهایی برای دانشگاه یا ورود به کار.', meta: 'نقطه انتخاب', href: '/path/', cta: 'مسیر رشد ۳ تا ۱۸ سال', tone: 'gold' },
 ];
 ---
 <section id="path" class="border-y border-line bg-surface" aria-labelledby="path-title">

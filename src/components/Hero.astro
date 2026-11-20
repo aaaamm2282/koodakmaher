@@ -1,7 +1,7 @@
 ---
 import { Picture, getImage } from 'astro:assets';
 import Icon from './Icon.astro';
-import Art from './Art.astro';
+import HeroScene from './HeroScene.astro';
 import Stroke from './Stroke.astro';
 import { site } from '../data/site';
 import { resolveImage } from '../lib/images';
@@ -29,13 +29,14 @@ const poster = heroImg ? (await getImage({ src: heroImg, width: Math.min(1280, h
     </div>
 
     <!-- A sheet of navy paper: the path from 3 to 18 cut out of coloured paper, climbing over one hill per stretch
-         to the sun (src/assets/art/hero-path.svg). It assembles once as the page opens (global.css, «Home hero»). -->
+         to the sun, set as a box of paper sheets at their depths (HeroScene.astro). It opens once like a pop-up book
+         when it comes into view, then leans a little toward the pointer on a computer. -->
     <div class="hero-sheet" data-hero-panel>
       {heroImg ? (
         <Picture src={heroImg} alt={heroAlt} formats={['avif', 'webp']} widths={[480, 800, 1200, 1600]} sizes="(min-width: 1024px) 46vw, 100vw"
           loading="eager" fetchpriority="high" />
       ) : (
-        <Art name="hero-path" class="hero-scene" />
+        <HeroScene />
       )}
       {heroImg && heroVideo && (
         <video muted playsinline loop preload="none" poster={poster} aria-hidden="true" data-hero-video>

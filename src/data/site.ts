@@ -191,6 +191,15 @@ export const cycle = [
   { title: 'بازبینی', text: 'حدسش را با آنچه واقعاً شد مقایسه می‌کند و از فاصله آن دو، خودش را بهتر می‌شناسد.' },
 ] as const;
 
+/* ---------- the path from 3 to 18: each stop's age and name (home page: the hero's drawing and PathStops) ---------- */
+export const stages = [
+  { age: '۳', label: 'کودکستان' },
+  { age: '۶', label: 'دبستان' },
+  { age: '۱۲', label: 'متوسطه اول' },
+  { age: '۱۵', label: 'انتخاب اول' },
+  { age: '۱۸', label: 'انتخاب نهایی' },
+] as const;
+
 /* ---------- workshops, registration, FAQ (editable in the CMS) ---------- */
 export type Workshop = { n: string; d: string; icon: string; age: string | null; photo: { image: string; alt: string } | null };
 export const workshops: Workshop[] = list<any>(workshopsJson.items)

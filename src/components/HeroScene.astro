@@ -1,0 +1,68 @@
+---
+// The home hero's drawing as a box of cut paper (src/assets/art/hero-scene.json, made by scripts/art/make-art.mjs):
+// every piece of hero-path.svg on a sheet of its own, standing at its depth. The nearer the hill, the younger the
+// child: the path climbs from 3 on the front hill to 18 at the back of the box, under the sun. Each age carries the
+// name of its stretch, as in the list under the hero (PathStops.astro, from the same `stages`).
+// At rest the pieces line up exactly as in the flat drawing. When the box comes into view it opens once like a pop-up
+// book (src/scripts/hero-scene.ts); afterwards, on a computer, it leans a little toward the pointer, so the sheets
+// part and show their depth. Without script, or with «reduce motion», it is the finished, still picture.
+// Decoration: the next section tells the same path in words, so screen readers skip it.
+import scene from '../assets/art/hero-scene.json';
+import { stages } from '../data/site';
+
+type Piece = {
+  id: string; kind: string; box: number[]; svg: string; origin?: number[]; from?: number; to?: number; children?: Piece[];
+  at?: number; age?: string; gold?: number; x?: number; y?: number; side?: string; dy?: number;
+};
+const fix = (s: string) => s.replaceAll('__ID__', 'hs-');
+const boxVars = ([x, y, w, h]: number[], origin?: number[]) =>
+  `--x:${x};--y:${y};--w:${w};--h:${h}` + (origin ? `;--o:${(origin[0] * 100).toFixed(2)}% ${(origin[1] * 100).toFixed(2)}%` : '');
+// A name hangs from its disc: its end tucked 12 units under the disc's edge (27 from the centre)
+const tag = (p: Piece) => ({ ax: p.side === 'left' ? p.x! - 15 : p.x! + 15, ay: p.y! + p.dy! });
+const nameOf = (age?: string) => stages.find((s) => s.age === age)?.label ?? '';
+---
+<div class="hero-scene" data-hero-scene aria-hidden="true" data-enter-from={scene.enter}>
+  <script is:inline>
+    // Before the first paint: hold the box closed (global.css, [data-enter]) only when its opening will play.
+    // If the page's script never arrives, show the finished picture after 3.5 s.
+    (function (el) {
+      try {
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window) || !el.animate) return;
+        el.setAttribute('data-enter', 'pending');
+        setTimeout(function () { if (el.getAttribute('data-enter') === 'pending') el.removeAttribute('data-enter'); }, 3500);
+      } catch (e) {}
+    })(document.currentScript.parentElement);
+  </script>
+  <svg class="hs-defs" width="0" height="0" focusable="false"><Fragment set:html={fix(scene.defs)} /></svg>
+  <div class="hs-tilt"><div class="hs-cam">
+    {scene.sheets.map((sheet) => (
+      <div class="hs-sheet" data-sheet={sheet.id} style={`--z:${sheet.z}`}>
+        {(sheet.pieces as Piece[]).map((p) =>
+          p.kind === 'stop' ? (
+            <Fragment>
+              <div class:list={['hs-tag', `hs-tag-${p.side}`, p.gold && 'is-gold']} data-tag={p.id} style={`--ax:${tag(p).ax};--ay:${tag(p).ay}`}>
+                <span class="hs-flap"><span class="hs-label">{nameOf(p.age)}</span></span>
+              </div>
+              {p.gold ? <div class="hs-piece hs-ring" data-ring={p.id} style={boxVars(p.box)}><i></i></div> : null}
+              <div class="hs-piece hs-stop" data-piece={p.id} data-at={p.at} style={boxVars(p.box)} set:html={fix(p.svg)} />
+            </Fragment>
+          ) : p.kind === 'hill' ? (
+            // a hill folds on the box's floor, carrying its cypresses, which then spring up on their own
+            <div class="hs-piece hs-hill" data-piece={p.id} style={boxVars(p.box, p.origin)}>
+              <div class="hs-fold">
+                <Fragment set:html={fix(p.svg)} />
+                {(p.children ?? []).map((c) => <div class="hs-piece hs-tree" data-piece={c.id} style={boxVars(c.box, c.origin)} set:html={fix(c.svg)} />)}
+              </div>
+            </div>
+          ) : (
+            <div class={`hs-piece hs-${p.kind}`} data-piece={p.id} data-from={p.from} data-to={p.to} style={boxVars(p.box, p.origin)} set:html={fix(p.svg)} />
+          ),
+        )}
+      </div>
+    ))}
+  </div></div>
+</div>
+
+<script>
+  import '../scripts/hero-scene';
+</script>
