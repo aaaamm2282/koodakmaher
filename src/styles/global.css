@@ -41,7 +41,7 @@
   --color-surface: #fffdf8;
   --color-sand: #efe6d2;
   --color-ink: #17201c;
-  --color-ink-soft: #49524d;
+  --color-ink-soft: #444c48; /* body text: 7.1:1 on sand, 7.9:1 on paper */
   --color-ink-mute: #5c6460; /* 4.9:1 on sand, 5.4:1 on paper */
   --color-line: rgb(23 32 28 / 0.12);
   --color-line-strong: rgb(23 32 28 / 0.22);
