@@ -1,0 +1,54 @@
+---
+/**
+ * For the institute's staff: every unit's review page, SMS short link and QR poster in one place,
+ * with what is still missing. Not linked from the site, not in search results or the sitemap.
+ * Texts for SMS and replies: docs/local-profiles.md
+ */
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import { units } from '../../data/site';
+import { displayName } from '../../lib/schema';
+import { listings, reviewPath, shortReviewPath } from '../../data/local.mjs';
+
+const host = new URL(Astro.site!).host;
+const rows = units
+  .filter((u) => !u.soon && u.slug in listings)
+  .map((u) => {
+    const l = listings[u.slug as keyof typeof listings];
+    return {
+      u,
+      name: displayName(u),
+      google: l.google.reviews ? (u.reviewUrl ? 'ثبت شده' : null) : 'گوگل برای مدرسه نظر نمی‌پذیرد',
+      neshan: u.mapUrl ? 'ثبت شده' : null,
+      balad: u.baladUrl ? 'ثبت شده' : null,
+      short: `${host}${shortReviewPath(u.slug)}`.replace(/\/$/, ''),
+    };
+  });
+---
+<Base title="نظرخواهی از والدین | کودک ماهر" description="صفحه‌های نظرخواهی، لینک‌های کوتاه پیامک و پوسترهای QR مراکز کودک ماهر." noindex>
+  <PageHero badge="برای همکاران مؤسسه" title="نظرخواهی از والدین" subtitle="لینک کوتاه هر مرکز برای پیامک، پوستر QR برای چاپ و وضعیت لینک‌های گوگل، نشان و بلد. متن پیامک‌ها و پاسخ به نظرها در راهنمای docs/local-profiles.md است." />
+  <section class="container-x pt-10 pb-20">
+    <ul class="grid gap-4 lg:grid-cols-2">
+      {rows.map((r) => (
+        <li class="rounded-2xl border border-line bg-surface p-5 sm:p-6">
+          <h2 class="text-xl">{r.name}</h2>
+          <dl class="mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
+            <dt class="text-ink-mute">لینک پیامک</dt>
+            <dd dir="ltr" class="text-end font-medium">{r.short}</dd>
+            {[['گوگل', r.google], ['نشان', r.neshan], ['بلد', r.balad]].map(([app, state]) => (
+              <>
+                <dt class="text-ink-mute">{app}</dt>
+                <dd>{state ?? <Pending inline label="لینک در پنل مدیریت" />}</dd>
+              </>
+            ))}
+          </dl>
+          <div class="mt-5 flex flex-wrap gap-2">
+            <a href={reviewPath(r.u.slug)} class="btn-ghost min-h-10 px-3.5 py-2 text-sm">صفحه‌ی نظرخواهی</a>
+            <a href={`${reviewPath(r.u.slug)}poster/`} class="btn-ghost min-h-10 px-3.5 py-2 text-sm">پوستر QR برای چاپ</a>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Base>

@@ -1,0 +1,14 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import UnitCards from '../../components/UnitCards.astro';
+import CTA from '../../components/CTA.astro';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/units/');
+const crumbs = [{ label: 'واحدها' }];
+---
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
+  <PageHero title={seo.h1} subtitle="واحدهای آموزشی کودک ماهر" crumbs={crumbs} />
+  <section class="container-x py-14 sm:py-20"><UnitCards level="h2" /></section>
+  <CTA />
+</Base>

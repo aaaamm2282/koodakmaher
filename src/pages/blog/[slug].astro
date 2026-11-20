@@ -1,0 +1,138 @@
+---
+import { render } from 'astro:content';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import Icon from '../../components/Icon.astro';
+import CTA from '../../components/CTA.astro';
+import { getPosts, faDate, isoDate, readingMinutes, faNum, showDrafts } from '../../lib/content';
+import { resolveImage } from '../../lib/images';
+import { site } from '../../data/site';
+import { categoryLinks } from '../../data/keywords';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post, posts } }));
+}
+
+const { post, posts } = Astro.props;
+const d = post.data;
+const { Content, headings } = await render(post);
+const toc = headings.filter((h) => h.depth === 2);
+const minutes = readingMinutes(post.body ?? '');
+const cover = resolveImage(d.cover);
+const related = posts.filter((p) => p.id !== post.id && p.data.category === d.category).slice(0, 3);
+const more = related.length ? related : posts.filter((p) => p.id !== post.id).slice(0, 3);
+const crumbs = [{ href: '/blog/', label: 'مقاله‌ها' }, { label: d.title }];
+const url = new URL(`/blog/${post.id}/`, Astro.site).href;
+const origin = new URL('/', Astro.site).href;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  '@id': `${url}#article`,
+  headline: d.title,
+  description: d.description,
+  inLanguage: 'fa-IR',
+  datePublished: isoDate(d.date),
+  dateModified: isoDate(d.updated ?? d.date),
+  mainEntityOfPage: url,
+  articleSection: d.category,
+  ...(d.focus && { keywords: d.focus }),
+  author: d.author ? { '@type': 'Person', name: d.author, ...(d.authorRole && { jobTitle: d.authorRole }), worksFor: { '@id': `${origin}#org` } } : { '@id': `${origin}#org` },
+  ...(d.reviewer && { reviewedBy: { '@type': 'Person', name: d.reviewer } }),
+  publisher: { '@id': `${origin}#org` },
+  ...(cover && { image: new URL(cover.src, Astro.site).href }),
+  ...(d.sources.length && { citation: d.sources.map((s) => ({ '@type': 'CreativeWork', name: s.title, url: s.url, ...(s.publisher && { publisher: s.publisher }) })) }),
+};
+const isDraft = d.draft;
+---
+<Base title={`${d.title} | ${site.brand}`} description={d.description} type="article" crumbs={crumbs} schema={[articleSchema]} noindex={isDraft || showDrafts}>
+  {isDraft && (
+    <div class="border-b border-saffron/30 bg-saffron-soft py-3 text-center text-sm text-saffron" role="note">
+      پیش‌نویس برای بازبینی؛ این مقاله هنوز منتشر نشده و در نسخه اصلی سایت دیده نمی‌شود.
+    </div>
+  )}
+  <PageHero title={d.title} badge={d.category} crumbs={crumbs} subtitle={d.description}>
+    <p class="rise mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-mute" style="--i:3">
+      <span>{d.author ? <>نوشته‌ی <span class="text-ink">{d.author}</span></> : <Pending inline label="نام نویسنده" />}</span>
+      <span aria-hidden="true">—</span>
+      <time datetime={isoDate(d.updated ?? d.date)}>{d.updated ? 'به‌روزرسانی' : 'انتشار'}: {faDate(d.updated ?? d.date)}</time>
+      <span aria-hidden="true">—</span>
+      <span>{faNum(minutes)} دقیقه مطالعه</span>
+    </p>
+  </PageHero>
+
+  <article class="container-x py-12 sm:py-16">
+    <div class="grid gap-12 lg:grid-cols-[1fr_16rem] lg:gap-16">
+      <div class="min-w-0">
+        {cover && (
+          <figure class="mb-10 overflow-hidden rounded-xl border border-line">
+            <Picture src={cover} alt={d.coverAlt ?? ''} formats={['avif', 'webp']} widths={[480, 800, 1200]} sizes="(min-width: 1024px) 760px, 100vw" class="h-auto w-full" />
+          </figure>
+        )}
+        <div class="prose-fa" data-progress-target>
+          <Content />
+        </div>
+
+        {d.sources.length > 0 && (
+          <section class="mt-14 border-t border-line pt-8" aria-labelledby="sources-title">
+            <h2 id="sources-title" class="font-sans text-base font-semibold">منابع</h2>
+            <ol class="mt-4 space-y-2 text-sm text-ink-soft">
+              {d.sources.map((s, i) => (
+                <li class="flex gap-3">
+                  <span class="num shrink-0 text-ink-mute">{faNum(i + 1)}.</span>
+                  <span>{s.publisher && <>{s.publisher}، </>}<a href={s.url} class="link" rel="noopener" target="_blank" dir="auto">{s.title}</a></span>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        <section class="mt-10 rounded-xl border border-line bg-surface p-6" aria-label="درباره نویسنده">
+          <p class="text-sm text-ink-mute">نویسنده</p>
+          <p class="mt-1 font-medium">{d.author ?? <Pending inline label="نام و سمت نویسنده" />}</p>
+          {d.authorRole && <p class="text-sm text-ink-soft">{d.authorRole}</p>}
+          {d.reviewer && <p class="mt-3 text-sm text-ink-soft">بازبینی علمی: {d.reviewer}</p>}
+          <p class="mt-3 text-sm text-ink-soft">این یادداشت برای آگاهی والدین است و جای مشاوره تخصصی را نمی‌گیرد.</p>
+        </section>
+      </div>
+
+      <aside class="space-y-8 lg:sticky lg:top-24 lg:h-fit">
+        {toc.length >= 3 && (
+          <nav aria-labelledby="toc-title" class="border-s border-line ps-4">
+            <h2 id="toc-title" class="font-sans text-sm font-semibold">در این مقاله</h2>
+            <ol class="mt-3 space-y-2 text-sm">
+              {toc.map((h) => <li><a href={`#${h.slug}`} class="text-ink-soft hover:text-accent">{h.text}</a></li>)}
+            </ol>
+          </nav>
+        )}
+        {categoryLinks[d.category]?.length > 0 && (
+          <nav aria-labelledby="units-title">
+            <h2 id="units-title" class="font-sans text-sm font-semibold">مرتبط در کودک ماهر</h2>
+            <ul class="mt-3 space-y-2 text-sm">
+              {categoryLinks[d.category].map((l) => <li><a href={l.href} class="link">{l.label}</a></li>)}
+            </ul>
+          </nav>
+        )}
+      </aside>
+    </div>
+
+    {more.length > 0 && (
+      <section class="mt-16 border-t border-line pt-10" aria-labelledby="more-title">
+        <h2 id="more-title" class="text-2xl">{related.length ? `بیشتر درباره ${d.category}` : 'مقاله‌های دیگر'}</h2>
+        <ul class="mt-6 grid gap-5 md:grid-cols-3">
+          {more.map((p) => (
+            <li class="card lift relative p-6">
+              <p class="text-sm text-accent">{p.data.category}</p>
+              <h3 class="mt-2 text-lg"><a href={`/blog/${p.id}/`} class="after:absolute after:inset-0">{p.data.title}</a></h3>
+              <p class="mt-2 text-sm text-ink-soft">{p.data.description}</p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </article>
+  <CTA />
+</Base>

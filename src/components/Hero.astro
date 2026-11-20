@@ -1,0 +1,76 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import Icon from './Icon.astro';
+import HeroScene from './HeroScene.astro';
+import Stroke from './Stroke.astro';
+import { site } from '../data/site';
+import { resolveImage } from '../lib/images';
+// Real photo or short video of the institute, only with written consent (site.json → hero). It takes the place of
+// the drawing on the sheet; without one the sheet shows the drawing.
+const heroImg = site.hero.consent ? resolveImage(site.hero.image) : null;
+const heroAlt = site.hero.alt ?? '';
+const heroVideo = site.hero.consent && site.hero.video ? site.hero.video : null;
+const poster = heroImg ? (await getImage({ src: heroImg, width: Math.min(1280, heroImg.width), format: 'webp' })).src : undefined;
+---
+<section class="relative" aria-labelledby="hero-title">
+  <div class="container-x hero-wrap">
+    <div class="hero-copy">
+      <h1 id="hero-title" class="hero-title rise" style="--i:0">
+        یادگیری برای زندگی،<br /><span class="hero-mark">نه برای امتحان<Stroke class="hero-stroke" delay="0.75s" /></span>
+      </h1>
+      <p class="rise lead mt-6 max-w-xl sm:mt-7" style="--i:1">از کودکستان تا نوجوانی، کنار فرزندتان هستیم تا خودش را بشناسد، با تجربه واقعی یاد بگیرد و مسیرش را آگاهانه انتخاب کند.</p>
+      <div class="rise mt-8 flex flex-wrap gap-3 sm:mt-9" style="--i:2">
+        <a href="/register/" class="btn-primary grow sm:grow-0" data-cta="home-hero">پیش‌ثبت‌نام و مشاوره<Icon name="arrow" size={18} /></a>
+        <a href="/method/" class="btn-ghost grow sm:grow-0">متد کودک ماهر چیست؟</a>
+      </div>
+      <p class="rise mt-8 flex items-center gap-3 text-sm text-ink-mute sm:mt-10" style="--i:3">
+        <span class="h-0.5 w-8 shrink-0 rounded-full bg-gold" aria-hidden="true"></span><span>{site.name}{site.foundingYear && <>، از <span class="num">{site.foundingYear}</span></>}</span>
+      </p>
+    </div>
+
+    <!-- A sheet of navy paper: the path from 3 to 18 cut out of coloured paper, climbing over one hill per stretch
+         to the sun, set as a box of paper sheets at their depths (HeroScene.astro). It opens once like a pop-up book
+         when it comes into view, then leans a little toward the pointer on a computer. -->
+    <div class="hero-sheet" data-hero-panel>
+      {heroImg ? (
+        <Picture src={heroImg} alt={heroAlt} formats={['avif', 'webp']} widths={[480, 800, 1200, 1600]} sizes="(min-width: 1024px) 46vw, 100vw"
+          loading="eager" fetchpriority="high" />
+      ) : (
+        <HeroScene />
+      )}
+      {heroImg && heroVideo && (
+        <video muted playsinline loop preload="none" poster={poster} aria-hidden="true" data-hero-video>
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+      )}
+      {heroImg && <div class="hero-scrim" aria-hidden="true"></div>}
+      <p class="hero-slogan">{site.slogan2}</p>
+      {heroImg && heroVideo && (
+        <button type="button" class="absolute bottom-3 end-3 grid size-11 place-items-center rounded-full bg-ink/45 text-white backdrop-blur-sm transition-colors hover:bg-ink/65 focus-visible:outline-white" data-video-toggle aria-label="پخش ویدیو" aria-pressed="false">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" data-icon-play><path d="M4 2.5v11l9-5.5z" fill="currentColor" /></svg>
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" class="hidden" data-icon-pause><path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor" /></svg>
+        </button>
+      )}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Hero video (only with a consented photo and video, see above): muted and looping, starts only when there is motion permission and no data saver,
+  // and can always be paused (WCAG 2.2.2). Under reduced motion the poster photo stays.
+  const video = document.querySelector<HTMLVideoElement>('[data-hero-video]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-video-toggle]');
+  if (video && toggle) {
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData;
+    const setState = (playing: boolean) => {
+      toggle.setAttribute('aria-pressed', String(playing));
+      toggle.setAttribute('aria-label', playing ? 'توقف ویدیو' : 'پخش ویدیو');
+      toggle.querySelector('[data-icon-play]')!.classList.toggle('hidden', playing);
+      toggle.querySelector('[data-icon-pause]')!.classList.toggle('hidden', !playing);
+    };
+    const play = () => { video.preload = 'auto'; video.play().then(() => setState(true)).catch(() => setState(false)); };
+    toggle.addEventListener('click', () => (video.paused ? play() : (video.pause(), setState(false))));
+    if (!reduce && !saveData) play();
+  }
+</script>

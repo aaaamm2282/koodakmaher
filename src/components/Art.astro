@@ -1,0 +1,19 @@
+---
+// One of the site's cut-paper drawings (src/assets/art, made by scripts/art/make-art.mjs), written into the page so
+// its numbers and letters use the site's own fonts. Decoration only: hidden from screen readers, never focusable.
+// Each drawing's shadow filters get ids of their own here, so two drawings on one page never share an id.
+interface Props { name: string; class?: string }
+const { name, class: cls } = Astro.props;
+const files = import.meta.glob<string>('../assets/art/*.svg', { query: '?raw', import: 'default', eager: true });
+const raw = files[`../assets/art/${name}.svg`];
+if (!raw) throw new Error(`Unknown drawing: ${name}`);
+// Astro renders components one at a time per page, so a counter kept on the request gives each drawing its own ids
+const locals = Astro.locals as { artCount?: number };
+locals.artCount = (locals.artCount ?? 0) + 1;
+const id = `art${locals.artCount}-`;
+const html = raw
+  .trim()
+  .replaceAll('__ID__', id)
+  .replace('<svg ', `<svg${cls ? ` class="${cls}"` : ''} aria-hidden="true" focusable="false" `);
+---
+<Fragment set:html={html} />

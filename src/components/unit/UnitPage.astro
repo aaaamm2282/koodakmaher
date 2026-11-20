@@ -1,0 +1,167 @@
+---
+/**
+ * Shared page for one center/unit: everything a parent needs on one page, in this order:
+ * heading and quick actions → what happens here (page-specific, via the slot) with key facts beside
+ * → a day at the unit → photos → registration documents → address, hours and contact → parent reviews
+ * → this unit's questions → where the path goes next.
+ * Facts come from src/content/units/<slug>.json (editable in /admin/); anything unknown shows "در حال تکمیل".
+ */
+import Base from '../../layouts/Base.astro';
+import PageHero from '../PageHero.astro';
+import InfoList from '../InfoList.astro';
+import UnitContact from '../UnitContact.astro';
+import FaqList from '../FaqList.astro';
+import Pending from '../Pending.astro';
+import Icon from '../Icon.astro';
+import CTA from '../CTA.astro';
+import Gallery from './Gallery.astro';
+import { type Unit } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+import { reviewLinks, reviewPath } from '../../data/local.mjs';
+import { unit as unitSchema, faqPage } from '../../lib/schema';
+import { resolveImage } from '../../lib/images';
+import { unitTone, unitArt } from '../../data/tones';
+import { getImage } from 'astro:assets';
+
+interface Props {
+  unit: Unit;
+  /** Defaults to the H1 in the keyword map (src/data/keyword-map.json) */
+  h1?: string;
+  subtitle?: string;
+  /** A day at the unit, built only from confirmed hours; an item without time reads «در طول روز» */
+  day?: { time?: string; label: string }[];
+  /** Next/previous steps in the 3–18 path and other useful pages */
+  related?: { href: string; label: string; text: string }[];
+}
+const seo = pageSeo(`/units/${Astro.props.unit.slug}/`);
+const { unit: u, h1 = seo.h1, subtitle, day = [], related = [] } = Astro.props;
+const registerHref = `/register/?unit=${u.slug}`;
+const crumbs = [{ href: '/units/', label: 'واحدها' }, { label: u.name }];
+
+// First photos go into the structured data as images of the place
+const photoUrls = (
+  await Promise.all(u.gallery.slice(0, 3).map(async (g) => {
+    const img = resolveImage(g.image);
+    return img ? new URL((await getImage({ src: img, width: 1200, format: 'jpeg' })).src, Astro.site).href : null;
+  }))
+).filter((x): x is string => Boolean(x));
+const schema = [unitSchema(u, Astro.site!, { description: seo.description, image: photoUrls }), faqPage(u.faqs)];
+// The first photo of the gallery is also the photo at the top of the page
+const coverSrc = u.gallery[0] ? resolveImage(u.gallery[0].image) : null;
+const cover = coverSrc ? { src: coverSrc, alt: u.gallery[0].alt } : null;
+// No photo yet: the unit's own sheet of coloured paper and drawing, as on its tile on the home page
+const paper = unitTone[u.slug] ? { tone: unitTone[u.slug], art: unitArt(u.slug) } : null;
+// Under the H1: the official name when the H1 doesn't already say it, otherwise the unit's short line
+const lede = subtitle ?? (u.officialName && !h1.includes(u.officialName) ? u.officialName : u.short) ?? undefined;
+const tel = u.phone ? `tel:${u.phone.tel}` : null;
+---
+<Base title={seo.title} description={seo.description} crumbs={crumbs} schema={schema} progress={!u.soon}>
+  <PageHero title={h1} subtitle={lede} crumbs={crumbs} image={cover} paper={paper}>
+    {(u.ages || u.hours || u.address) && (
+      <ul class="rise mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-ink-soft" style="--i:3" aria-label="خلاصه">
+        {u.ages && <li class="flex items-center gap-2"><Icon name="users" size={18} class="shrink-0 text-accent" />{u.ages}</li>}
+        {u.hours && <li class="flex items-center gap-2"><Icon name="clock" size={18} class="shrink-0 text-accent" />{u.hours}</li>}
+        {u.address && <li class="flex items-center gap-2"><Icon name="pin" size={18} class="shrink-0 text-accent" />{u.address}</li>}
+      </ul>
+    )}
+    <!-- Phone: the main action across the full width, call and directions side by side under it (thumb reach) -->
+    <div class="rise mt-7 grid grid-cols-2 gap-3 sm:flex sm:flex-wrap" style="--i:4">
+      <a href={registerHref} class="btn-primary col-span-2" data-cta="register-hero">پیش‌ثبت‌نام و مشاوره<Icon name="arrow" size={18} /></a>
+      {tel && <a href={tel} class="btn-ghost whitespace-nowrap max-sm:!px-3" data-track="click_phone" data-unit={u.slug}><Icon name="phone" size={18} /><span class="num" dir="ltr">{u.phone!.display}</span></a>}
+      {u.mapUrl && <a href={u.mapUrl} class="btn-ghost whitespace-nowrap max-sm:!px-3" target="_blank" rel="noopener" data-track="click_map" data-unit={u.slug}><Icon name="pin" size={18} />مسیریابی در نشان</a>}
+    </div>
+  </PageHero>
+
+  <section class="container-x py-14 sm:py-20">
+    <div class="grid gap-12 lg:grid-cols-[1.6fr_1fr] lg:gap-16">
+      <div class="min-w-0 space-y-14">
+        <slot />
+
+        {day.length > 0 && (
+          <div>
+            <h2 class="text-2xl">یک روز در {u.name}</h2>
+            <ol class="relative mt-6 border-s border-line-strong ps-6">
+              {day.map((d) => (
+                <li class="relative pb-6 last:pb-0">
+                  <span class="absolute top-2 -start-[1.85rem] h-2.5 w-2.5 rounded-full border-2 border-accent bg-paper" aria-hidden="true"></span>
+                  <p class:list={[d.time ? 'num text-lg' : 'text-sm font-medium', 'text-accent']}>{d.time ?? 'در طول روز'}</p>
+                  <p class="text-ink-soft">{d.label}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+      </div>
+      {u.facts.length > 0 && <InfoList title={`اطلاعات کلیدی ${u.name}`} items={u.facts.map((f) => ({ label: f.label, value: f.value ?? undefined, pending: f.pending ?? undefined }))} cta={{ href: registerHref, label: 'پیش‌ثبت‌نام و مشاوره' }} />}
+    </div>
+  </section>
+
+  <Gallery items={u.gallery} title={`عکس‌هایی از ${u.name}`} id={`gallery-${u.slug}`} />
+
+  {u.documents && (
+    <section class="border-y border-line bg-sand" aria-labelledby="docs-title">
+      <div class="container-x grid gap-8 py-14 sm:py-16 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+        <div>
+          <h2 id="docs-title" class="text-2xl sm:text-title">مدارک ثبت‌نام {u.name}</h2>
+          <p class="mt-3 text-ink-soft">پس از پیش‌ثبت‌نام و جلسه مصاحبه، این مدارک را برای ثبت‌نام نهایی همراه داشته باشید.</p>
+          <a href="/register/#steps" class="link mt-4 inline-flex items-center gap-1 text-sm">مراحل ثبت‌نام<Icon name="arrow" size={15} /></a>
+        </div>
+        <div>
+          <ul class="divide-y divide-line rounded-xl border border-line bg-surface">
+            {u.documents.items.map((d) => <li class="flex items-start gap-3 px-5 py-3.5"><Icon name="check" size={18} class="mt-1 shrink-0 text-accent" />{d}</li>)}
+          </ul>
+          {u.documents.pending && <Pending class="mt-3" label={u.documents.pending} />}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <div class="container-x py-14 sm:py-20" id="contact">
+    <UnitContact unit={u} />
+  </div>
+
+  {u.reviews.length > 0 && (
+    <section class="container-x pb-14 sm:pb-20" aria-labelledby="reviews-title">
+      <h2 id="reviews-title" class="text-2xl sm:text-title">والدین درباره {u.name}</h2>
+      <ul class="mt-6 grid gap-5 md:grid-cols-2">
+        {u.reviews.map((r) => (
+          <li class="card p-6">
+            <Icon name="quote" size={22} class="text-gold" />
+            <blockquote class="mt-3 font-serif text-lg leading-9">{r.text}</blockquote>
+            <p class="mt-4 text-sm text-ink-mute">{r.author}{r.date && <> — {r.date}</>}{r.source && <> — {r.source}</>}</p>
+          </li>
+        ))}
+      </ul>
+      {reviewLinks(u).length > 0 && <a href={reviewPath(u.slug)} class="link mt-5 inline-flex items-center gap-1 text-sm" data-track="review" data-unit={u.slug}>نظر خود را بنویسید<Icon name="arrow" size={15} /></a>}
+    </section>
+  )}
+
+  {u.faqs.length > 0 && (
+    <section class="border-t border-line bg-surface" aria-labelledby="unit-faq-title">
+      <div class="container-x grid gap-8 py-14 sm:py-20 lg:grid-cols-[1fr_1.8fr] lg:gap-16">
+        <div>
+          <h2 id="unit-faq-title" class="text-2xl sm:text-title">پرسش‌های پرتکرار درباره {u.name}</h2>
+          <p class="mt-3 text-ink-soft">پاسخ پرسشی را پیدا نکردید؟ <a href="/faq/" class="link">پرسش‌های عمومی</a> را ببینید یا <a href="/contact/" class="link">با ما تماس بگیرید</a>.</p>
+        </div>
+        <FaqList items={u.faqs} level="h3" />
+      </div>
+    </section>
+  )}
+
+  {related.length > 0 && (
+    <nav class="container-x py-14 sm:py-16" aria-labelledby="related-title">
+      <h2 id="related-title" class="text-2xl">ادامه مسیر</h2>
+      <ul class="mt-6 grid gap-5 md:grid-cols-3">
+        {related.map((r) => (
+          <li class="card lift relative p-6">
+            <h3 class="text-lg"><a href={r.href} class="after:absolute after:inset-0">{r.label}</a></h3>
+            <p class="mt-2 text-sm text-ink-soft">{r.text}</p>
+            <Icon name="arrow" size={18} class="mt-4 text-accent" />
+          </li>
+        ))}
+      </ul>
+    </nav>
+  )}
+
+  <CTA href={registerHref} />
+</Base>

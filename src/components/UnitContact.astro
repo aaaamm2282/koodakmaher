@@ -1,0 +1,133 @@
+---
+/**
+ * Address, map, phone, hours, manager and links of one unit. Missing values show "در حال تکمیل".
+ * The map: with confirmed coordinates (geo), an OpenStreetMap view that loads only after a click
+ * (no third-party request, cookie or weight before the visitor asks for it); without them, the
+ * Neshan / Balad / Google Maps links the institute has given.
+ */
+import Icon from './Icon.astro';
+import Pending from './Pending.astro';
+import type { Unit, Weekday } from '../data/site';
+import { reviewLinks, reviewPath } from '../data/local.mjs';
+interface Props { unit: Unit; headingLevel?: 'h2' | 'h3' }
+const { unit: u, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+const ig = u.instagram ? `https://instagram.com/${u.instagram.replace(/^@/, '')}` : null;
+/** «نظر شما» page of the unit (Google, Neshan, Balad), once at least one of them has a link. */
+const review = reviewLinks(u).length > 0 ? reviewPath(u.slug) : null;
+
+const faDays: Record<Weekday, string> = { Saturday: 'شنبه', Sunday: 'یکشنبه', Monday: 'دوشنبه', Tuesday: 'سه‌شنبه', Wednesday: 'چهارشنبه', Thursday: 'پنجشنبه', Friday: 'جمعه' };
+const week: Weekday[] = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const faNum = (s: string) => s.replace(/\d/g, (d) => '۰۱۲۳۴۵۶۷۸۹'[+d]);
+const time = (t: string) => faNum(t.replace(/^0/, '').replace(/:00$/, ''));
+/** Consecutive days read as a range: «شنبه تا چهارشنبه». */
+function dayRange(days: Weekday[]) {
+  const idx = [...new Set(days.map((d) => week.indexOf(d)))].sort((a, b) => a - b);
+  const runs: number[][] = [];
+  idx.forEach((i) => (runs.length && runs.at(-1)!.at(-1) === i - 1 ? runs.at(-1)!.push(i) : runs.push([i])));
+  return runs.map((r) => (r.length > 2 ? `${faDays[week[r[0]]]} تا ${faDays[week[r.at(-1)!]]}` : r.map((i) => faDays[week[i]]).join(' و '))).join('، ');
+}
+const schedule = u.openingHours.map((o) => ({ days: dayRange(o.days), hours: `${time(o.opens)} تا ${time(o.closes)}` }));
+
+const nav = [
+  u.mapUrl && { href: u.mapUrl, label: 'مسیریابی در نشان', track: 'neshan' },
+  u.baladUrl && { href: u.baladUrl, label: 'مسیریابی در بلد', track: 'balad' },
+  (u.googleMapsUrl || u.geo) && { href: u.googleMapsUrl ?? `https://www.google.com/maps/search/?api=1&query=${u.geo!.lat},${u.geo!.lng}`, label: 'گوگل‌مپ', track: 'google' },
+].filter(Boolean) as { href: string; label: string; track: string }[];
+
+const osm = u.geo
+  ? (() => {
+      const { lat, lng } = u.geo!;
+      const d = { x: 0.0045, y: 0.0028 };
+      return {
+        embed: `https://www.openstreetmap.org/export/embed.html?bbox=${lng - d.x},${lat - d.y},${lng + d.x},${lat + d.y}&layer=mapnik&marker=${lat},${lng}`,
+        page: `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=17/${lat}/${lng}`,
+      };
+    })()
+  : null;
+const id = `contact-${u.slug}`;
+---
+<section class="card overflow-hidden" aria-labelledby={id}>
+  <div class="grid lg:grid-cols-[1.15fr_1fr]">
+    <div class="p-6 sm:p-8">
+      <H id={id} class="text-2xl">نشانی و تماس</H>
+      {u.officialName && <p class="mt-1 text-sm text-ink-mute">{u.officialName}</p>}
+      <dl class="mt-6 space-y-5 text-sm">
+        <div class="flex gap-3">
+          <dt class="shrink-0"><Icon name="pin" size={18} class="mt-1 text-accent" /><span class="sr-only">نشانی</span></dt>
+          <dd>{u.address ?? <Pending inline label="نشانی" />}</dd>
+        </div>
+        <div class="flex gap-3">
+          <dt class="shrink-0"><Icon name="phone" size={18} class="mt-1 text-accent" /><span class="sr-only">تلفن</span></dt>
+          <dd>{u.phone
+            ? <><a href={`tel:${u.phone.tel}`} class="num link no-underline" dir="ltr" data-track="click_phone" data-unit={u.slug}>{u.phone.display}</a>{u.phone.note && <span class="text-ink-mute"> ({u.phone.note})</span>}</>
+            : <Pending inline label="تلفن" />}</dd>
+        </div>
+        <div class="flex gap-3">
+          <dt class="shrink-0"><Icon name="clock" size={18} class="mt-1 text-accent" /><span class="sr-only">ساعت کار</span></dt>
+          <dd>
+            {u.hours ?? (schedule.length ? null : <Pending inline label="ساعت کار" />)}
+            {schedule.length > 0 && !u.hours && schedule.map((s) => <span class="block">{s.days}: {s.hours}</span>)}
+          </dd>
+        </div>
+        <div class="flex gap-3">
+          <dt class="shrink-0"><Icon name="users" size={18} class="mt-1 text-accent" /><span class="sr-only">مدیر</span></dt>
+          <dd>{u.manager ? <>مدیر: {u.manager}</> : <Pending inline label="مدیر واحد" />}</dd>
+        </div>
+        {ig && (
+          <div class="flex gap-3">
+            <dt class="shrink-0"><Icon name="instagram" size={18} class="mt-1 text-accent" /><span class="sr-only">اینستاگرام</span></dt>
+            <dd><a href={ig} target="_blank" rel="noopener" class="link" dir="ltr" data-track="social" data-unit={u.slug}>{u.instagram}</a></dd>
+          </div>
+        )}
+      </dl>
+      {review && (
+        <a href={review} class="link mt-6 inline-flex items-center gap-1.5 text-sm" data-track="review" data-unit={u.slug}>
+          <Icon name="star" size={16} />نظر خود را درباره {u.name} بنویسید
+        </a>
+      )}
+    </div>
+
+    <div class="relative min-h-[19rem] border-t border-line bg-sand lg:border-t-0 lg:border-s" data-map>
+      {osm ? (
+        <>
+          <div class:list={['map-paper absolute inset-0 flex flex-col items-center justify-center gap-4 p-6 text-center', nav.length && 'pb-20']} data-map-facade>
+            <Icon name="pin" size={34} class="text-accent" />
+            <button type="button" class="btn-ghost" data-map-load data-embed={osm.embed} data-title={`نقشه ${u.name}`}>نمایش نقشه</button>
+            <p class="max-w-[16rem] text-xs text-ink-mute">نقشه از OpenStreetMap و فقط پس از کلیک بارگذاری می‌شود.</p>
+          </div>
+          <noscript><a href={osm.page} class="link absolute bottom-4 start-4 text-sm" target="_blank" rel="noopener">دیدن روی نقشه</a></noscript>
+        </>
+      ) : (
+        <div class:list={['map-paper absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center', nav.length && 'pb-20']}>
+          <Icon name="pin" size={34} class="text-accent" />
+          {u.address ? <p class="max-w-[18rem] font-serif text-lg leading-8">{u.address}</p> : <Pending inline label="نشانی و نقشه" />}
+        </div>
+      )}
+      {nav.length > 0 && (
+        <ul class="absolute inset-x-0 bottom-0 flex flex-wrap justify-center gap-2 p-4" aria-label="مسیریابی">
+          {nav.map((n, i) => (
+            <li><a href={n.href} target="_blank" rel="noopener" class:list={[i === 0 ? 'btn-primary' : 'btn-ghost', 'min-h-11 px-4 py-2 text-sm']} data-track="click_map" data-map-app={n.track} data-unit={u.slug}>{n.label}</a></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Click-to-load map: the OpenStreetMap iframe (and its requests) only exists after the visitor asks.
+  document.querySelectorAll<HTMLButtonElement>('[data-map-load]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const box = btn.closest<HTMLElement>('[data-map]')!;
+      const frame = document.createElement('iframe');
+      frame.src = btn.dataset.embed!;
+      frame.title = btn.dataset.title ?? 'نقشه';
+      frame.loading = 'lazy';
+      frame.referrerPolicy = 'no-referrer';
+      frame.className = 'absolute inset-0 h-full w-full border-0';
+      box.querySelector('[data-map-facade]')?.replaceWith(frame);
+      frame.focus();
+    });
+  });
+</script>

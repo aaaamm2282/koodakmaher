@@ -1,0 +1,48 @@
+---
+// The brand idea under the home hero: one continuous path from 3 to 18 with two choice points. Five stops, all in
+// sight at once (no tabs, nothing moves by itself); each is one link to its page, the whole stop is the target.
+// The discs are cut from the paper of their stretch, as in the hero's drawing; 15 to 18 is dashed (still to come).
+import Icon from './Icon.astro';
+import PaperDisc from './PaperDisc.astro';
+import { stages, units } from '../data/site';
+const u = (slug: string) => units.find((x) => x.slug === slug)!;
+const stops = [
+  { ...stages[0], title: 'کودکستان', text: u('kindergarten').short!, meta: u('kindergarten').ages, href: '/units/kindergarten/', cta: 'آشنایی با کودکستان', tone: 'saffron' },
+  { ...stages[1], title: 'دبستان مهارت‌محور', text: u('primary').short!, meta: u('primary').ages, href: '/units/primary/', cta: 'آشنایی با دبستان', tone: 'red' },
+  { ...stages[2], title: 'متوسطه اول پسرانه', text: u('middle-school').short!, meta: u('middle-school').ages, href: '/units/middle-school/', cta: 'آشنایی با متوسطه اول', tone: 'teal' },
+  { ...stages[3], title: '۱۵ سالگی، پایه نهم', text: 'اولین انتخاب رشته تحصیلی، بر پایه تجربه‌ها و «پرونده انتخاب» خود دانش‌آموز.', meta: 'نقطه انتخاب', href: '/method/', cta: 'متد کودک ماهر', tone: 'gold', soonAfter: true },
+  { ...stages[4], title: '۱۸ سالگی', text: 'بازنگری و انتخاب نهایی برای دانشگاه یا ورود به کار.', meta: 'نقطه انتخاب', href: '/path/', cta: 'مسیر رشد ۳ تا ۱۸ سال', tone: 'gold' },
+];
+---
+<section id="path" class="border-y border-line bg-surface" aria-labelledby="path-title">
+  <div class="container-x py-16 sm:py-24">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
+      <h2 id="path-title" class="section-title">یک مسیر پیوسته، از ۳ تا ۱۸ سالگی</h2>
+      <p class="text-sm text-ink-mute">روی هر سن بزنید</p>
+    </div>
+    <ol class="stops mt-12 sm:mt-14" role="list">
+      {stops.map((s, i) => (
+        <li class:list={['stop', s.soonAfter && 'is-next-soon']} data-tone={s.tone}>
+          <p class="stop-head">
+            <PaperDisc n={s.age} seed={70 + i} class="stop-disc" />
+            <span class="stop-label">{s.label}</span>
+          </p>
+          <div class="stop-card">
+            {s.meta && <p class="text-sm text-saffron">{s.meta}</p>}
+            <h3 class="mt-1 text-xl">{s.title}</h3>
+            <p class="mt-2 text-ink-soft">{s.text}</p>
+            <a href={s.href} class="stop-cta link mt-3 inline-flex items-center gap-1 text-sm" data-stage={s.label}>{s.cta}<Icon name="arrow" size={15} /></a>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<script>
+  import { track } from '../lib/track';
+  // Which stage of the path visitors open (Analytics.astro: explorer_select)
+  document.querySelectorAll<HTMLAnchorElement>('.stop-cta[data-stage]').forEach((a) =>
+    a.addEventListener('click', () => track('explorer_select', { stage: a.dataset.stage! })),
+  );
+</script>

@@ -1,0 +1,109 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import NewsBar from '../components/NewsBar.astro';
+import PathStops from '../components/PathStops.astro';
+import Icon from '../components/Icon.astro';
+import PlacePin from '../components/PlacePin.astro';
+import Section from '../components/Section.astro';
+import CycleOrbit from '../components/CycleOrbit.astro';
+import UnitCards from '../components/UnitCards.astro';
+import InkText from '../components/InkText.astro';
+import CTA from '../components/CTA.astro';
+import { cycle, units, workshops } from '../data/site';
+import { pageSeo } from '../data/keywords';
+const seo = pageSeo('/');
+
+const pillars = [
+  { t: 'یادگیری با تجربه واقعی', d: 'کودک با دست و ذهن کار می‌کند، نه فقط با حفظ کردن.' },
+  { t: 'مسئولیت تدریجی', d: 'هر سال کمی بیشتر از کارهای واقعی مدرسه به خود بچه‌ها سپرده می‌شود.' },
+  { t: 'بدون برچسب', d: 'به کودک نمی‌گوییم «تو استعداد فلان کار را داری». کمکش می‌کنیم خودش با شاهد بفهمد.' },
+  { t: 'پرونده رشد', d: 'مسیر هر کودک، از حدس‌ها تا انتخاب‌هایش، سال‌به‌سال ثبت می‌شود.' },
+];
+const places = units.filter((u) => u.address);
+---
+<Base title={seo.title} description={seo.description}>
+  <Hero />
+  <NewsBar />
+
+  <!-- The path from 3 to 18: the hero's drawing, told in words, one stop per stage -->
+  <PathStops />
+
+  <!-- The problem: the page's one statement, which inks in word by word as it is read (InkText.astro) -->
+  <Section id="problem">
+    <div class="mt-4 grid gap-8 lg:grid-cols-[1fr_1.3fr] lg:gap-16">
+      <h2 id="problem-title" class="section-title">انتخاب آگاهانه <span class="mark-sweep">یک مهارت است</span>؛ باید از کودکی تمرین شود.</h2>
+      <div class="space-y-5">
+        <InkText class="font-serif text-xl leading-[2] sm:text-lede" text="بسیاری از نوجوان‌ها در ۱۵ سالگی رشته‌ای را انتخاب می‌کنند که خودشان آن را نیازموده‌اند. انتخاب‌ها اغلب بر پایه نمره، حرف دیگران یا تصویری کلی از یک شغل است." />
+        <p class="lead">نتیجه‌اش را بعدها در دانشگاه و کار می‌بینیم: تغییر رشته، بی‌انگیزگی و سال‌هایی که دوباره باید جبران شود. نباید این تصمیم یک‌باره در پایه نهم از نوجوان خواسته شود.</p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- The method: the cycle every class and workshop repeats, as a circle with a gold token (CycleOrbit.astro) -->
+  <Section id="steps" title="سه قدم ساده، از ۳ تا ۱۸ سالگی" mark="سه قدم ساده" intro="در هر کلاس و هر کارگاه، یک چرخه تکرار می‌شود:" tone="white">
+    <CycleOrbit items={cycle} class="mt-12 sm:mt-14" />
+    <p class="mt-12"><a href="/method/" class="link inline-flex items-center gap-1">بیشتر درباره متد<Icon name="arrow" size={16} /></a></p>
+  </Section>
+
+  <!-- Units: one sheet of coloured paper each -->
+  <Section id="units" title="از کودکستان تا آموزشگاه" intro="کودک ماهر مانا یک مدرسه مهارت‌محور است. امروز مؤسسه شامل کودکستان، دبستان مهارت‌محور، متوسطه اول پسرانه، آموزشگاه زبان و آموزشگاه آزاد فنی‌وحرفه‌ای است.">
+    <div class="mt-12 sm:mt-14"><UnitCards /></div>
+  </Section>
+
+  <!-- A day -->
+  <Section id="day" tone="sand">
+    <div class="mt-4 grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-16">
+      <div>
+        <h2 id="day-title" class="section-title">درس رسمی، <span class="mark-sweep">یک جلسه مهارت</span>، یک کارگاه</h2>
+        <p class="lead mt-5">در همه مراکز، در کنار برنامه درسی رسمی، دانش‌آموزان هر روز یک جلسه مهارت‌های نرم و یک جلسه کارگاه دارند. کارگاه برای ما فقط سرگرمی نیست؛ جایی است که کودک تجربه می‌کند، و قبل و بعد از آن چند دقیقه درباره حدس و نتیجه‌اش فکر می‌کند.</p>
+        <p class="mt-6"><a href="/workshops/" class="link">درباره کارگاه‌ها</a></p>
+      </div>
+      <div class="card overflow-hidden shadow-soft">
+        <table class="w-full text-start">
+          <caption class="sr-only">کارگاه‌ها و سن مناسب</caption>
+          <thead><tr class="border-b border-line text-sm text-ink-mute"><th scope="col" class="px-5 py-3 text-start font-normal">کارگاه</th><th scope="col" class="px-5 py-3 text-start font-normal">سن مناسب</th></tr></thead>
+          <tbody class="divide-y divide-line">
+            {workshops.map((w) => (
+              <tr>
+                <th scope="row" class="px-5 py-3.5 font-medium"><span class="flex items-center gap-3"><Icon name={w.icon} size={18} class="shrink-0 text-accent" />{w.n}</span></th>
+                <td class="num px-5 py-3.5 text-ink-soft">{w.age ?? 'جلسه روزانه'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Why us: four short statements side by side -->
+  <Section id="why">
+    <div class="mt-4 grid gap-10 lg:grid-cols-[1fr_1.6fr] lg:gap-16">
+      <h2 id="why-title" class="section-title">آنچه ما را <span class="mark-sweep">متفاوت</span> می‌کند</h2>
+      <ul class="grid gap-x-10 gap-y-10 sm:grid-cols-2" role="list">
+        {pillars.map((p) => <li class="marked"><h3 class="text-2xl">{p.t}</h3><p class="mt-3 text-ink-soft sm:text-lg" style="line-height:1.9">{p.d}</p></li>)}
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Places -->
+  <Section id="places" title="برای بازدید به ما سر بزنید" tone="white">
+    <ul class="mt-10 grid gap-5 md:grid-cols-3" role="list">
+      {places.map((u) => (
+        <li class="card flex flex-col p-6">
+          <PlacePin pending={!u.mapUrl} />
+          <h3 class="text-xl">{u.officialName ?? u.name}</h3>
+          <p class="mt-1 text-sm text-ink-mute">{u.name}</p>
+          <dl class="mt-5 space-y-2.5 text-sm">
+            <div class="flex gap-2.5"><dt><Icon name="pin" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">نشانی</span></dt><dd>{u.address}</dd></div>
+            {u.phone && <div class="flex gap-2.5"><dt><Icon name="phone" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">تلفن</span></dt><dd><a href={`tel:${u.phone.tel}`} class="num" dir="ltr">{u.phone.display}</a></dd></div>}
+            {u.hours && <div class="flex gap-2.5"><dt><Icon name="clock" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">ساعت</span></dt><dd>{u.hours}</dd></div>}
+          </dl>
+          {u.mapUrl && <div class="mt-auto pt-6"><a href={u.mapUrl} class="btn-ghost w-full" target="_blank" rel="noopener" data-track="click_map" data-unit={u.slug} data-pin-link><Icon name="pin" size={18} />مسیریابی در نشان</a></div>}
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <CTA />
+</Base>

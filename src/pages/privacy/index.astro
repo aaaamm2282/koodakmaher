@@ -1,0 +1,29 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import { site } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/privacy/');
+const crumbs = [{ label: 'حریم خصوصی' }];
+// Said only when the site really uses them (src/components/Analytics.astro).
+const ga = /^G-[A-Z0-9]{4,}$/i.test((import.meta.env.PUBLIC_GA4_ID ?? '').trim());
+const umami = /^https:\/\//.test((import.meta.env.PUBLIC_UMAMI_SRC ?? '').trim()) && Boolean((import.meta.env.PUBLIC_UMAMI_ID ?? '').trim());
+const services = [ga && 'Google Analytics', umami && 'Umami'].filter(Boolean).join(' و ');
+---
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
+  <PageHero title="حریم خصوصی" crumbs={crumbs} />
+  <section class="container-x py-14 sm:py-20">
+    <div class="max-w-3xl space-y-5 text-md leading-[2]">
+      <Pending label="این متن پیش از انتشار باید توسط مشاور حقوقی بررسی شود." />
+      <p>اطلاعاتی که در فرم‌های این سایت وارد می‌کنید فقط برای پاسخ دادن به شما و فرایند ثبت‌نام استفاده می‌شود و در اختیار هیچ شخص یا سازمان دیگری قرار نمی‌گیرد.</p>
+      <p>همراه هر فرم، نشانی صفحه‌ای که فرم را از آن فرستاده‌اید و اینکه از کجا به سایت آمده‌اید (مثلاً جست‌وجو، نقشه یا اینستاگرام) هم ثبت می‌شود تا بدانیم خانواده‌ها از چه راهی با ما آشنا می‌شوند. پیش از فرستادن فرم، این اطلاعات فقط در همان زبانه مرورگر خودتان نگه داشته می‌شود (کوکی نیست) و با بستن زبانه پاک می‌شود.</p>
+      {services && (
+        <p>برای اینکه بدانیم کدام صفحه‌ها به کار بازدیدکنندگان می‌آید، آمار بازدید را با {services} جمع می‌کنیم. در این آمار نام، تلفن یا متن فرم‌ها ثبت نمی‌شود.{ga && ' Google Analytics برای شمردن بازدیدها کوکی می‌گذارد.'} اگر در مرورگرتان گزینه «درخواست ردیابی نشدن» (Do Not Track یا Global Privacy Control) روشن است، آمار شما جمع نمی‌شود.</p>
+      )}
+      <p>اطلاعات و پرونده رشد دانش‌آموزان فقط با رضایت خانواده نگه داشته می‌شود و فقط کادر آموزشی مرتبط به آن دسترسی دارد.</p>
+      <p>تصویر هیچ دانش‌آموزی بدون رضایت کتبی خانواده در سایت یا شبکه‌های اجتماعی منتشر نمی‌شود.</p>
+      <p>برای پرسش یا درخواست حذف اطلاعات با {site.privacyContact ?? <Pending inline label="راه ارتباطی" />} تماس بگیرید.</p>
+    </div>
+  </section>
+</Base>

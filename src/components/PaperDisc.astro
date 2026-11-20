@@ -1,0 +1,9 @@
+---
+// A number on a disc cut from coloured paper, like the ages on the home page's path. The paper takes the colour of
+// the nearest [data-tone] (--tone-bg, --tone-ink in global.css). The number stays real text; the disc is decoration.
+import { cut, ellipse } from '../../scripts/art/paper.mjs';
+interface Props { n: string; seed?: number; class?: string }
+const { n, seed = 70, class: cls } = Astro.props;
+const d = cut(ellipse(32, 32, 30, 30, 40), { seed, amp: 0.9, step: 5 });
+---
+<span class:list={['paper-disc', cls]}><svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><path d={d} fill="var(--tone-bg)" /></svg><span>{n}</span></span>

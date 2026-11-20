@@ -1,0 +1,313 @@
+# پیکربندی پنل مدیریت محتوای سایت کودک ماهر (Decap CMS)
+# راهنمای راه‌اندازی و نقش‌ها: docs/cms-setup.md
+#
+# هیچ کلید یا رمزی در این فایل نیست و نباید باشد. ورود با حساب گیت‌هاب انجام می‌شود
+# و رمز برنامه‌ی OAuth فقط در تنظیمات سرویس واسط (Cloudflare Worker) ذخیره می‌شود.
+
+backend:
+  name: github
+  repo: aaaamm2282/koodakmaher
+  branch: main
+  # نشانی سرویس واسط ورود (پس از راه‌اندازی، خط زیر را از حالت توضیح خارج کنید):
+  # base_url: https://koodakmaher-cms-auth.<your-subdomain>.workers.dev
+  commit_messages:
+    create: 'محتوا: افزودن «{{slug}}» در {{collection}}'
+    update: 'محتوا: ویرایش «{{slug}}» در {{collection}}'
+    delete: 'محتوا: حذف «{{slug}}» از {{collection}}'
+    uploadMedia: 'رسانه: بارگذاری {{path}}'
+    deleteMedia: 'رسانه: حذف {{path}}'
+    openAuthoring: '{{message}}'
+
+# پیش‌نویس ← آماده بررسی ← آماده انتشار. فقط مدیر می‌تواند منتشر کند (docs/cms-setup.md).
+publish_mode: editorial_workflow
+
+# ویرایش روی رایانه‌ی خودتان، بدون ورود: «npx decap-server» و «npm run dev»
+local_backend: true
+
+locale: fa
+site_url: https://mahermana.com
+display_url: https://mahermana.com
+logo_url: /logo.png
+
+media_folder: src/assets/uploads
+public_folder: /src/assets/uploads
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: '-'
+
+collections:
+  # ------------------------------------------------------------------ اطلاعیه‌ها
+  - name: news
+    label: اطلاعیه‌ها و اخبار
+    label_singular: اطلاعیه
+    description: اطلاعیه‌های ثبت‌نام، رویدادها و خبرهای واحدها. بالاترین اطلاعیه‌ها در صفحه اول هم دیده می‌شوند.
+    folder: src/content/news
+    create: true
+    slug: '{{fields.slug}}'
+    extension: md
+    format: frontmatter
+    sortable_fields: ['date', 'title']
+    summary: '{{title}} — {{date | date("YYYY-MM-DD")}}'
+    preview_path: 'news/{{fields.slug}}/'
+    fields:
+      - { label: عنوان, name: title, widget: string, hint: 'کوتاه و روشن؛ مثلاً «آغاز پیش‌ثبت‌نام کودکستان برای سال تحصیلی ۱۴۰۶-۱۴۰۵»' }
+      - label: نشانی صفحه (انگلیسی)
+        name: slug
+        widget: string
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'فقط حروف کوچک انگلیسی، رقم و خط تیره؛ مثل kindergarten-registration-1405']
+        hint: 'بعد از انتشار تغییرش ندهید؛ لینک‌های قبلی خراب می‌شود.'
+      - { label: تاریخ, name: date, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true, hint: 'تاریخ میلادی را انتخاب کنید؛ در سایت به شمسی نشان داده می‌شود.' }
+      - { label: خلاصه یک‌خطی, name: summary, widget: text, hint: 'بین ۲۰ تا ۲۰۰ نویسه. در فهرست اطلاعیه‌ها و نتیجه جست‌وجو نشان داده می‌شود.' }
+      - label: مربوط به واحد
+        name: units
+        widget: select
+        multiple: true
+        required: false
+        options:
+          - { label: کودکستان, value: kindergarten }
+          - { label: دبستان, value: primary }
+          - { label: متوسطه اول, value: middle-school }
+          - { label: متوسطه دوم, value: high-school }
+          - { label: آموزشگاه زبان, value: language }
+          - { label: آموزشگاه فنی‌وحرفه‌ای, value: vocational }
+      - { label: تصویر, name: cover, widget: image, required: false, choose_url: false, hint: 'عکس بدون چهره‌ی شناخته‌شدنی کودک، مگر با رضایت‌نامه‌ی کتبی ولی.' }
+      - { label: توضیح تصویر, name: coverAlt, widget: string, required: false, hint: 'یک جمله‌ی فارسی درباره‌ی آنچه در عکس دیده می‌شود (برای نابینایان و گوگل).' }
+      - { label: متن, name: body, widget: markdown, buttons: [bold, italic, link, heading-two, heading-three, bulleted-list, numbered-list, quote], editor_components: [image] }
+      - { label: پنهان بماند, name: draft, widget: boolean, default: false, required: false, hint: 'اگر روشن باشد، حتی پس از انتشار در سایت دیده نمی‌شود.' }
+
+  # ------------------------------------------------------------------ مقاله‌ها
+  - name: blog
+    label: مقاله‌ها
+    label_singular: مقاله
+    description: یادداشت‌های «دفتر اندیشه‌ها». هر مقاله پیش از انتشار باید منبع معتبر و تأیید مدیر آموزشی داشته باشد.
+    folder: src/content/blog
+    create: true
+    slug: '{{fields.slug}}'
+    extension: md
+    format: frontmatter
+    sortable_fields: ['date', 'title', 'category']
+    view_filters:
+      - { label: پیش‌نویس‌ها, field: draft, pattern: true }
+    view_groups:
+      - { label: دسته, field: category }
+    summary: '{{title}} ({{category}})'
+    preview_path: 'blog/{{fields.slug}}/'
+    fields:
+      - { label: عنوان, name: title, widget: string, hint: 'عبارت کلیدی اصلی در ابتدای عنوان بیاید؛ حدود ۵۰ تا ۶۰ نویسه.' }
+      - label: نشانی صفحه (انگلیسی)
+        name: slug
+        widget: string
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'فقط حروف کوچک انگلیسی، رقم و خط تیره']
+        hint: 'مثلاً soft-skills-at-home. بعد از انتشار تغییرش ندهید.'
+      - { label: توضیح کوتاه (برای گوگل), name: description, widget: text, hint: 'بین ۵۰ تا ۱۷۰ نویسه؛ بگویید خواننده از این مقاله چه چیزی به دست می‌آورد.' }
+      - label: دسته
+        name: category
+        widget: select
+        options: ['شناخت کودک', 'مهارت‌های نرم', 'انتخاب رشته و مسیر', 'یادگیری در خانه', 'از کلاس‌های ما']
+      - { label: عبارت کلیدی اصلی, name: focus, widget: string, required: false, hint: 'از docs/keyword-map.md. فقط برای هماهنگی؛ در صفحه نشان داده نمی‌شود.' }
+      - { label: تاریخ انتشار, name: date, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true }
+      - { label: تاریخ به‌روزرسانی, name: updated, widget: datetime, format: 'YYYY-MM-DD', date_format: 'YYYY-MM-DD', time_format: false, picker_utc: true, required: false, hint: 'فقط وقتی محتوا واقعاً تغییر کرده است.' }
+      - { label: نویسنده, name: author, widget: string, required: false, hint: 'نام واقعی نویسنده. اگر خالی بماند، «در حال تکمیل» نشان داده می‌شود.' }
+      - { label: سمت نویسنده, name: authorRole, widget: string, required: false, hint: 'مثلاً «مربی کارگاه چوب، دبستان کودک ماهر»' }
+      - { label: بازبین علمی, name: reviewer, widget: string, required: false }
+      - { label: تصویر شاخص, name: cover, widget: image, required: false, choose_url: false }
+      - { label: توضیح تصویر, name: coverAlt, widget: string, required: false }
+      - label: منابع
+        name: sources
+        widget: list
+        required: false
+        summary: '{{fields.title}}'
+        hint: 'هر ادعای علمی باید منبع داشته باشد: پژوهش، سازمان معتبر یا کتاب.'
+        fields:
+          - { label: عنوان منبع, name: title, widget: string }
+          - { label: ناشر یا سازمان, name: publisher, widget: string, required: false }
+          - { label: نشانی, name: url, widget: string, pattern: ['^https?://', 'با http یا https شروع شود'] }
+      - { label: نسخه کوتاه اینستاگرام, name: instagram, widget: text, required: false, hint: 'متن کپشن؛ در سایت نشان داده نمی‌شود.' }
+      - { label: متن مقاله, name: body, widget: markdown, buttons: [bold, italic, link, heading-two, heading-three, bulleted-list, numbered-list, quote], editor_components: [image] }
+      - { label: پیش‌نویس (منتشر نشود), name: draft, widget: boolean, default: true, required: false, hint: 'تا وقتی تأیید نهایی نشده، روشن بماند.' }
+
+  # ------------------------------------------------------------------ واحدها
+  - name: units
+    label: مراکز و واحدها
+    label_singular: واحد
+    description: نشانی، تلفن، ساعت کار، شهریه، مدارک، عکس‌ها و پرسش‌های هر واحد.
+    editor: { preview: false }
+    files:
+      - { label: کودکستان, name: kindergarten, file: src/content/units/kindergarten.json, fields: &unit_fields [
+          { label: شناسه, name: slug, widget: hidden },
+          { label: ترتیب, name: order, widget: hidden },
+          { label: نماد, name: icon, widget: hidden },
+          { label: به‌زودی, name: soon, widget: hidden },
+          { label: متن جایگزین جمله کوتاه, name: shortPending, widget: hidden },
+          { label: نام کوتاه, name: name, widget: string },
+          { label: نام رسمی (مطابق مجوز), name: officialName, widget: string, required: false },
+          { label: جمله کوتاه معرفی, name: short, widget: text, required: false, hint: 'در کارت‌های صفحه اول و فهرست واحدها.' },
+          { label: سن یا پایه‌ها, name: ages, widget: string, required: false },
+          { label: مدیر واحد, name: manager, widget: string, required: false },
+          { label: نشانی, name: address, widget: string, required: false, hint: 'دقیقاً همان نشانی که در نشان، بلد و گوگل‌مپ ثبت می‌شود.' },
+          { label: تلفن, name: phone, widget: object, required: false, collapsed: false, fields: [
+              { label: شماره برای نمایش, name: display, widget: string, required: false, hint: 'مثل ۰۵۱-۳۶۰۶۱۶۸۱' },
+              { label: شماره برای تماس (رقم انگلیسی), name: tel, widget: string, required: false, pattern: ['^\+?[0-9]{8,13}$', 'فقط رقم انگلیسی؛ مثل 05136061681'] },
+              { label: توضیح, name: note, widget: string, required: false, hint: 'مثلاً «مدیریت»' } ] },
+          { label: ساعت کار (یک خط), name: hours, widget: string, required: false, hint: 'در کارت‌ها و صفحه تماس نشان داده می‌شود.' },
+          { label: ساعت کار برای گوگل, name: openingHours, widget: list, required: false, summary: '{{fields.opens}} تا {{fields.closes}}',
+            hint: 'فقط وقتی روزها و ساعت دقیق قطعی است. در داده‌ی ساختاریافته‌ی گوگل استفاده می‌شود.', fields: [
+              { label: روزها, name: days, widget: select, multiple: true, options: [
+                  { label: شنبه, value: Saturday }, { label: یکشنبه, value: Sunday }, { label: دوشنبه, value: Monday },
+                  { label: سه‌شنبه, value: Tuesday }, { label: چهارشنبه, value: Wednesday }, { label: پنجشنبه, value: Thursday }, { label: جمعه, value: Friday } ] },
+              { label: از ساعت, name: opens, widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'به شکل 07:30'] },
+              { label: تا ساعت, name: closes, widget: string, pattern: ['^([01][0-9]|2[0-3]):[0-5][0-9]$', 'به شکل 14:00'] } ] },
+          { label: لینک صفحه مرکز در نشان, name: mapUrl, widget: string, required: false, hint: 'از اپ نشان: صفحه همین مرکز (با نام مرکز، نه یک نقطه خالی روی نقشه)، «اشتراک‌گذاری» و کپی لینک. دکمه «مسیریابی در نشان» و دکمه «امتیاز و نظر در نشان» از همین لینک‌اند.' },
+          { label: مختصات, name: geo, widget: object, required: false, hint: 'از گوگل‌مپ: روی محل کلیک راست کنید و دو عدد را کپی کنید. با مختصات، نقشه در صفحه همین مرکز هم نشان داده می‌شود.', fields: [
+              { label: عرض جغرافیایی (lat), name: lat, widget: number, value_type: float, required: false },
+              { label: طول جغرافیایی (lng), name: lng, widget: number, value_type: float, required: false } ] },
+          { label: لینک صفحه مرکز در گوگل‌مپ, name: googleMapsUrl, widget: string, required: false, hint: 'از گوگل‌مپ: صفحه همین مرکز، «اشتراک‌گذاری» (Share) و کپی لینک. پروفایل کسب‌وکار گوگل برای ایران فعال نیست؛ اگر مرکز در گوگل‌مپ نیست، با «افزودن مکان جاافتاده» (Add a missing place) اضافه‌اش کنید. راهنما: docs/local-profiles.md' },
+          { label: لینک صفحه مرکز در بلد, name: baladUrl, widget: string, required: false, hint: 'از اپ بلد: صفحه همین مرکز، «اشتراک‌گذاری» و کپی لینک. دکمه «مسیریابی در بلد» و دکمه «امتیاز و نظر در بلد» از همین لینک‌اند.' },
+          { label: لینک ثبت نظر در گوگل, name: reviewUrl, widget: string, required: false, hint: 'به این شکل: https://search.google.com/local/writereview?placeid= و بعد شناسه مکان (Place ID) که ابزار Place ID Finder گوگل نشان می‌دهد. گوگل از ۱۰ اردیبهشت ۱۴۰۴ برای دبستان و متوسطه نظر نمی‌پذیرد؛ برای این دو خالی بماند (اگر پر شود هم در سایت نشان داده نمی‌شود).' },
+          { label: اینستاگرام, name: instagram, widget: string, required: false, hint: 'با @؛ مثل @koodakmaher' },
+          { label: اطلاعات کلیدی (شهریه، ساعت، ظرفیت), name: facts, widget: list, required: false, summary: '{{fields.label}}: {{fields.value}}', fields: [
+              { label: عنوان, name: label, widget: string },
+              { label: مقدار, name: value, widget: string, required: false },
+              { label: چه چیزی هنوز معلوم نیست؟, name: pending, widget: string, required: false, hint: 'اگر پر شود، کنار مقدار برچسب «در حال تکمیل» نشان داده می‌شود.' } ] },
+          { label: مدارک ثبت‌نام, name: documents, widget: object, required: false, fields: [
+              { label: فهرست مدارک, name: items, widget: list, required: false, summary: '{{fields.item}}', field: { label: مدرک, name: item, widget: string } },
+              { label: چه چیزی هنوز معلوم نیست؟, name: pending, widget: string, required: false } ] },
+          { label: عکس‌ها, name: gallery, widget: list, required: false, summary: '{{fields.alt}}',
+            hint: 'عکس واقعی از همین مرکز. عکس اول، عکس بالای صفحه همین مرکز هم هست. عکسی که رضایت‌نامه‌ی کتبی ندارد در سایت نشان داده نمی‌شود.', fields: [
+              { label: عکس, name: image, widget: image, choose_url: false },
+              { label: توضیح تصویر, name: alt, widget: string, hint: 'یک جمله‌ی فارسی؛ بدون نام کودک.' },
+              { label: زیرنویس, name: caption, widget: string, required: false },
+              { label: برای همه‌ی افراد داخل عکس رضایت‌نامه‌ی کتبی داریم, name: consent, widget: boolean, default: false } ] },
+          { label: پرسش‌های پرتکرار این واحد, name: faqs, widget: list, required: false, summary: '{{fields.q}}', fields: [
+              { label: پرسش, name: q, widget: string },
+              { label: پاسخ, name: a, widget: text, required: false },
+              { label: چه چیزی هنوز معلوم نیست؟, name: pending, widget: string, required: false } ] },
+          { label: نظر والدین, name: reviews, widget: list, required: false, summary: '{{fields.author}}',
+            hint: 'فقط نظر واقعی و با اجازه‌ی نویسنده. نظر ساختگی ممنوع است.', fields: [
+              { label: متن نظر, name: text, widget: text },
+              { label: نویسنده, name: author, widget: string, hint: 'مثلاً «مادر یکی از نوآموزان کودکستان»؛ نام کامل فقط با اجازه.' },
+              { label: تاریخ, name: date, widget: string, required: false, hint: 'شمسی؛ مثل ۱۴۰۵/۰۸/۲۰' },
+              { label: منبع, name: source, widget: select, required: false, options: [حضوری, گوگل, نشان, اینستاگرام, پیام‌رسان] },
+              { label: اجازه‌ی انتشار گرفته شده است, name: permission, widget: boolean, default: false } ] } ] }
+      - { label: دبستان, name: primary, file: src/content/units/primary.json, fields: *unit_fields }
+      - { label: متوسطه اول, name: middle-school, file: src/content/units/middle-school.json, fields: *unit_fields }
+      - { label: متوسطه دوم (به‌زودی), name: high-school, file: src/content/units/high-school.json, fields: *unit_fields }
+      - { label: آموزشگاه زبان, name: language, file: src/content/units/language.json, fields: *unit_fields }
+      - { label: آموزشگاه فنی‌وحرفه‌ای, name: vocational, file: src/content/units/vocational.json, fields: *unit_fields }
+
+  # ------------------------------------------------------------------ تنظیمات
+  - name: settings
+    label: تنظیمات عمومی
+    editor: { preview: false }
+    files:
+      - label: اطلاعات مؤسسه
+        name: site
+        file: src/content/settings/site.json
+        fields:
+          - { label: نام کامل, name: name, widget: string }
+          - { label: نام کوتاه, name: brand, widget: string }
+          - { label: شعار اصلی, name: slogan, widget: string }
+          - { label: شعار دوم, name: slogan2, widget: string }
+          - { label: مأموریت, name: mission, widget: text }
+          - { label: بنیان‌گذار, name: founder, widget: string, required: false }
+          - { label: پیام بنیان‌گذار, name: founderMessage, widget: text, required: false }
+          - { label: عکس بنیان‌گذار, name: founderPhoto, widget: image, required: false, choose_url: false }
+          - { label: شهر, name: city, widget: string, required: false, hint: 'پس از تأیید، در عنوان صفحه‌ها و داده‌ی گوگل هم می‌آید.' }
+          - { label: تلفن اصلی, name: phone, widget: string, required: false }
+          - { label: نشانی اصلی (دفتر مرکزی), name: address, widget: string, required: false }
+          - { label: سال تأسیس, name: foundingYear, widget: string, required: false }
+          - { label: راه تماس برای حریم خصوصی, name: privacyContact, widget: string, required: false }
+          - { label: سایت قبلی, name: oldSite, widget: hidden }
+          - label: مجوزها و نماد اعتماد
+            name: licenses
+            widget: list
+            required: false
+            summary: '{{fields.title}}'
+            hint: 'فقط مجوزهایی که سند دارند. برای هر گواهی، صادرکننده را بنویسید.'
+            fields:
+              - { label: عنوان, name: title, widget: string }
+              - { label: صادرکننده, name: issuer, widget: string, required: false }
+              - { label: شماره, name: number, widget: string, required: false }
+              - { label: لینک استعلام, name: url, widget: string, required: false }
+          - label: تصویر یا ویدیوی بالای صفحه اول
+            name: hero
+            widget: object
+            required: false
+            hint: 'اختیاری. تا وقتی خالی است، طرح فعلی صفحه اول نشان داده می‌شود.'
+            fields:
+              - { label: عکس, name: image, widget: image, required: false, choose_url: false, hint: 'عریض و باکیفیت؛ دست‌کم ۲۴۰۰ پیکسل عرض.' }
+              - { label: توضیح عکس, name: alt, widget: string, required: false }
+              - { label: ویدیو (mp4، حداکثر ۱۵ ثانیه، بی‌صدا), name: video, widget: file, required: false, choose_url: false, media_folder: /public/media, public_folder: /media, hint: 'H.264، حداکثر ۴ مگابایت، بدون صدا. عکس بالا تصویر پیش از پخش ویدیو است، پس هر دو لازم‌اند.' }
+              - { label: رضایت‌نامه‌ی کتبی برای افراد داخل عکس یا ویدیو داریم, name: consent, widget: boolean, default: false }
+          - label: شبکه‌های اجتماعی
+            name: social
+            widget: list
+            summary: '{{fields.label}}'
+            fields:
+              - { label: عنوان, name: label, widget: string }
+              - { label: نام کاربری, name: handle, widget: string, required: false }
+              - { label: لینک, name: href, widget: string }
+      - label: کارگاه‌ها
+        name: workshops
+        file: src/content/settings/workshops.json
+        fields:
+          - label: کارگاه‌ها
+            name: items
+            widget: list
+            summary: '{{fields.title}} ({{fields.age}})'
+            fields:
+              - { label: نام, name: title, widget: string }
+              - { label: توضیح کوتاه, name: text, widget: string }
+              - label: نماد
+                name: icon
+                widget: select
+                options: [bulb, hammer, palette, cpu, zap, users, blocks, pencil, compass, chat, wrench, flag]
+              - { label: سن, name: age, widget: string, required: false, hint: 'مثل «از ۴ سال». برای جلسه روزانه خالی بماند.' }
+              - { label: عکس کارگاه, name: image, widget: image, required: false, choose_url: false, hint: 'افقی؛ دست‌کم ۱۶۰۰ پیکسل عرض. بهتر است دست‌ها و ابزار دیده شوند، نه چهره بچه‌ها.' }
+              - { label: توضیح عکس, name: alt, widget: string, required: false, hint: 'یک جمله‌ی فارسی؛ بدون نام کودک.' }
+              - { label: رضایت‌نامه‌ی کتبی برای افراد داخل عکس داریم, name: consent, widget: boolean, required: false, default: false }
+      - label: مراحل ثبت‌نام
+        name: register
+        file: src/content/settings/register.json
+        fields:
+          - label: مراحل
+            name: steps
+            widget: list
+            summary: '{{fields.title}}'
+            fields:
+              - { label: عنوان, name: title, widget: string }
+              - { label: توضیح, name: text, widget: text }
+      - label: پرسش‌های پرتکرار عمومی
+        name: faqs
+        file: src/content/settings/faqs.json
+        fields:
+          - label: پرسش‌ها
+            name: items
+            widget: list
+            summary: '{{fields.q}}'
+            fields:
+              - { label: پرسش, name: q, widget: string }
+              - { label: پاسخ, name: a, widget: text, required: false }
+              - { label: چه چیزی هنوز معلوم نیست؟, name: pending, widget: string, required: false }
+      - label: ریدایرکت‌ها و لینک‌های کوتاه
+        name: redirects
+        file: src/content/settings/redirects.json
+        fields:
+          - label: نشانی‌ها
+            name: items
+            widget: list
+            summary: '{{fields.from}} ← {{fields.to}} ({{fields.status}})'
+            hint: 'نشانی‌های سایت قبلی و لینک‌های کوتاه پیامک (‎/r/kg/‎ و …). وقتی سرچ کنسول نشانی قدیمی‌ای را «پیدا نشد (۴۰۴)» نشان داد، اینجا به صفحه تازه‌اش وصلش کنید. اگر نشانی اشتباه باشد، انتشار سایت متوقف می‌شود و سایت آسیبی نمی‌بیند. راهنما: docs/migration.md'
+            fields:
+              - { label: نشانی قدیمی, name: from, widget: string, hint: 'مثل ‎/درباره-ما/‎ . می‌توانید کل نشانی را از نوار مرورگر کپی کنید.' }
+              - { label: نشانی تازه, name: to, widget: string, required: false, hint: 'مثل ‎/about/‎ . برای «حذف شده» خالی بماند.' }
+              - label: نوع
+                name: status
+                widget: select
+                default: '301'
+                options:
+                  - { label: 'منتقل شده به نشانی تازه (۳۰۱)', value: '301' }
+                  - { label: 'حذف شده و جایگزین ندارد (۴۱۰)', value: '410' }
+              - { label: یادداشت, name: note, widget: string, required: false, hint: 'برای خودتان: این نشانی چه بود.' }

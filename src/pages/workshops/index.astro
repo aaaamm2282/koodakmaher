@@ -1,0 +1,46 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import { Picture } from 'astro:assets';
+import LottieIcon from '../../components/LottieIcon.astro';
+import { resolveImage } from '../../lib/images';
+import CTA from '../../components/CTA.astro';
+import { workshops } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/workshops/');
+const crumbs = [{ label: 'کارگاه‌ها' }];
+---
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
+  <PageHero title="کارگاه‌های مهارتی کودکان؛ جایی که تجربه واقعی اتفاق می‌افتد" crumbs={crumbs}
+    subtitle="کارگاه‌ها لایه «تجربه» در متد ما هستند. قبل از هر کارگاه، بچه‌ها چند دقیقه حدس می‌زنند و بعد از آن چند دقیقه بازبینی می‌کنند. هدف این نیست که هر کودک در هر کارگاه ماهر شود؛ هدف این است که کارهای متفاوت را امتحان کند و ببیند در هر کدام چه حالی دارد." />
+  <section class="container-x py-14 sm:py-20">
+    <!-- An index of the workshops, like the units list: name and age, what happens there, and a photo only
+         when one with consent exists. No empty picture frames, and no hover lift on rows that are not links. -->
+    <ul class="border-t border-line">
+      {workshops.map((w) => {
+        const img = w.photo ? resolveImage(w.photo.image) : null;
+        return (
+        <li class:list={['grid gap-x-12 gap-y-3 border-b border-line py-7 sm:py-9 md:grid-cols-[17rem_1fr]', img && 'lg:grid-cols-[17rem_1fr_15rem]']} data-lottie-card>
+          <div class="flex items-start gap-4">
+            <LottieIcon name={w.icon} size={32} class="mt-1 shrink-0 text-accent" />
+            <div>
+              <h2 class="text-2xl">{w.n}</h2>
+              <p class="mt-1 text-sm text-saffron">{w.age ?? 'جلسه روزانه'}</p>
+            </div>
+          </div>
+          <p class="text-ink-soft md:pt-1.5 md:text-lg">{w.d}</p>
+          {img && (
+            <Picture src={img} alt={w.photo!.alt} formats={['avif', 'webp']} widths={[320, 480, 720]} sizes="(min-width: 1024px) 15rem, (min-width: 768px) 60vw, 100vw"
+              class="aspect-[4/3] w-full rounded-xl border border-line object-cover md:col-start-2 lg:col-start-3 lg:row-start-1" />
+          )}
+        </li>
+        );
+      })}
+    </ul>
+    <div class="note mt-12 grid gap-3 md:grid-cols-[1fr_1.6fr] md:gap-10">
+      <h2 class="text-xl">آیا کارگاه‌ها برای کودکان بیرون از مؤسسه هم هست؟</h2>
+      <p class="text-ink-soft">بله. کودکانی که دانش‌آموز ما نیستند هم می‌توانند در نوبت عصر در کارگاه‌ها شرکت کنند. برای اطلاع از زمان‌بندی، فرم پیش‌ثبت‌نام را پر کنید یا با مراکز تماس بگیرید.</p>
+    </div>
+  </section>
+  <CTA href="/register/?unit=workshops" />
+</Base>

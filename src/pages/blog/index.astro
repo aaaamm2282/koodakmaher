@@ -1,0 +1,64 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { getPosts, faDate, isoDate, readingMinutes, faNum } from '../../lib/content';
+import { blogCategories } from '../../content.config';
+import { pageSeo } from '../../data/keywords';
+
+const seo = pageSeo('/blog/');
+const crumbs = [{ label: 'دفتر اندیشه‌ها' }];
+const posts = await getPosts();
+const groups = blogCategories.map((c) => ({ c, items: posts.filter((p) => p.data.category === c) }));
+const blogSchema = posts.length
+  ? [{
+      '@context': 'https://schema.org',
+      '@type': 'Blog',
+      name: 'دفتر اندیشه‌های کودک ماهر',
+      url: new URL('/blog/', Astro.site).href,
+      inLanguage: 'fa-IR',
+      publisher: { '@id': new URL('/#org', Astro.site).href },
+      blogPost: posts.slice(0, 20).map((p) => ({ '@type': 'BlogPosting', headline: p.data.title, url: new URL(`/blog/${p.id}/`, Astro.site).href, datePublished: isoDate(p.data.date) })),
+    }]
+  : [];
+---
+<Base title={seo.title} description={seo.description} crumbs={crumbs} schema={blogSchema}>
+  <PageHero title="دفتر اندیشه‌های کودک ماهر" tagline="مقاله‌های تربیتی برای والدین" crumbs={crumbs}
+    subtitle="یادداشت‌های کوتاه و کاربردی برای والدین و معلمان، درباره شناخت کودک، مهارت‌های زندگی و انتخاب مسیر." />
+  <section class="container-x py-14 sm:py-20">
+    <h2 class="sr-only">دسته‌ها</h2>
+    <ul class="flex flex-wrap gap-x-6 gap-y-2 border-b border-line pb-4 text-ink-soft">
+      {groups.map(({ c, items }) => <li>{items.length ? <a href={`#cat-${blogCategories.indexOf(c)}`} class="hover:text-accent">{c} <span class="num text-ink-mute">({faNum(items.length)})</span></a> : c}</li>)}
+    </ul>
+
+    {posts.length === 0 ? (
+      <div class="card mt-12 max-w-xl p-6 sm:p-8">
+        <p class="font-serif text-2xl font-semibold">به‌زودی</p>
+        <p class="mt-2 text-ink-soft">اولین یادداشت‌ها به‌زودی منتشر می‌شوند.</p>
+      </div>
+    ) : (
+      groups.filter((g) => g.items.length).map(({ c, items }) => (
+        <section class="mt-14" aria-labelledby={`cat-${blogCategories.indexOf(c)}`}>
+          <h2 id={`cat-${blogCategories.indexOf(c)}`} class="text-2xl">{c}</h2>
+          <ul class="mt-6 divide-y divide-line border-y border-line">
+            {items.map((p) => (
+              <li class="row-wipe relative py-6 sm:px-4">
+                <div class="grid gap-2 md:grid-cols-[1fr_12rem] md:items-baseline md:gap-8">
+                  <div>
+                    <h3 class="text-xl"><a href={`/blog/${p.id}/`} class="after:absolute after:inset-0">{p.data.title}</a></h3>
+                    <p class="mt-1 text-ink-soft">{p.data.description}</p>
+                  </div>
+                  <p class="flex items-center gap-2 text-sm text-ink-mute md:justify-end">
+                    <time datetime={isoDate(p.data.date)}>{faDate(p.data.date)}</time>
+                    <span aria-hidden="true">—</span>{faNum(readingMinutes(p.body ?? ''))} دقیقه
+                    <Icon name="arrow" size={16} class="row-arrow text-accent" />
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    )}
+  </section>
+</Base>

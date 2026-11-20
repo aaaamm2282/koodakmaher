@@ -1,0 +1,59 @@
+---
+/**
+ * «نظر شما» for one unit: where the SMS short link (/r/kg/) and the QR poster lead.
+ *
+ * Every visitor sees the same buttons. Asking only happy parents, or asking for a good rating or for
+ * particular words, is against Google's rules for reviews:
+ * https://support.google.com/contributionpolicy/answer/7400114
+ * Google takes no reviews for primary and secondary schools (src/data/local.mjs), so those units link
+ * to Neshan and Balad only. The unit pages link here; the page is not in search results or the sitemap.
+ */
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import Logo from '../../components/Logo.astro';
+import Pending from '../../components/Pending.astro';
+import { units } from '../../data/site';
+import { displayName } from '../../lib/schema';
+import { listings, reviewLinks } from '../../data/local.mjs';
+
+export function getStaticPaths() {
+  return units.filter((u) => !u.soon && u.slug in listings).map((u) => ({ params: { slug: u.slug }, props: { u } }));
+}
+
+const { u } = Astro.props;
+const name = displayName(u);
+const links = reviewLinks(u);
+---
+<Base title={`نظر شما درباره ${name} | کودک ماهر`} description={`ثبت نظر و امتیاز درباره ${name} در نقشه‌ها.`} noindex>
+  <section class="container-x py-12 sm:py-20">
+    <div class="mx-auto max-w-lg text-center">
+      <Logo class="mx-auto size-14 rounded-2xl" />
+      <p class="mt-6 text-ink-mute">نظر شما درباره</p>
+      <h1 class="mt-1 text-title leading-snug sm:text-[2.25rem]">{name}</h1>
+      <p class="lead mt-4">تجربه‌ی شما، هر چه هست، به خانواده‌های دیگر کمک می‌کند. ما همه‌ی نظرها را می‌خوانیم.</p>
+
+      {links.length > 0 ? (
+        <ul class="mt-8 grid gap-3">
+          {links.map((x, i) => (
+            <li>
+              <a href={x.href} target="_blank" rel="noopener" class:list={[i === 0 ? 'btn-primary' : 'btn-ghost', 'w-full']} data-track="review" data-unit={u.slug} data-map-app={x.app}>
+                <Icon name="star" size={18} />{x.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <Pending class="mt-8 text-start" label="لینک ثبت نظر بعد از ثبت این مرکز در گوگل، نشان و بلد همین‌جا می‌آید." />
+      )}
+
+      <p class="mt-6 text-sm text-ink-mute">لطفاً نام کودک یا اطلاعات شخصی را در نظر ننویسید.</p>
+
+      {u.phone && (
+        <p class="mt-10 border-t border-line pt-6 text-sm text-ink-soft">
+          برای گفت‌وگو درباره‌ی موضوعی مشخص با {u.name}:
+          <a href={`tel:${u.phone.tel}`} class="link ms-1" dir="ltr" data-track="click_phone" data-unit={u.slug}>{u.phone.display}</a>
+        </p>
+      )}
+    </div>
+  </section>
+</Base>

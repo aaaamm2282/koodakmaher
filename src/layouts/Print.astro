@@ -1,0 +1,23 @@
+---
+/**
+ * A single printable sheet (QR posters). No header, footer or scripts of the site; never in search results.
+ * Paper size comes from the page's own @page rule.
+ */
+import '../styles/global.css';
+
+interface Props { title: string }
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>{title}</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  </head>
+  <body class="bg-sand print:bg-white">
+    <slot />
+  </body>
+</html>

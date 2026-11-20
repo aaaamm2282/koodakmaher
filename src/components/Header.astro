@@ -1,0 +1,134 @@
+---
+import Icon from './Icon.astro';
+import Logo from './Logo.astro';
+import { nav, site, units } from '../data/site';
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header id="site-header" class="sticky top-0 z-50 border-b border-transparent bg-paper/95 transition-[border-color] duration-200 data-[scrolled=true]:border-line">
+  <div class="container-x flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
+    <a href="/" class="flex items-center gap-3">
+      <Logo class="h-10 w-10 shrink-0" decorative />
+      <span class="flex flex-col leading-tight">
+        <span class="font-serif text-md font-semibold">{site.brand}</span>
+        <span class="text-xs text-ink-mute">مؤسسه آموزشی کودک ماهر مانا</span>
+      </span>
+      <span class="sr-only">، صفحه اول</span>
+    </a>
+
+    <nav aria-label="منوی اصلی" class="relative hidden xl:block" data-nav>
+      <ul class="flex items-center gap-1">
+        {nav.map((item) => item.children ? (
+          <li class="group relative">
+            <a href={item.href} class:list={['relative flex min-h-11 items-center gap-1 rounded-lg px-3 text-sm transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft']} aria-haspopup="true">
+              {item.label}<Icon name="chevron" size={15} class="transition-transform group-hover:rotate-180 group-focus-within:rotate-180" />
+              {isActive(item.href) && <span class="nav-line" aria-hidden="true"></span>}
+            </a>
+            <div class="invisible absolute top-full start-0 translate-y-1 pt-2 opacity-0 transition-[opacity,visibility,translate] group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+              <ul class="w-72 rounded-xl border border-line bg-surface p-1.5 shadow-soft">
+                {units.map((u) => (
+                  <li>
+                    <a href={`/units/${u.slug}/`} class="flex min-h-11 items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-sand">
+                      <span>{u.name}</span>
+                      {u.soon ? <span class="text-xs text-ink-mute">به‌زودی</span> : u.ages && <span class="truncate text-xs text-ink-mute">{u.ages.split('،')[0]}</span>}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ) : (
+          <li>
+            <a href={item.href} class:list={['relative flex min-h-11 items-center rounded-lg px-3 text-sm transition-colors hover:text-ink', isActive(item.href) ? 'text-ink font-medium' : 'text-ink-soft']} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}{isActive(item.href) && <span class="nav-line" aria-hidden="true"></span>}</a>
+          </li>
+        ))}
+      </ul>
+      <!-- One line that slides under the item the mouse or the keyboard is on (see the script below) -->
+      <span class="nav-hover" aria-hidden="true" data-nav-hover></span>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href="/register/" class="btn-primary hidden !min-h-11 !px-4 sm:inline-flex" data-cta="header">پیش‌ثبت‌نام و مشاوره</a>
+      <button id="menu-btn" type="button" class="grid size-11 place-items-center rounded-lg border border-line bg-surface transition-colors active:bg-sand xl:hidden" aria-label="باز کردن منو" aria-expanded="false" aria-controls="mobile-menu">
+        <Icon name="menu" size={22} />
+      </button>
+    </div>
+  </div>
+
+  <!-- Closed: inert, so its links are not Tab stops and screen readers skip it. Open: a modal; the rest of the page is inert. -->
+  <div id="mobile-menu" class="pointer-events-none fixed inset-0 z-50 opacity-0 transition-opacity duration-200 xl:hidden data-[open=true]:pointer-events-auto data-[open=true]:opacity-100" data-open="false" role="dialog" aria-modal="true" aria-label="منو" inert>
+    <div class="absolute inset-0 bg-ink/30" data-close></div>
+    <nav aria-label="منوی موبایل" class="menu-sheet absolute inset-y-0 start-0 flex w-[min(22rem,88vw)] flex-col overflow-y-auto overscroll-contain bg-paper p-5 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-raised">
+      <div class="mb-4 flex items-center justify-between">
+        <span class="font-serif text-lg font-semibold">منو</span>
+        <button type="button" class="grid size-11 place-items-center rounded-lg border border-line bg-surface transition-colors active:bg-sand" aria-label="بستن منو" data-close>
+          <Icon name="close" size={22} />
+        </button>
+      </div>
+      <ul class="divide-y divide-line border-y border-line">
+        {nav.map((item) => (
+          <li>
+            <a href={item.href} class:list={['flex min-h-12 items-center justify-between gap-3 py-2 text-md', isActive(item.href) && 'font-medium text-accent']} aria-current={isActive(item.href) ? 'page' : undefined} data-close>{item.label}{isActive(item.href) && <span class="h-0.5 w-5 rounded-full bg-gold" aria-hidden="true"></span>}</a>
+            {item.children && (
+              <ul class="mb-3 border-s border-line ps-3">
+                {units.map((u) => <li><a href={`/units/${u.slug}/`} class="flex min-h-11 items-center text-ink-soft" data-close>{u.name}{u.soon && ' (به‌زودی)'}</a></li>)}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ul>
+      <a href="/register/" class="btn-primary mt-5 w-full" data-close data-cta="menu">پیش‌ثبت‌نام و مشاوره</a>
+    </nav>
+  </div>
+  <!-- Reading pages only: how much of the text has been read (src/scripts/fx.ts) -->
+  <span class="read-progress" aria-hidden="true" data-progress hidden></span>
+</header>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const onScroll = () => (header.dataset.scrolled = String(window.scrollY > 8));
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const menu = document.getElementById('mobile-menu')!;
+  const btn = document.getElementById('menu-btn')!;
+  const closeBtn = menu.querySelector<HTMLElement>('button[data-close]')!;
+  // Everything but the menu: the header bar and the rest of the page
+  const outside = () => [...header.children, ...document.body.children].filter((el) => el !== menu && el !== header && el.tagName !== 'SCRIPT') as HTMLElement[];
+  const setOpen = (open: boolean) => {
+    if ((menu.dataset.open === 'true') === open) return;
+    menu.dataset.open = String(open);
+    menu.inert = !open;
+    for (const el of outside()) el.inert = open;
+    btn.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+    (open ? closeBtn : btn).focus();
+  };
+  btn.addEventListener('click', () => setOpen(true));
+  menu.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', () => setOpen(false)));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && setOpen(false));
+  // Turning a tablet to a width with the full header hides the menu: give the page back
+  matchMedia('(min-width: 80rem)').addEventListener('change', (e) => e.matches && setOpen(false));
+
+  // Wide screens: one thin line slides under the menu item the mouse or the keyboard is on and fades out when
+  // they leave the menu (after "Animated Tabs" on 21st.dev, docs/21st-elements.md). The gold line under the
+  // current page stays where it is. Under the text only: 12px in from each side of the item.
+  const navEl = header.querySelector<HTMLElement>('[data-nav]');
+  const slider = navEl?.querySelector<HTMLElement>('[data-nav-hover]');
+  if (navEl && slider) {
+    let shown = false;
+    const moveTo = (link: HTMLElement) => {
+      const box = navEl.getBoundingClientRect(), r = link.getBoundingClientRect();
+      const t = `translateX(${(r.left - box.left + 12).toFixed(1)}px) scaleX(${Math.max(0, r.width - 24).toFixed(1)})`;
+      if (!shown) { slider.style.transition = 'none'; slider.style.transform = t; void slider.offsetWidth; slider.style.transition = ''; }
+      slider.style.transform = t; slider.style.opacity = '1'; shown = true;
+    };
+    const hide = () => { slider.style.opacity = '0'; shown = false; };
+    navEl.querySelectorAll<HTMLElement>(':scope > ul > li > a').forEach((link) => {
+      link.addEventListener('pointerenter', () => moveTo(link));
+      link.addEventListener('focus', () => link.matches(':focus-visible') && moveTo(link));
+    });
+    navEl.addEventListener('pointerleave', hide);
+    navEl.addEventListener('focusout', (e) => { if (!navEl.contains(e.relatedTarget as Node | null)) hide(); });
+  }
+</script>

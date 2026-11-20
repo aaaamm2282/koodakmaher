@@ -1,0 +1,66 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Pending from '../../components/Pending.astro';
+import FormShell from '../../components/FormShell.astro';
+import Field from '../../components/Field.astro';
+import Icon from '../../components/Icon.astro';
+import PlacePin from '../../components/PlacePin.astro';
+import { social, units } from '../../data/site';
+import { pageSeo } from '../../data/keywords';
+const seo = pageSeo('/contact/');
+const crumbs = [{ label: 'تماس با ما' }];
+const list = units.filter((u) => !u.soon);
+---
+<Base title={seo.title} description={seo.description} crumbs={crumbs}>
+  <PageHero title={seo.h1} subtitle="نشانی و تلفن کودک ماهر" crumbs={crumbs} />
+  <section class="container-x py-14 sm:py-20" aria-label="نشانی واحدها">
+    <ul class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {list.map((c) => (
+        <li class="card flex flex-col p-6">
+          <PlacePin pending={!c.mapUrl} />
+          <h2 class="text-xl">{c.name}</h2>
+          {c.officialName && <p class="mt-0.5 text-sm text-ink-mute">{c.officialName}</p>}
+          <dl class="mt-5 space-y-3 text-sm">
+            <div class="flex gap-2.5"><dt><Icon name="pin" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">نشانی</span></dt><dd>{c.address ?? <Pending inline label="نشانی" />}</dd></div>
+            <div class="flex gap-2.5"><dt><Icon name="phone" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">تلفن</span></dt><dd>{c.phone ? <><a href={`tel:${c.phone.tel}`} class="num" dir="ltr" data-track="click_phone" data-unit={c.slug}>{c.phone.display}</a>{c.phone.note && <span class="text-ink-mute"> ({c.phone.note})</span>}</> : <Pending inline label="تلفن" />}</dd></div>
+            <div class="flex gap-2.5"><dt><Icon name="clock" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">ساعت کار</span></dt><dd>{c.hours ?? <Pending inline label="ساعت پاسخگویی" />}</dd></div>
+            {c.manager && <div class="flex gap-2.5"><dt><Icon name="users" size={18} class="mt-1 text-ink-mute" /><span class="sr-only">مدیر</span></dt><dd>مدیر: {c.manager}</dd></div>}
+          </dl>
+          {c.mapUrl && <div class="mt-auto pt-6"><a href={c.mapUrl} class="btn-ghost w-full" target="_blank" rel="noopener" data-track="click_map" data-unit={c.slug} data-pin-link><Icon name="pin" size={18} />مسیریابی در نشان</a></div>}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section id="social" class="scroll-mt-4 border-y border-line bg-surface" aria-labelledby="social-title">
+    <div class="container-x grid gap-8 py-14 lg:grid-cols-[1fr_2fr] lg:gap-16">
+      <h2 id="social-title" class="section-title">شبکه‌های اجتماعی</h2>
+      <ul class="grid gap-x-10 sm:grid-cols-2">
+        {social.map((s) => (
+          <li class="border-t border-line">
+            <a href={s.href} target="_blank" rel="noopener" class="flex min-h-14 items-baseline justify-between gap-4 py-4 transition-colors hover:text-accent">
+              <span>{s.label}</span><span class="min-w-0 text-sm text-ink-mute [overflow-wrap:anywhere]" dir="ltr">{s.handle}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-x py-14 sm:py-20">
+    <div class="mx-auto max-w-2xl">
+      <FormShell id="contact-form" kind="contact" title="فرم تماس" submit="ارسال پیام"
+        success={{ title: 'پیام شما رسید', text: 'پاسخ را از همان راهی که نوشتید، تلفن یا ایمیل، می‌گیرید.' }}>
+        <Field label="نام" name="name" required autocomplete="name" />
+        <Field label="شماره تماس یا ایمیل" name="contact" required />
+        <Field label="واحد مرتبط" name="unit" type="select" required full param="unit" options={[
+          { value: 'کودکستان', slug: 'kindergarten' }, { value: 'دبستان', slug: 'primary' }, { value: 'متوسطه اول', slug: 'middle-school' },
+          { value: 'متوسطه دوم', slug: 'high-school' }, { value: 'آموزشگاه زبان', slug: 'language' }, { value: 'آموزشگاه فنی‌وحرفه‌ای', slug: 'vocational' },
+          { value: 'عمومی', slug: 'general' },
+        ]} />
+        <Field label="پیام" name="message" type="textarea" required full />
+      </FormShell>
+    </div>
+  </section>
+</Base>

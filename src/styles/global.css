@@ -1,0 +1,714 @@
+@import 'tailwindcss';
+/* class names are read from the site only: the skill kits in .claude hold thousands of demo files */
+@source not "../../.claude";
+
+/* One file per family: Persian letters and digits, the punctuation Persian uses and basic Latin, weights
+   400 to 600 (scripts/subset-fonts.py; SIL Open Font License, see src/assets/fonts/). Preloaded in Base.astro. */
+@font-face {
+  font-family: 'Vazirmatn Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url('../assets/fonts/vazirmatn-fa.woff2') format('woff2-variations'), url('../assets/fonts/vazirmatn-fa.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Noto Naskh Arabic Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 600;
+  src: url('../assets/fonts/noto-naskh-arabic-fa.woff2') format('woff2-variations'), url('../assets/fonts/noto-naskh-arabic-fa.woff2') format('woff2');
+}
+
+/*
+ * Design system: «کاغذ رنگی» (coloured paper)
+ * The world of a Persian children's picture book and the craft table: cream paper, sheets of coloured paper cut
+ * with scissors and laid on top of each other, a soft shadow under each layer. The logo gives navy and gold; four
+ * craft papers join them, each with a meaning: saffron, vermilion and turquoise are the three stretches of the path
+ * from 3 to 18 (kindergarten, primary, middle school), cypress green is the vocational school. A dashed outline
+ * always means "not yet" (high school, a missing map link).
+ * - The chrome stays quiet (paper, ink, one navy button); colour lives in the drawings and the unit tiles.
+ * - Drawings: src/assets/art, made by scripts/art/make-art.mjs, written into the page by Art.astro.
+ * - Headings: Noto Naskh Arabic (book-like Persian serif), body: Vazirmatn. Weights 400 / 500 / 600 only.
+ * - Motion: the home hero enters once (the drawing assembles); every other page enters with its heading only.
+ *   Hover and press answer the pointer; nothing moves on its own and nothing follows the scroll, except the
+ *   reading line in the header and the one statement on the home and method pages that inks in as it is read.
+ */
+@theme {
+  --font-sans: 'Vazirmatn Variable', Vazirmatn, Tahoma, sans-serif;
+  --font-serif: 'Noto Naskh Arabic Variable', 'Noto Naskh Arabic', serif;
+
+  --color-paper: #f7f1e3;
+  --color-surface: #fffdf8;
+  --color-sand: #efe6d2;
+  --color-ink: #17201c;
+  --color-ink-soft: #444c48; /* body text: 7.1:1 on sand, 7.9:1 on paper */
+  --color-ink-mute: #5c6460; /* 4.9:1 on sand, 5.4:1 on paper */
+  --color-line: rgb(23 32 28 / 0.12);
+  --color-line-strong: rgb(23 32 28 / 0.22);
+  --color-accent: #01237a;
+  --color-accent-hover: #011a5c;
+  --color-accent-soft: #e6e9f2;
+  --color-saffron: #7d5c17; /* saffron as text: 5.0:1 on sand, 5.5:1 on paper */
+  --color-saffron-soft: #f4e7c8;
+  --color-gold: #d9b25a;
+  --color-gold-soft: #f1e2bb;
+  --color-forest: #011a5c;
+  --color-danger: #a23b2a;
+  /* Craft papers: fills only. Text on them is ink (saffron, turquoise) or white (vermilion, green), 4.5:1 or more. */
+  --color-paper-saffron: #e3a93c;
+  --color-paper-red: #c4482e;
+  --color-paper-teal: #2b9c97;
+  --color-paper-green: #3f7a3c;
+
+  --shadow-soft: 0 1px 2px rgb(23 32 28 / 0.05), 0 10px 24px -14px rgb(23 32 28 / 0.1);
+  --shadow-raised: 0 1px 2px rgb(23 32 28 / 0.06), 0 14px 32px -16px rgb(23 32 28 / 0.2);
+  /* Paper lying on paper: the same light as the drawings (down, toward the reading start) */
+  --shadow-paper: 1px 2px 2px rgb(10 20 51 / 0.12), 2px 6px 14px -6px rgb(10 20 51 / 0.22);
+
+  /* Type for Persian. Arabic script reads smaller than Latin at the same size, so the small steps sit one size
+     above Tailwind's defaults (caption 13px, small 15px) and every step has a looser line height for the dots
+     and marks above and below the line. */
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.7;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.75;
+  --text-base: 1rem;
+  --text-base--line-height: 1.85;
+  --text-md: 1.0625rem;
+  --text-md--line-height: 1.85;
+  --text-lg: 1.1875rem;
+  --text-lg--line-height: 1.85;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.6;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 1.5;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 1.45;
+  /* Named steps between those: a reading page's sub-heading, and a serif opening paragraph */
+  --text-title: 1.75rem;
+  --text-title--line-height: 1.5;
+  --text-lede: 1.375rem;
+  --text-lede--line-height: 2;
+
+  /* Corners by size: chips 6, controls 10, cards 16, panels and paper tiles 20, the hero's sheet 28. Inside a
+     padded box the inner radius is the outer one minus the padding (the units menu: 16 − 6 = 10). */
+  --radius-md: 0.375rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+
+  /* Motion: one ease-out curve for everything that responds or enters, one in-out curve for things that travel. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --default-transition-duration: 200ms;
+  --default-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Durations: press, hover out, hover in, state (open, select), entrance. A hover leaves faster than it comes. */
+:root { --dur-press: 90ms; --dur-out: 120ms; --dur-in: 160ms; --dur-1: 140ms; --dur-2: 220ms; --dur-3: 420ms; --dur-4: 900ms; --gutter: 1rem; }
+@media (width >= 40rem) { :root { --gutter: 1.5rem; } }
+@media (width >= 64rem) { :root { --gutter: 2rem; } }
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* Whatever the browser scrolls to (a focused link, a #section) stops clear of the sticky header (4–4.5rem) */
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* …and, on a phone, clear of the quick-action bar at the bottom (#quickbar in Base.astro) */
+  @media (width < 40rem) { html { scroll-padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); } }
+  a, button, summary, label, select, input[type='checkbox'], input[type='file'] { touch-action: manipulation; }
+  a, button, summary, select, [role='button'], label[for] { cursor: pointer; }
+  body {
+    @apply bg-paper text-ink font-sans antialiased;
+    font-size: 1rem;
+    line-height: 1.85;
+    /* A long handle, address or link breaks inside the box instead of pushing the page sideways */
+    overflow-wrap: break-word;
+  }
+  /* 17px body from tablets up; phones keep 16px so lines do not get too short */
+  @media (width >= 40rem) { body { font-size: var(--text-md); } }
+  /* The parts the browser draws: caret, checkboxes and radios, scrollbars, list markers, selection */
+  input, textarea, select { caret-color: var(--color-accent); accent-color: var(--color-accent); }
+  html { scrollbar-color: rgb(23 32 28 / 0.3) var(--color-paper); }
+  ::marker { color: var(--color-saffron); }
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: 1.45;
+    text-wrap: balance;
+    letter-spacing: 0;
+  }
+  p { text-wrap: pretty; }
+  strong, b { font-weight: 600; }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+  /* On navy and on the darker papers (footer, closing panel, unit tiles) the focus ring turns white; on the
+     light papers (saffron, turquoise) it stays navy */
+  :where(.bg-accent, .bg-forest, [data-tone='red'], [data-tone='navy'], [data-tone='green']) :focus-visible,
+  :is([data-tone='red'], [data-tone='navy'], [data-tone='green']):focus-visible { outline-color: #fff; }
+  /* Windows high contrast: filled buttons and paper tiles keep an outline, since their fill is removed */
+  @media (forced-colors: active) {
+    .btn-primary, .btn-light, .tile { border: 1px solid ButtonText; }
+  }
+  ::selection { background: var(--color-gold-soft); color: var(--color-ink); }
+}
+
+@layer components {
+  /* Page gutter 16 / 24 / 32, and never less than the phone's notch or rounded corner (viewport-fit=cover) */
+  .container-x { @apply mx-auto w-full max-w-6xl; padding-left: max(var(--gutter), env(safe-area-inset-left)); padding-right: max(var(--gutter), env(safe-area-inset-right)); }
+
+  /* One button family: a navy fill for the main action, an outline for the second one; on navy, white and a
+     light outline. Hover steps the box up 1px and the fill a little toward ink; a press sinks it 1px below rest. */
+  .btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light {
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 text-sm font-medium select-none;
+    transition: background-color var(--dur-out) ease, border-color var(--dur-out) ease, color var(--dur-out) ease, transform var(--dur-out) var(--ease-out);
+  }
+  .btn-primary { @apply bg-accent text-white; }
+  .btn-ghost { @apply border border-line-strong bg-surface text-ink; }
+  .btn-light { @apply bg-white text-forest; }
+  .btn-ghost-light { @apply border border-white/45 text-white; }
+  @media (hover: hover) and (pointer: fine) {
+    :is(.btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light):hover { transform: translateY(-1px); transition-duration: var(--dur-in); }
+    .btn-primary:hover { background-color: var(--color-accent-hover); }
+    .btn-ghost:hover { border-color: var(--color-ink); }
+    .btn-light:hover { background-color: var(--color-paper); }
+    .btn-ghost-light:hover { border-color: #fff; background-color: rgb(255 255 255 / 0.08); }
+  }
+  :is(.btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light):active { transform: translateY(1px) scale(0.985); transition-duration: var(--dur-press); }
+
+  /* A short status next to a heading or a name: «به‌زودی», «برای همکاران مؤسسه» */
+  .chip { @apply inline-flex items-center rounded-md border border-saffron/25 bg-saffron-soft px-2 py-0.5 text-xs font-medium text-saffron; }
+
+  .section-title { font-size: clamp(1.875rem, 1.1rem + 2.4vw, 2.875rem); line-height: 1.38; }
+  .lead { @apply text-md text-ink-soft sm:text-lg; line-height: 1.9; }
+  .card { @apply rounded-xl border border-line bg-surface; }
+  /* A short item in a row of equals: a hairline on top with the gold mark at its reading start */
+  .marked { @apply relative border-t border-line pt-6; }
+  .marked::before { content: ''; position: absolute; inset-inline-start: 0; top: -1.5px; width: 2.5rem; height: 2px; border-radius: 9999px; background: var(--color-gold); }
+  /* An aside inside a page: a fact to keep in mind, not a call to act. A tint, never a coloured side bar. */
+  .note { @apply rounded-xl bg-sand px-5 py-4 sm:px-6 sm:py-5; }
+  .link { @apply font-medium text-accent; }
+  .num { font-family: var(--font-serif); font-feature-settings: 'tnum'; }
+}
+
+/* ==========================================================================
+   Home hero: the heading beside a sheet of navy paper with the path from 3 to 18 cut out of coloured paper
+   (Hero.astro, HeroScene.astro: the drawing of src/assets/art/hero-path.svg as a box of paper sheets). One screen
+   tall on wide screens.
+   ========================================================================== */
+.hero-wrap { display: grid; gap: 2.5rem; padding-block: 2.5rem 3.5rem; }
+@media (width >= 64rem) {
+  .hero-wrap { grid-template-columns: 1fr 1.02fr; gap: 4rem; align-items: stretch; padding-block: 0.75rem 2.5rem; min-height: min(calc(100svh - 4.5rem), 58rem); }
+}
+.hero-copy { display: flex; flex-direction: column; justify-content: center; }
+.hero-title { font-size: clamp(2.5rem, 1.1rem + 3.2vw, 4.125rem); line-height: 1.3; }
+@media (width < 23rem) { .hero-title { font-size: 2.125rem; } }
+/* The phrase the page stands on, with a hand-drawn gold stroke under it (Stroke.astro) */
+.hero-mark { position: relative; display: inline-block; color: var(--color-accent); }
+.hero-stroke { position: absolute; inset-inline-start: -0.05em; bottom: -0.04em; width: calc(100% + 0.1em); height: 0.2em; }
+/* A size container (its drawing is laid out in its units, below), so its height never comes from its content: fixed on
+   phones, square on tablets, the height of the heading's column on wide screens */
+.hero-sheet { position: relative; isolation: isolate; overflow: clip; border-radius: var(--radius-3xl); background: var(--color-accent); height: 27.5rem; container-type: size; }
+/* Stacked under the heading on tablets: a square, so the drawing (cut from its foot) keeps all five ages */
+@media (width >= 40rem) { .hero-sheet { height: auto; aspect-ratio: 1; } }
+@media (width >= 64rem) { .hero-sheet { aspect-ratio: auto; min-height: 34rem; } }
+.hero-scene, .hero-sheet > picture, .hero-sheet > picture > img, .hero-sheet > video { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
+.hero-sheet > picture > img, .hero-sheet > video { object-fit: cover; }
+.hero-slogan { position: absolute; top: 1.5rem; inset-inline: 1.5rem; margin: 0; font-family: var(--font-serif); font-size: 1.25rem; line-height: 1.7; color: var(--color-gold); text-align: center; }
+@media (width >= 40rem) { .hero-slogan { top: 1.875rem; inset-inline: 2.25rem auto; font-size: 1.375rem; text-align: start; } }
+/* With a photo: navy shade behind the slogan only */
+.hero-scrim { position: absolute; inset: 0 0 auto; z-index: -1; height: 9rem; background: linear-gradient(rgb(1 35 122 / 0.85), rgb(1 35 122 / 0)); pointer-events: none; }
+
+/* Text fades up with CSS so the largest paint does not wait for a script: the heading leads, the lede, the buttons and
+   the founding line overlap it at shrinking gaps. Beside them the drawing opens once as a pop-up book (hero-scene.ts):
+   the authored moment of the site. Every piece is clickable as soon as it shows. */
+.rise { animation: rise 0.6s var(--ease-out) both; animation-delay: calc(var(--i, 0) * 80ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+/* The drawing as a box of cut paper (HeroScene.astro). Each piece is placed by its box in drawing units (--x --y --w
+   --h, from hero-scene.json); --s is the size of one unit, the drawing filling the sheet from its foot (as
+   xMidYMax slice). Each sheet of the box stands at its depth (--z, units toward the reader, the camera --cam away) and is
+   scaled back by its distance, so at rest every piece lies exactly where the flat drawing has it; the sheets part only
+   when the box tilts. Hills, trees and the path's strips draw past their box (overflow), so no edge shows on a tilt.
+   A hill folds on the box's floor (.hs-fold, its origin on the bottom edge) and carries its cypresses, which stand a
+   little in front of it and spring up on their own. */
+.hero-scene {
+  --s: max(100cqw / 720, 100cqh / 900);
+  --ox: calc(50cqw - 360 * var(--s));
+  --oy: calc(100cqh - 900 * var(--s));
+  --cam: 1200;
+  perspective: calc(var(--cam) * var(--s));
+  pointer-events: none;
+}
+.hs-defs { position: absolute; }
+.hs-tilt, .hs-cam, .hs-sheet { position: absolute; inset: 0; transform-style: preserve-3d; }
+.hs-sheet { transform: translateZ(calc(var(--z) * var(--s))) scale(calc((var(--cam) - var(--z)) / var(--cam))); }
+.hs-piece {
+  position: absolute; left: calc(var(--ox) + var(--x) * var(--s)); top: calc(var(--oy) + var(--y) * var(--s));
+  width: calc(var(--w) * var(--s)); height: calc(var(--h) * var(--s)); transform-style: preserve-3d;
+}
+.hs-piece > svg, .hs-fold > svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: var(--o, 50% 50%); }
+.hs-hill { --bx: var(--x); --by: var(--y); }
+.hs-fold { position: absolute; inset: 0; transform-style: preserve-3d; transform-origin: var(--o); }
+.hs-fold > .hs-tree { left: calc((var(--x) - var(--bx)) * var(--s)); top: calc((var(--y) - var(--by)) * var(--s)); transform: translateZ(calc(6 * var(--s))); }
+.hs-stop { transform: translateZ(calc(2 * var(--s))); }
+.hs-kite > svg { transform-origin: 50.6% 21.3%; }
+/* On the square tablet sheet the high cloud would sit under the slogan, cut by the top edge */
+@media (width >= 40rem) and (width < 64rem) { [data-piece='cloud-hi'] { display: none; } }
+/* The name of each stretch on a strip of paper tucked under its age's disc: cream, gold at the two choice points.
+   Its outer end is cut in a V like a paper banner; it keeps the page's text size, between 12 and 15 px. */
+.hs-tag {
+  --tuck: calc(12 * var(--s));
+  position: absolute; top: calc(var(--oy) + var(--ay) * var(--s)); translate: 0 -50%;
+  font-size: clamp(0.75rem, 25 * var(--s), 0.9375rem); transform: translateZ(var(--s)); transform-style: preserve-3d;
+}
+.hs-tag-left { right: calc(100% - var(--ox) - var(--ax) * var(--s)); }
+.hs-tag-right { left: calc(var(--ox) + var(--ax) * var(--s)); }
+.hs-flap { display: block; filter: drop-shadow(1px 1.5px 1px rgb(10 20 51 / 0.3)); backface-visibility: hidden; }
+.hs-tag-left .hs-flap { transform-origin: 100% 50%; }
+.hs-tag-right .hs-flap { transform-origin: 0 50%; }
+.hs-label { display: block; padding-block: 0.15em 0.1em; white-space: nowrap; line-height: 1.6; font-weight: 600; color: var(--color-accent); background: var(--color-paper); }
+.is-gold .hs-label { background: var(--color-gold); }
+.hs-tag-left .hs-label { padding-inline: calc(var(--tuck) + 0.45em) 0.95em; clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0.4em 50%); }
+.hs-tag-right .hs-label { padding-inline: 0.95em calc(var(--tuck) + 0.45em); clip-path: polygon(0 0, 100% 0, calc(100% - 0.4em) 50%, 100% 100%, 0 100%); }
+/* The gold ring that opens once around a choice point during the opening; never seen at rest */
+.hs-ring > i { position: absolute; inset: calc(5 * var(--s)); border: calc(2.5 * var(--s)) solid var(--color-gold); border-radius: 50%; opacity: 0; }
+/* The box before its opening (hero-scene.ts): the first frame of the same keyframes. The inline script sets
+   [data-enter] only when the opening will play; at rest the attribute is gone and this is the still picture. */
+.hero-scene[data-enter] .hs-cam { transform: rotateX(-12deg) rotateY(-6deg) scale(0.97); }
+.hero-scene[data-enter] .hs-fold { transform: rotateX(75deg); }
+.hero-scene[data-enter] .hs-tree > svg { transform: rotateX(85deg); opacity: 0; }
+.hero-scene[data-enter] .hs-cloud > svg { transform: translateX(22%); }
+.hero-scene[data-enter] :is(.hs-kite, .hs-stop) > svg { opacity: 0; }
+.hero-scene[data-enter] .hs-tag-left .hs-flap { transform: rotateY(115deg); }
+.hero-scene[data-enter] .hs-tag-right .hs-flap { transform: rotateY(-115deg); }
+.hero-scene[data-enter] .hs-line { stroke-dashoffset: 1000; }
+/* No lean with the scroll: while a transform animation runs on an ancestor (a scroll timeline counts), the browser
+   draws the whole box at a lower resolution and the names go soft on a phone; and the page scrolls plainly. */
+
+/* ==========================================================================
+   Paper tiles: one sheet of coloured paper per unit (UnitCards.astro; the unit pages' heading panel).
+   [data-tone] picks the paper and the text colour that reads on it.
+   ========================================================================== */
+[data-tone] { --tone-bg: var(--color-paper-saffron); --tone-ink: var(--color-ink); --tone-head: var(--tone-ink); --tone-wash: rgb(23 32 28 / 0.1); }
+[data-tone='red'] { --tone-bg: var(--color-paper-red); --tone-ink: #fff; --tone-wash: rgb(255 255 255 / 0.18); }
+[data-tone='teal'] { --tone-bg: var(--color-paper-teal); }
+[data-tone='navy'] { --tone-bg: var(--color-accent); --tone-ink: #fff; --tone-head: var(--color-gold); --tone-wash: rgb(255 255 255 / 0.14); }
+[data-tone='green'] { --tone-bg: var(--color-paper-green); --tone-ink: #fff; --tone-wash: rgb(255 255 255 / 0.18); }
+[data-tone='soon'] { --tone-bg: transparent; --tone-ink: var(--color-ink-soft); --tone-wash: transparent; }
+[data-tone='gold'] { --tone-bg: var(--color-gold); --tone-ink: var(--color-accent); }
+
+/* A number on a disc of coloured paper (PaperDisc.astro): the ages on the path, the two choice points */
+.paper-disc { position: relative; display: grid; width: 4rem; height: 4rem; flex-shrink: 0; place-items: center; color: var(--tone-ink); }
+.paper-disc svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(1px 2px 1.5px rgb(10 20 51 / 0.22)); }
+.paper-disc > span { position: relative; font-family: var(--font-serif); font-size: 1.625rem; line-height: 1; font-weight: 600; font-feature-settings: 'tnum'; }
+.paper-disc-lg { width: 4.75rem; height: 4.75rem; }
+.paper-disc-lg > span { font-size: 1.875rem; }
+
+.tile {
+  position: relative; isolation: isolate; display: grid; overflow: clip; column-gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) 5.5rem; grid-template-rows: auto auto 1fr auto;
+  grid-template-areas: 'name art' 'ages art' 'text art' 'text go';
+  border-radius: var(--radius-2xl); background: var(--tone-bg); color: var(--tone-ink); box-shadow: var(--shadow-paper);
+  transition: transform var(--dur-out) var(--ease-out), box-shadow var(--dur-out) var(--ease-out);
+}
+.tile[data-tone='soon'] { box-shadow: none; border: 2px dashed var(--color-line-strong); }
+.tile-art { grid-area: art; display: block; width: 5.5rem; height: 5.5rem; transition: transform var(--dur-3) var(--ease-out); }
+.tile-art svg { display: block; width: 100%; height: 100%; }
+[data-tone='soon'] .tile-art { color: var(--color-ink-mute); }
+.tile-name { grid-area: name; color: var(--tone-head); }
+.tile-ages { grid-area: ages; margin-top: 0.25rem; font-size: 0.875rem; }
+.tile-text { grid-area: text; max-width: 28rem; margin-top: 0.75rem; line-height: 1.9; }
+.tile-go { grid-area: go; justify-self: end; align-self: end; display: grid; width: 2.75rem; height: 2.75rem; margin-top: 1rem; place-items: center; border-radius: 9999px; background: var(--tone-wash); transition: transform var(--dur-out) var(--ease-out); }
+@media (width >= 40rem) {
+  /* The four stages of the path: tall sheets, the drawing at the top, the arrow at the foot */
+  .tile-tall { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto 1fr auto; grid-template-areas: 'art' 'name' 'ages' 'text' 'go'; }
+  .tile-tall .tile-art { justify-self: end; width: 9.5rem; height: 9.5rem; margin: -0.5rem -0.5rem 0.75rem 0; }
+  .tile-tall .tile-go { margin-top: 1.5rem; }
+  /* The two schools beside the path: wide sheets, the drawing beside the text */
+  .tile-wide { column-gap: 2rem; grid-template-columns: minmax(0, 1fr) 9rem; }
+  .tile-wide .tile-art { width: 9rem; height: 9rem; }
+}
+@media (hover: hover) and (pointer: fine) {
+  .tile:has(a:hover) { transform: translateY(-2px); box-shadow: 1px 2px 2px rgb(10 20 51 / 0.12), 3px 12px 26px -10px rgb(10 20 51 / 0.32); transition-duration: 180ms; }
+  .tile:has(a:hover) .tile-art { transform: translateY(-4px) rotate(-2.5deg) scale(1.03); }
+  .tile:has(a:hover) .tile-go { transform: translateX(-3px); transition-duration: 180ms; }
+}
+.tile:has(a:active) { transform: scale(0.99); transition-duration: var(--dur-press); }
+
+/* ==========================================================================
+   The path from 3 to 18 (PathStops.astro): five stops on one line, each a disc cut from the paper of its stretch;
+   the stretch still to come (15 to 18) is dashed. A column on phones and tablets, a row on wide screens.
+   ========================================================================== */
+.stops { display: grid; }
+.stop { position: relative; display: grid; grid-template-columns: 4rem 1fr; column-gap: 1rem; margin-bottom: 2.25rem; }
+.stop:last-child { margin-bottom: 0; }
+/* The line to the next stop: down the column on phones, across the row on wide screens */
+.stop:not(:last-child)::after { content: ''; position: absolute; inset-inline-start: calc(2rem - 1px); top: 4.5rem; bottom: -1.75rem; border-inline-start: 2px solid var(--color-line-strong); }
+.stop.is-next-soon::after { border-inline-start-style: dashed; border-color: var(--color-ink-mute); }
+.stop-head { display: contents; }
+.stop-disc { grid-row: 1 / span 2; }
+.stop-label { align-self: center; font-size: 0.9375rem; font-weight: 500; color: var(--color-ink-soft); }
+.stop-card { grid-column: 2; padding-top: 0.5rem; }
+/* The whole stop is the link's target (the stop is the box it stretches over); its arrow answers the pointer */
+.stop .stop-cta.link { position: static; }
+@media (pointer: coarse) { .stop .stop-cta.link { min-height: 2.75rem; } }
+.stop .stop-cta.link::after { content: ''; position: absolute; inset: -0.5rem; border-radius: var(--radius-xl); }
+@media (hover: hover) and (pointer: fine) { .stop:has(.stop-cta:hover) .stop-cta svg { transform: translateX(-3px); } }
+@media (width >= 64rem) {
+  .stops { grid-template-columns: repeat(5, minmax(0, 1fr)); column-gap: 2rem; }
+  .stop { grid-template-columns: 4rem 1fr; grid-template-rows: 4rem auto; column-gap: 0.875rem; margin: 0; }
+  .stop-disc { grid-row: 1; }
+  .stop-card { grid-column: 1 / -1; padding-top: 1.5rem; }
+  .stop:not(:last-child)::after { top: calc(2rem - 1px); bottom: auto; inset-inline-start: calc(4rem + 0.5rem); inset-inline-end: -1.5rem; border-inline-start: 0; border-top: 2px solid var(--color-line-strong); }
+  .stop.is-next-soon::after { border-top-style: dashed; border-color: var(--color-ink-mute); }
+  /* the label sits on the line, on a patch of the section's own white, so the line runs behind it */
+  .stop-label { position: relative; z-index: 1; justify-self: start; margin-inline-start: -0.5rem; padding-inline: 0.5rem 0.625rem; background: var(--color-surface); }
+}
+
+/* The method's three steps (CycleSteps.astro): a square of navy paper with its drawing above each step */
+.step-art { display: grid; width: 6.5rem; height: 6.5rem; place-items: center; border-radius: var(--radius-2xl); background: var(--color-accent); box-shadow: var(--shadow-paper); }
+.step-art svg { width: 82%; height: 82%; }
+
+/* ==========================================================================
+   The method's cycle on the home page (CycleOrbit.astro): a small paper board game. The track is printed (a faint
+   line under navy dashes); the three stops are cut paper, a cream disc laid on a navy one so the navy shows as a
+   rim; a gold paper token stands under the current stop, and that stop turns navy when the token lands on it.
+   The token travels on the cycle's own curve (ease-in-out: it moves across the board, it does not enter).
+   ========================================================================== */
+.orbit-dial { position: relative; aspect-ratio: 1; container-type: inline-size; --travel: 640ms; }
+.orbit-ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.orbit-track { fill: none; stroke: var(--color-line-strong); stroke-width: 1.5; }
+.orbit-dash { fill: none; stroke: var(--color-accent); stroke-width: 2; stroke-dasharray: 4 10; stroke-linecap: round; }
+/* The token rides on an arm turned round the middle and turns back by the same angle on it, so the paper's shadow
+   keeps falling the same way (down, toward the reading start) wherever it stands */
+.orbit-arm { position: absolute; inset: 0; transition: transform var(--travel) var(--ease-in-out); }
+.orbit-token { position: absolute; left: 50%; top: 12.5%; width: 20%; aspect-ratio: 1; transform: translate(-50%, -50%); transition: transform var(--travel) var(--ease-in-out); }
+.orbit-token svg, .orbit-disc, .orbit-num svg { overflow: visible; filter: drop-shadow(1px 2px 1.5px rgb(10 20 51 / 0.22)); }
+.orbit-token svg { display: block; width: 100%; height: 100%; fill: var(--color-gold-soft); }
+.orbit-node { position: absolute; width: 15%; aspect-ratio: 1; transform: translate(-50%, -50%); cursor: pointer; }
+.orbit-node svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orbit-rim { fill: var(--color-accent); }
+.orbit-face { fill: var(--color-paper); transform-box: fill-box; transform-origin: center; transition: scale 260ms var(--ease-in-out); }
+.orbit-digit text { font-family: var(--font-serif); font-size: 20px; font-weight: 600; fill: var(--color-accent); transition: fill var(--dur-2) var(--ease-out); }
+/* The stop the token comes to: its cream layer closes like an iris and the navy fills it, timed to the landing,
+   not to the click (a fade would pass through a muddy grey-blue); the stop it leaves opens again at once */
+.orbit-node.is-on .orbit-face { scale: 0; transition-delay: calc(var(--travel) * 0.55); }
+.orbit-node.is-on .orbit-digit text { fill: var(--color-gold); transition-delay: calc(var(--travel) * 0.55 + 120ms); }
+@media (hover: hover) and (pointer: fine) {
+  .orbit-disc { transition: translate var(--dur-out) var(--ease-out); }
+  .orbit-node:hover .orbit-disc { translate: 0 -1px; }
+}
+/* The middle: the loop's name, and the name of the stop the token is going to (a short blurred crossfade, so the
+   two words read as one changing word) */
+.orbit-hub { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; text-align: center; }
+.orbit-label { font-size: 0.8125rem; font-size: clamp(0.75rem, 4.2cqi, 0.9375rem); line-height: 1.6; color: var(--color-ink-mute); }
+.orbit-titles { display: grid; }
+.orbit-title {
+  grid-area: 1 / 1; font-family: var(--font-serif); font-size: 1.75rem; font-size: 9.4cqi; line-height: 1.4; font-weight: 500;
+  color: var(--color-ink); opacity: 0; filter: blur(2px);
+  transition: opacity var(--dur-out) var(--ease-out), filter var(--dur-out) var(--ease-out); transition-delay: calc(var(--travel) * 0.4);
+}
+.orbit-title.is-on { opacity: 1; filter: none; transition-duration: var(--dur-2); transition-delay: calc(var(--travel) * 0.4 + 60ms); }
+/* The three steps: all texts always shown; the current one has the gold token under its number */
+.orbit-steps { border-top: 1px solid var(--color-line); }
+.orbit-step { position: relative; display: grid; grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: 1.125rem; padding: 1.375rem 0 1.5rem; border-bottom: 1px solid var(--color-line); transition: background-color var(--dur-out) ease; }
+.orbit-num { grid-row: 1 / span 2; position: relative; display: grid; width: 2.75rem; height: 2.75rem; place-items: center; }
+.orbit-num svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: var(--color-gold-soft); opacity: 0; scale: 0.8; transition: opacity var(--dur-2) var(--ease-out), scale var(--dur-2) var(--ease-out); }
+.orbit-num > span { position: relative; font-family: var(--font-serif); font-size: 1.625rem; line-height: 1; font-weight: 600; font-feature-settings: 'tnum'; color: var(--color-ink-mute); transition: color var(--dur-2) var(--ease-out); }
+.orbit-step.is-on .orbit-num svg { opacity: 1; scale: 1; }
+.orbit-step.is-on .orbit-num > span { color: var(--color-accent); }
+/* Titles at the page's one h3 size (the path's stops and the unit tiles are 20px too); the button is as tall as
+   the gold mark beside it, which also makes it a 44px target on its own */
+.orbit-name { font-size: 1.25rem; line-height: 1.5; }
+.orbit-name button { display: inline-flex; min-height: 2.75rem; align-items: center; text-align: start; }
+/* The whole row is the button's target */
+.orbit-name button::after { content: ''; position: absolute; inset: 0; }
+.orbit-text { grid-column: 2; margin-top: 0.125rem; max-width: 34rem; color: var(--color-ink-soft); }
+/* With a mouse the row tints on hover; on wider screens the tint reaches a little past the text, which stays on
+   the column's edges (on a narrow window that would take the lines to the screen's edge) */
+@media (hover: hover) and (pointer: fine) { .orbit-step:hover { background-color: rgb(247 241 227 / 0.7); } }
+@media (hover: hover) and (pointer: fine) and (width >= 48rem) {
+  .orbit-steps { margin-inline: -0.75rem; }
+  .orbit-step { padding-inline: 0.75rem; }
+}
+.orbit-step:active { background-color: var(--color-paper); }
+/* Keyboard: the site's usual ring on the title, and the row it stands for tinted as on hover */
+.orbit-step:has(button:focus-visible) { background-color: rgb(247 241 227 / 0.7); }
+
+/* Cut-paper hills at the foot of a page heading and of the closing panel (src/assets/art/hills.svg) */
+.hills { display: block; width: 100%; height: 4.5rem; pointer-events: none; }
+@media (width >= 40rem) { .hills { height: 6.5rem; } }
+@media (width >= 64rem) { .hills { height: 8rem; } }
+/* The low strip is drawn whole at 1600 x 72: as tall as its width allows on wide screens, cut at the sides on phones */
+.hills-low { display: block; width: 100%; height: max(2.75rem, 4.5vw); pointer-events: none; }
+
+/* A unit's sheet of coloured paper beside its page heading, its drawing in the middle */
+.paper-panel { display: grid; aspect-ratio: 4 / 3; place-items: center; border-radius: var(--radius-3xl); background: var(--tone-bg); box-shadow: var(--shadow-paper); }
+.paper-panel[data-tone='soon'] { box-shadow: none; border: 2px dashed var(--color-line-strong); color: var(--color-ink-mute); }
+.paper-panel svg { width: min(62%, 17rem); height: auto; aspect-ratio: 1; }
+@media (width < 64rem) { .paper-panel { aspect-ratio: 16 / 9; } .paper-panel svg { width: auto; height: 78%; } }
+
+/* ---------- Phones: safe areas (the page uses viewport-fit=cover) and finger-sized targets ---------- */
+/* Safe-area insets are physical (the notch is on a physical side), so these two use left/right on purpose. */
+.quickbar { padding-left: max(1rem, env(safe-area-inset-left)); padding-right: max(1rem, env(safe-area-inset-right)); }
+.menu-sheet { padding-right: max(1.25rem, env(safe-area-inset-right)); }
+/* A text link that stands on its own line (link + arrow) gets a 44px-high touch area without changing the layout */
+@media (pointer: coarse) {
+  .link.inline-flex { position: relative; }
+  .link.inline-flex::after { content: ''; position: absolute; inset: -0.6rem -0.375rem; }
+}
+
+/* ---------- Main menu: the gold line under the current page ---------- */
+.nav-line { position: absolute; inset-inline: 0.75rem; bottom: -0.875rem; height: 2px; border-radius: 9999px; background: var(--color-gold); pointer-events: none; }
+
+/* ---------- From page to page (browsers with cross-document view transitions; the rest just load the page):
+   a short crossfade, the header stays where it is, and the gold line slides to the new page's menu item. ---------- */
+@view-transition { navigation: auto; }
+#site-header { view-transition-name: site-header; }
+.nav-line { view-transition-name: nav-line; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-2); }
+::view-transition-group(nav-line) { animation-duration: var(--dur-3); animation-timing-function: var(--ease-out); }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
+/* ---------- Questions and documents: open smoothly where the browser can animate to the content's height ---------- */
+@supports (interpolate-size: allow-keywords) {
+  :root { interpolate-size: allow-keywords; }
+  details::details-content { block-size: 0; overflow-y: clip; transition: block-size var(--dur-3) var(--ease-out), content-visibility var(--dur-3) allow-discrete; }
+  details[open]::details-content { block-size: auto; }
+}
+@media (prefers-reduced-motion: reduce) { details::details-content { transition: none; } }
+
+/* File field (Field.astro): the box turns red with the hidden input it holds */
+[data-file]:has([aria-invalid='true']) { border-color: var(--color-danger); }
+
+/* ---------- Form sent: the check draws itself once (short arm first, the way a hand writes it) ---------- */
+.form-done-check path { stroke-dasharray: 24; stroke-dashoffset: -24; animation: check-draw 0.5s 0.15s var(--ease-out) forwards; }
+@keyframes check-draw { to { stroke-dashoffset: 0; } }
+@media (prefers-reduced-motion: reduce) { .form-done-check path { animation: none; stroke-dashoffset: 0; } }
+
+/* ---------- Closing panel: after a section on the same paper, that section's own bottom space is the gap ---------- */
+:not(.bg-sand, .bg-surface) + .cta-band { padding-top: 0; }
+
+/* Map panel before a map loads: a faint street grid, fading out towards the edges */
+.map-paper {
+  background-image:
+    radial-gradient(circle at 50% 42%, transparent 0, var(--color-sand) 75%),
+    linear-gradient(var(--color-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-line) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  background-position: center, center, center;
+}
+
+/* ---------- Header: the phone menu slides in from its own edge while the page dims ---------- */
+.menu-sheet { transform: translateX(100%); transition: transform var(--dur-3) var(--ease-out); }
+[data-open='true'] > .menu-sheet { transform: none; }
+@media (prefers-reduced-motion: reduce) { .menu-sheet { transform: none; transition: none; } }
+
+/* ---------- Article and announcement rows: navy wipe on hover ---------- */
+.row-wipe { position: relative; isolation: isolate; }
+.row-wipe::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  background: var(--color-accent); transform: scaleX(0); transform-origin: right;
+  transition: transform var(--dur-3) var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .row-wipe:hover::before { transform: scaleX(1); }
+  .row-wipe:hover, .row-wipe:hover * { color: #fff !important; }
+  .row-wipe:hover .row-arrow { color: var(--color-gold) !important; }
+}
+
+/* Buttons and links: the arrow nudges toward the reading direction */
+.btn-primary svg, .btn-ghost svg, .btn-light svg, .link svg, .stop-cta svg { transition: transform var(--dur-2) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover svg, .btn-ghost:hover svg, .btn-light:hover svg, .link:hover svg { transform: translateX(-3px); }
+}
+
+/* A card that is a link lifts 2px and its edge darkens a step */
+.lift { transition: transform var(--dur-out) var(--ease-out), box-shadow var(--dur-out) var(--ease-out), border-color var(--dur-out) var(--ease-out); }
+@media (hover: hover) and (pointer: fine) {
+  .lift:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); border-color: var(--color-line-strong); transition-duration: 180ms; }
+}
+
+/* ---------- /path/: the stage in the reading zone ---------- */
+.path-dot { transition: scale var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out); }
+.path-item.is-active .path-dot { scale: 1.35; box-shadow: 0 0 0 5px rgb(217 178 90 / 0.35); }
+
+/* ---------- Lottie icons (src/components/LottieIcon.astro) ---------- */
+[data-lottie] > svg { grid-area: 1 / 1; width: 100%; height: 100%; }
+[data-lottie].is-lottie .lottie-fallback { visibility: hidden; }
+
+/* ---------- Long-form text: articles and announcements (Markdown) ---------- */
+.prose-fa { font-size: 1.0625rem; line-height: 2; color: var(--color-ink); max-width: 44rem; }
+.prose-fa > * + * { margin-top: 1.1em; }
+.prose-fa h2 { font-size: var(--text-title); line-height: 1.5; margin-top: 2.2em; scroll-margin-top: 1rem; }
+.prose-fa h3 { font-size: 1.25rem; margin-top: 1.8em; scroll-margin-top: 1rem; }
+.prose-fa h2 + *, .prose-fa h3 + * { margin-top: 0.6em; }
+.prose-fa a { color: var(--color-accent); text-decoration: underline; text-decoration-color: rgb(1 35 122 / 0.3); text-underline-offset: 5px; }
+.prose-fa a:hover { text-decoration-color: var(--color-accent); }
+.prose-fa ul, .prose-fa ol { padding-inline-start: 1.4em; }
+.prose-fa ul { list-style: disc; }
+.prose-fa ol { list-style: persian; }
+.prose-fa li + li { margin-top: 0.4em; }
+.prose-fa li::marker { color: var(--color-saffron); }
+/* A quotation: a hairline rule on the reading side and the book face, not a coloured bar */
+.prose-fa blockquote { border-inline-start: 1px solid var(--color-line-strong); padding-inline-start: 1.25em; color: var(--color-ink-soft); font-family: var(--font-serif); font-size: 1.15em; }
+.prose-fa img { border-radius: 0.75rem; border: 1px solid var(--color-line); }
+.prose-fa strong { font-weight: 600; }
+.prose-fa hr { border: 0; border-top: 1px solid var(--color-line); margin: 2.5em 0; }
+.prose-fa table { width: 100%; border-collapse: collapse; font-size: 0.95em; }
+.prose-fa th, .prose-fa td { border-bottom: 1px solid var(--color-line); padding: 0.6em 0.4em; text-align: start; }
+
+/* ==========================================================================
+   Details kept from the earlier passes (docs/21st-elements.md), all still now: they move only when the page loads
+   (a heading's stroke), when they are pointed at, or with the reader's own scrolling (the reading line, the one
+   statement that inks in).
+   ========================================================================== */
+
+/* A hand-drawn gold stroke under a page heading (Stroke.astro), drawn once from the reading side as the page opens.
+   `still` strokes (the closing panel) are simply there. */
+.stroke-draw { display: block; overflow: visible; color: var(--color-gold); clip-path: inset(0 0 0 100%); animation: stroke-reveal 0.85s var(--delay, 0.3s) var(--ease-out) forwards; }
+.stroke-draw.is-still { clip-path: none; animation: none; }
+@keyframes stroke-reveal { to { clip-path: inset(0); } }
+
+/* One phrase of a heading in a gold marker (Section `mark` prop), still */
+.mark-sweep {
+  --mark: rgb(217 178 90 / 0.4);
+  padding-inline: 0.12em; margin-inline: -0.12em; border-radius: 0.2em;
+  background-image: linear-gradient(transparent 50%, var(--mark) 50%, var(--mark) 88%, transparent 88%);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+/* The statement that inks in word by word as it moves up to the reading line (InkText.astro, fx.ts). It starts
+   at the site's muted grey (5.4:1 on paper), never fainter. Without the script --p is missing, the colour is
+   invalid and the word simply inherits the ink. */
+.ink-w { --w: clamp(0, (var(--p) * (var(--n) + 6) - var(--i)) / 6, 1); color: color-mix(in oklab, var(--color-ink) calc(var(--w) * 100%), var(--color-ink-mute)); transition: color 0.2s linear; }
+
+/* Scroll Progress: a gold reading line along the bottom of the header on reading pages (fx.ts) */
+.read-progress { position: absolute; inset-inline: 0; bottom: -1px; height: 2px; background: var(--color-gold); transform: scaleX(0); transform-origin: right; pointer-events: none; }
+
+/* Under a text link a faint line is always there (a link never depends on colour alone); on hover the full line
+   draws in from the reading side and leaves the other way. */
+.link {
+  text-decoration: none; padding-bottom: 0.2em;
+  background-image: linear-gradient(currentColor, currentColor), linear-gradient(rgb(1 35 122 / 0.28), rgb(1 35 122 / 0.28));
+  background-repeat: no-repeat; background-size: 0% 1px, 100% 1px; background-position: left bottom, left bottom;
+  transition: color var(--dur-2) var(--ease-out), background-size var(--dur-3) var(--ease-out);
+}
+.link:hover, .link:focus-visible { background-size: 100% 1px, 100% 1px; background-position: right bottom, left bottom; }
+.link:active { color: var(--color-accent-hover); }
+/* A link set on its own line (link + arrow) is a box already taller than its text: no extra room needed */
+.link.inline-flex { padding-bottom: 0; }
+.foot-link > span { padding-bottom: 0.15em; background: linear-gradient(var(--color-gold), var(--color-gold)) no-repeat left bottom / 0% 1px; transition: background-size var(--dur-3) var(--ease-out); }
+.foot-link:hover > span, .foot-link:focus-visible > span { background-size: 100% 1px; background-position: right bottom; }
+
+/* One line slides under the menu item the mouse or the keyboard is on (Header.astro) */
+.nav-hover { position: absolute; left: 0; bottom: 0.5rem; width: 1px; height: 1px; background: var(--color-accent); transform-origin: 0 0; opacity: 0; pointer-events: none; transition: transform var(--dur-3) var(--ease-out), opacity var(--dur-2) var(--ease-out); }
+
+/* The institute's name in a gold hairline across the foot of the footer. The letters of a Persian word overlap
+   where they join; a fill in the footer's own navy, painted over the stroke, hides those inner outlines. */
+.foot-mark { display: block; width: 100%; height: clamp(4.25rem, 14vw, 11.5rem); overflow: visible; }
+.foot-mark text { font-family: var(--font-serif); font-weight: 600; font-size: clamp(4.5rem, 16vw, 13rem); fill: var(--color-forest); paint-order: stroke fill; stroke: var(--color-gold); stroke-width: 2px; stroke-opacity: 0.65; }
+
+/* Isometric Steps: the age staircase on /path/ (path-story.ts). Steps already lived take the paper of their
+   stretch; the rest are paper outlines. The last step, high school, is dashed: it opens later. */
+.stairs .face { stroke: var(--color-line-strong); stroke-width: 1; stroke-linejoin: round; vector-effect: non-scaling-stroke; transition: fill var(--dur-3) var(--ease-out), stroke var(--dur-3) var(--ease-out); }
+.stairs .front { fill: var(--color-surface); }
+.stairs .top { fill: var(--color-sand); }
+.stairs .side { fill: #e6dcc6; }
+.stairs .label { font-family: var(--font-serif); font-size: 13px; fill: var(--color-ink-mute); text-anchor: middle; transition: fill var(--dur-3) var(--ease-out); }
+/* Each step is cut from the paper of its stretch of the path (the colours of the home page) and takes that colour
+   once the reader has reached it: front, a lighter top and a darker side */
+.stairs .stair { --s-front: var(--color-paper-saffron); --s-top: #eec27a; --s-side: #b8862a; --s-ink: var(--color-ink); }
+.stairs .stair[data-tone='red'] { --s-front: var(--color-paper-red); --s-top: #d9735c; --s-side: #973522; --s-ink: #fff; }
+.stairs .stair[data-tone='teal'] { --s-front: var(--color-paper-teal); --s-top: #5bb7b2; --s-side: #1f7a76; --s-ink: var(--color-ink); }
+.stairs .stair[data-tone='gold'] { --s-front: var(--color-gold); --s-top: #ecd08c; --s-side: #a9843a; --s-ink: var(--color-accent); }
+.stairs .is-on .front { fill: var(--s-front); stroke: var(--s-front); }
+.stairs .is-on .top { fill: var(--s-top); stroke: var(--s-top); }
+.stairs .is-on .side { fill: var(--s-side); stroke: var(--s-side); }
+.stairs .is-on .label { fill: var(--s-ink); }
+.stairs .is-soon .face { fill: transparent; stroke-dasharray: 3 2.5; }
+.stairs .is-soon.is-on .face { fill: transparent; stroke: var(--color-ink-mute); }
+.stairs .is-soon.is-on .label { fill: var(--color-ink-soft); }
+.stairs .token-ball { fill: var(--color-accent); stroke: var(--color-forest); stroke-width: 1.2; }
+.stairs .token-shadow { fill: rgb(23 32 28 / 0.25); }
+
+/* The growth file on /parents/ (GrowthFile.astro): a navy folder with its tab at the reading side, standing open
+   with three sheets showing; a mouse over it opens it a little further. */
+.gfile { position: relative; isolation: isolate; width: 100%; max-width: 16rem; aspect-ratio: 1; margin-inline: auto; perspective: 1000px; perspective-origin: 50% 0%; }
+/* Where the folder rests on the page */
+.gfile::after { content: ''; position: absolute; z-index: -1; inset: auto 8% -0.5rem; height: 1.25rem; border-radius: 50%; background: rgb(23 32 28 / 0.2); filter: blur(10px); }
+@media (width >= 64rem) { .gfile { max-width: 18rem; } }
+.gfile-back { position: absolute; inset: 1.75rem 0 0; border-radius: 0.75rem; border-start-start-radius: 0; background: var(--color-forest); }
+.gfile-tab { position: absolute; bottom: 100%; inset-inline-start: 0; height: 1.75rem; padding-inline: 1rem 1.25rem; border-radius: 0.625rem 0.625rem 0 0; background: var(--color-forest); color: var(--color-gold); font-size: var(--text-xs); line-height: 1.75rem; white-space: nowrap; }
+.gfile-sheet {
+  position: absolute; inset-inline: 7%; top: var(--top); height: 62%; padding: 0.3rem 0.875rem; border: 1px solid var(--color-line); border-radius: 0.5rem;
+  background: var(--color-surface) linear-gradient(to bottom, transparent 1.95rem, rgb(1 35 122 / 0.1) 1.95rem, rgb(1 35 122 / 0.1) calc(1.95rem + 1px), transparent calc(1.95rem + 1px)) 0 0 / 100% 1.25rem repeat-y;
+  color: var(--color-ink-soft); font-size: var(--text-xs); line-height: 1.6;
+  transition: translate var(--dur-3) var(--ease-out) calc(var(--k) * 40ms);
+}
+.gfile-front {
+  position: absolute; inset: 40% 0 0; border-radius: 0.75rem; background: var(--color-accent); border-top: 1px solid rgb(255 255 255 / 0.14);
+  transform-origin: 50% 100%; transform: rotateX(-24deg);
+  box-shadow: 0 -10px 22px -14px rgb(1 26 92 / 0.6);
+  transition: transform var(--dur-3) var(--ease-out);
+}
+.gfile-mark { position: absolute; inset-inline-start: 1.25rem; top: 1.125rem; height: 1.75rem; width: auto; color: var(--color-gold); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .gfile:hover .gfile-front { transform: rotateX(-34deg); }
+  .gfile:hover .gfile-sheet { translate: 0 -7%; }
+}
+
+/* The top of each address card (PlacePin.astro): a strip of squared map paper, flat like the rest of the cut paper,
+   a navy pin standing on it. Pointing at the card's map button lifts the pin. No map link yet: a dashed pin. */
+.pin3d {
+  position: relative; height: 5rem; margin: -1.5rem -1.5rem 1.25rem; overflow: hidden;
+  border-bottom: 1px solid var(--color-line); border-radius: calc(var(--radius-xl) - 1px) calc(var(--radius-xl) - 1px) 0 0;
+  background: var(--color-sand);
+}
+@media (width >= 40rem) { .pin3d { height: 5.5rem; } }
+.pin3d-floor {
+  position: absolute; inset: 0;
+  background-image: linear-gradient(rgb(23 32 28 / 0.08) 1px, transparent 1px), linear-gradient(90deg, rgb(23 32 28 / 0.08) 1px, transparent 1px);
+  background-size: 26px 26px; background-position: center bottom;
+  mask-image: linear-gradient(to top, #000 30%, transparent 75%);
+}
+/* The pin's tip sits on one point of the paper, 70% down and in the middle */
+.pin3d-pin, .pin3d-shadow { position: absolute; left: 50%; top: 70%; }
+.pin3d-pin { width: 1.75rem; height: 2.3rem; margin: -2.3rem 0 0 -0.875rem; overflow: visible; transition: translate var(--dur-2) var(--ease-out); }
+.pin3d-body { fill: var(--color-accent); }
+.pin3d-dot { fill: var(--color-gold); }
+.pin3d-shadow { width: 1.5rem; height: 0.45rem; margin: -0.225rem 0 0 -0.75rem; border-radius: 50%; background: rgb(23 32 28 / 0.3); filter: blur(1.5px); transition: scale var(--dur-2) var(--ease-out), opacity var(--dur-2) var(--ease-out); }
+.is-pending .pin3d-body { fill: none; stroke: var(--color-ink-mute); stroke-width: 1.4; stroke-dasharray: 3 2.4; }
+.is-pending .pin3d-dot { fill: none; stroke: var(--color-ink-mute); stroke-width: 1.4; }
+.is-pending .pin3d-shadow { opacity: 0.4; }
+@media (prefers-reduced-motion: no-preference) {
+  .card:has([data-pin-link]:is(:hover, :focus-visible)) .pin3d-pin { translate: 0 -0.375rem; }
+  .card:has([data-pin-link]:is(:hover, :focus-visible)) .pin3d-shadow { scale: 0.75; opacity: 0.6; }
+}
+
+/* ---------- Reduced motion: the finished, still state of everything ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise, .stroke-draw { animation: none; }
+  .stroke-draw { clip-path: none; }
+  .btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light, .tile, .tile-art, .tile-go, .lift, .row-wipe::before,
+  .link, .foot-link > span, .nav-hover, .ink-w, .path-dot, .stairs .face, .stairs .label, .gfile-front, .gfile-sheet { transition: none; }
+  :is(.btn, .btn-primary, .btn-ghost, .btn-light, .btn-ghost-light):is(:hover, :active), .tile:has(a:active) { transform: none; }
+  /* The cycle on the home page: no walk (CycleOrbit.astro), and a chosen step is marked at once; only the name in
+     the middle and the gold mark in the list still fade */
+  .orbit-arm, .orbit-token, .orbit-face, .orbit-digit text, .orbit-disc { transition: none; }
+  .orbit-title { filter: none; transition-delay: 0s; }
+  .orbit-title.is-on { transition-delay: 0s; }
+  .orbit-num svg { scale: 1; transition-property: opacity; }
+}

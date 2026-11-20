@@ -1,0 +1,122 @@
+# انتشار سایت: بعد از هر تغییر در main (از جمله «انتشار» در پنل مدیریت)، هر روز ساعت ۴ صبح به وقت تهران
+# اگر مقاله یا اطلاعیه‌ای به تاریخ انتشارش رسیده باشد، و با دکمه‌ی Run workflow.
+# مقصد با متغیر DEPLOY_TARGET انتخاب می‌شود: ftp (هاست اشتراکی با cPanel یا DirectAdmin)، zip (فقط ساخت؛
+# فایل آماده برای بارگذاری دستی در بخش Artifacts همان اجرا) یا hook (Netlify، Cloudflare Pages یا هر میزبانی که
+# «build hook» می‌دهد). تا این متغیر تنظیم نشده، کاری نمی‌کند.
+# راهنما: docs/deploy.md
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '30 0 * * *' # every day 04:00 Tehran
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# One upload at a time; a newer one waits for the running one instead of cutting it off halfway
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  site:
+    name: Build and upload
+    if: vars.DEPLOY_TARGET == 'ftp' || vars.DEPLOY_TARGET == 'zip'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Always the live branch, whatever started the run (a daily run uses the default branch otherwise)
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Anything to publish?
+        id: due
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then node scripts/due-today.mjs >> "$GITHUB_OUTPUT"; else echo "due=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Install
+        if: steps.due.outputs.due == 'true'
+        run: npm ci
+
+      - name: Build
+        id: build
+        if: steps.due.outputs.due == 'true'
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          PUBLIC_FORM_ENDPOINT: ${{ vars.PUBLIC_FORM_ENDPOINT }}
+          PUBLIC_GA4_ID: ${{ vars.PUBLIC_GA4_ID }}
+          PUBLIC_UMAMI_SRC: ${{ vars.PUBLIC_UMAMI_SRC }}
+          PUBLIC_UMAMI_ID: ${{ vars.PUBLIC_UMAMI_ID }}
+        run: npm run build
+
+      # Ready to upload by hand (cPanel File Manager → Upload → Extract), also when the FTP upload fails
+      - name: Keep the built site
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-${{ github.run_number }}
+          path: dist/
+          include-hidden-files: true
+          retention-days: 7
+
+      - name: Upload
+        if: steps.due.outputs.due == 'true' && vars.DEPLOY_TARGET == 'ftp'
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USER: ${{ secrets.FTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_PROTOCOL: ${{ vars.FTP_PROTOCOL }}
+          FTP_PORT: ${{ vars.FTP_PORT }}
+          FTP_DIR: ${{ vars.FTP_DIR }}
+          FTP_VERIFY_CERTIFICATE: ${{ vars.FTP_VERIFY_CERTIFICATE }}
+          FTP_DELETE: ${{ vars.FTP_DELETE }}
+          SFTP_KNOWN_HOSTS: ${{ vars.SFTP_KNOWN_HOSTS }}
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+          bash scripts/deploy-ftp.sh
+
+      - name: Check the live site (old addresses, sitemap, robots.txt, 404 page, https and www)
+        if: steps.due.outputs.due == 'true' && vars.DEPLOY_TARGET == 'ftp' && vars.DEPLOY_CHECK != 'off'
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: npm run migrate:check -- "${SITE_URL:-https://mahermana.com}"
+
+  hook:
+    name: Ask the host to build again
+    # A host connected to the repository (Netlify, Cloudflare Pages) already builds on every push;
+    # this only adds the daily build and the manual button.
+    if: vars.DEPLOY_TARGET == 'hook' && github.event_name != 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # Always the live branch, whatever started the run (a daily run uses the default branch otherwise)
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+
+      - name: Anything to publish?
+        id: due
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = "schedule" ]; then node scripts/due-today.mjs >> "$GITHUB_OUTPUT"; else echo "due=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Call the build hook
+        if: steps.due.outputs.due == 'true'
+        env:
+          BUILD_HOOK_URL: ${{ secrets.BUILD_HOOK_URL }}
+        run: |
+          if [ -z "$BUILD_HOOK_URL" ]; then echo "::error::secret BUILD_HOOK_URL is empty (docs/deploy.md)"; exit 1; fi
+          curl -fsS --retry 3 -X POST -H 'Content-Type: application/json' -d '{}' "$BUILD_HOOK_URL" > /dev/null
+          echo "The host is building the site."

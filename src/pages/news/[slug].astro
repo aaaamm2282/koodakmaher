@@ -1,0 +1,53 @@
+---
+import { render } from 'astro:content';
+import { Picture } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import CTA from '../../components/CTA.astro';
+import { getNews, faDate, isoDate, showDrafts } from '../../lib/content';
+import { resolveImage } from '../../lib/images';
+import { units } from '../../data/site';
+
+export async function getStaticPaths() {
+  return (await getNews()).map((item) => ({ params: { slug: item.id }, props: { item } }));
+}
+const { item } = Astro.props;
+const d = item.data;
+const { Content } = await render(item);
+const cover = resolveImage(d.cover);
+const related = units.filter((u) => d.units.includes(u.slug as never));
+const crumbs = [{ href: '/news/', label: 'اطلاعیه‌ها' }, { label: d.title }];
+const url = new URL(`/news/${item.id}/`, Astro.site).href;
+const origin = new URL('/', Astro.site).href;
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: d.title,
+  description: d.summary,
+  datePublished: isoDate(d.date),
+  inLanguage: 'fa-IR',
+  mainEntityOfPage: url,
+  author: { '@id': `${origin}#org` },
+  publisher: { '@id': `${origin}#org` },
+  ...(cover && { image: new URL(cover.src, Astro.site).href }),
+  ...(related.length && { about: related.map((u) => ({ '@id': new URL(`/units/${u.slug}/#unit`, Astro.site).href })) }),
+};
+---
+<Base title={`${d.title} | کودک ماهر`} description={d.summary} type="article" crumbs={crumbs} schema={[schema]} noindex={d.draft || showDrafts}>
+  <PageHero title={d.title} crumbs={crumbs} subtitle={d.summary}>
+    <p class="rise mt-6 text-sm text-ink-mute" style="--i:3"><time datetime={isoDate(d.date)}>{faDate(d.date)}</time></p>
+  </PageHero>
+  <article class="container-x py-12 sm:py-16">
+    <div class="max-w-3xl">
+      {cover && <figure class="mb-10 overflow-hidden rounded-xl border border-line"><Picture src={cover} alt={d.coverAlt ?? ''} formats={['avif', 'webp']} widths={[480, 800, 1200]} sizes="(min-width: 1024px) 760px, 100vw" class="h-auto w-full" /></figure>}
+      <div class="prose-fa" data-progress-target><Content /></div>
+      {related.length > 0 && (
+        <p class="mt-10 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-6 text-sm">
+          <span class="text-ink-mute">مربوط به:</span>
+          {related.map((u) => <a href={`/units/${u.slug}/`} class="link">{u.name}</a>)}
+        </p>
+      )}
+    </div>
+  </article>
+  <CTA />
+</Base>

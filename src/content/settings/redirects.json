@@ -1,0 +1,160 @@
+{
+  "items": [
+    {
+      "from": "/کودکستان-کودک-ماهر/",
+      "to": "/units/kindergarten/",
+      "status": "301",
+      "note": "صفحه کودکستان در سایت قبلی"
+    },
+    {
+      "from": "/دبستان-کودک-ماهر/",
+      "to": "/units/primary/",
+      "status": "301",
+      "note": "صفحه «دبستان کودک ماهر» در سایت قبلی"
+    },
+    {
+      "from": "/دوره-های-زبان/",
+      "to": "/units/language/",
+      "status": "301",
+      "note": "صفحه «دوره‌های زبان» در سایت قبلی"
+    },
+    {
+      "from": "/آموزش-های-آزاد/",
+      "to": "/units/vocational/",
+      "status": "301",
+      "note": "صفحه «آموزشگاه آزاد» در سایت قبلی"
+    },
+    {
+      "from": "/دپارتمان-ها/",
+      "to": "/units/",
+      "status": "301",
+      "note": "صفحه «دپارتمان‌ها» در سایت قبلی؛ همان فهرست واحدها"
+    },
+    {
+      "from": "/دوره-ها/",
+      "to": "/units/",
+      "status": "301",
+      "note": "صفحه «دوره‌ها» در سایت قبلی؛ دوره‌ها حالا در صفحه هر واحد است"
+    },
+    {
+      "from": "/درباره-ما/",
+      "to": "/about/",
+      "status": "301",
+      "note": "صفحه «درباره ما» در سایت قبلی"
+    },
+    {
+      "from": "/تماس-باما/",
+      "to": "/contact/",
+      "status": "301",
+      "note": "صفحه «تماس با ما» در سایت قبلی"
+    },
+    {
+      "from": "/همکاری-باما/",
+      "to": "/careers/",
+      "status": "301",
+      "note": "صفحه «همکاری با ما» در سایت قبلی"
+    },
+    {
+      "from": "/اخبار-و-رویداد-ها/",
+      "to": "/news/",
+      "status": "301",
+      "note": "صفحه «اخبار و رویدادها» در سایت قبلی"
+    },
+    {
+      "from": "/پیش-ثبت-نام-کودکستان/",
+      "to": "/register/?unit=kindergarten",
+      "status": "301",
+      "note": "فرم پیش‌ثبت‌نام کودکستان در سایت قبلی؛ فرم تازه با کودکستان انتخاب‌شده باز می‌شود"
+    },
+    {
+      "from": "/پیش-ثبت-نام-مدرسه/",
+      "to": "/register/",
+      "status": "301",
+      "note": "فرم پیش‌ثبت‌نام مدرسه در سایت قبلی"
+    },
+    {
+      "from": "/گالری/",
+      "to": "/units/",
+      "status": "301",
+      "note": "گالری سایت قبلی؛ عکس‌ها حالا در صفحه هر واحد است"
+    },
+    {
+      "from": "/ورود-والدین/",
+      "to": "/parents/",
+      "status": "301",
+      "note": "«ورود والدین» در سایت قبلی؛ اگر سامانه والدین جای دیگری است، نشانی آن را اینجا بگذارید"
+    },
+    {
+      "from": "/سلام-دنیا/",
+      "to": "",
+      "status": "410",
+      "note": "نوشته پیش‌فرض وردپرس که در گوگل ایندکس شده بود"
+    },
+    {
+      "from": "/index.php",
+      "to": "/",
+      "status": "301",
+      "note": "صفحه اصلی وردپرس"
+    },
+    {
+      "from": "/sitemap_index.xml",
+      "to": "/sitemap-index.xml",
+      "status": "301",
+      "note": "نقشه سایت افزونه سئو در وردپرس"
+    },
+    {
+      "from": "/wp-sitemap.xml",
+      "to": "/sitemap-index.xml",
+      "status": "301",
+      "note": "نقشه سایت پیش‌فرض وردپرس"
+    },
+    {
+      "from": "/sitemap.xml",
+      "to": "/sitemap-index.xml",
+      "status": "301",
+      "note": "نشانی رایج نقشه سایت"
+    },
+    {
+      "from": "/feed/",
+      "to": "",
+      "status": "410",
+      "note": "خوراک RSS وردپرس"
+    },
+    {
+      "from": "/comments/feed/",
+      "to": "",
+      "status": "410",
+      "note": "خوراک دیدگاه‌های وردپرس"
+    },
+    {
+      "from": "/r/kg/",
+      "to": "/review/kindergarten/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی کودکستان"
+    },
+    {
+      "from": "/r/pr/",
+      "to": "/review/primary/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی دبستان"
+    },
+    {
+      "from": "/r/ms/",
+      "to": "/review/middle-school/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی متوسطه اول"
+    },
+    {
+      "from": "/r/la/",
+      "to": "/review/language/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی آموزشگاه زبان"
+    },
+    {
+      "from": "/r/vo/",
+      "to": "/review/vocational/?utm_source=sms&utm_medium=sms&utm_campaign=review",
+      "status": "301",
+      "note": "لینک کوتاه پیامک نظرخواهی آموزشگاه فنی‌وحرفه‌ای"
+    }
+  ]
+}

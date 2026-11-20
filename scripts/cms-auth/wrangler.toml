@@ -1,0 +1,9 @@
+# Cloudflare Worker for CMS sign-in. Deploy: npx wrangler deploy (from this folder).
+# Secrets are added with: npx wrangler secret put GITHUB_CLIENT_SECRET
+name = "koodakmaher-cms-auth"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://mahermana.com"
+# GITHUB_CLIENT_ID = "paste the Client ID here (it is public, not a secret)"

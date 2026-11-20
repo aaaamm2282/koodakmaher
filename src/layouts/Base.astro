@@ -1,0 +1,127 @@
+---
+import '../styles/global.css';
+// The two font files every page needs (src/styles/global.css), fetched in parallel with the CSS.
+import vazirFont from '../assets/fonts/vazirmatn-fa.woff2?url';
+import naskhFont from '../assets/fonts/noto-naskh-arabic-fa.woff2?url';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Analytics from '../components/Analytics.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import { organization, website, breadcrumbs } from '../lib/schema';
+
+interface Props {
+  /** Full <title>, exactly as in section 5 of the content brief */
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  crumbs?: { href?: string; label: string }[];
+  schema?: (Record<string, unknown> | null)[];
+  noindex?: boolean;
+  /** false on the 404 page: it is served at many addresses, so it has no address of its own */
+  canonical?: boolean;
+  /** A long page: a gold line along the bottom of the header shows how much of it has been read (fx.ts).
+      Articles mark their own text instead, so the line follows the text and not the whole page. */
+  progress?: boolean;
+}
+
+const defaultDescription = `مؤسسه آموزشی مهارت‌محور${site.city ? ` در ${site.city}` : ''}: کودکستان، دبستان، متوسطه اول، آموزشگاه زبان و فنی‌وحرفه‌ای.`;
+const {
+  title = `کودک ماهر مانا · ${site.slogan}`,
+  description = defaultDescription,
+  image = '/og.png',
+  type = 'website',
+  crumbs = [],
+  schema = [],
+  noindex: noindexProp = false,
+  canonical: hasCanonical = true,
+  progress = false,
+} = Astro.props;
+// Builds that show drafts or placeholder photos are for review only: keep every page out of search.
+const reviewBuild = process.env.SHOW_DRAFTS === '1' || process.env.PREVIEW_PHOTOS === '1';
+const noindex = noindexProp || reviewBuild;
+const fullTitle = title;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
+
+// Organisation, site and breadcrumbs on every page; pages add their own (unit, article, FAQ) via `schema`.
+const allSchema = [organization(Astro.site!, ogImage), website(Astro.site!), ...(crumbs.length ? [breadcrumbs(crumbs, Astro.url.pathname, Astro.site!)] : []), ...schema.filter(Boolean)];
+
+---
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {hasCanonical && <link rel="canonical" href={canonical} />}
+    <meta name="robots" content={noindex ? "noindex" : "index, follow, max-image-preview:large, max-snippet:-1"} />
+    <meta name="theme-color" content="#01237a" />
+    <link rel="preload" href={vazirFont} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={naskhFont} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="text/plain" title="LLM summary" href="/llms.txt" />
+
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="fa_IR" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    {hasCanonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    {allSchema.map((s) => <script type="application/ld+json" set:html={JSON.stringify(s)} />)}
+
+    <script is:inline>
+      // Where this visit started: first page, the site it came from and its UTM tags, kept for this tab only
+      // (sessionStorage, no cookie). Forms send it with the fields so the institute knows which channel
+      // brought a request, even without any statistics service (src/components/FormShell.astro).
+      try {
+        if (!sessionStorage.getItem('km:src')) {
+          var q = new URLSearchParams(location.search), src = { landing: location.pathname + location.search };
+          if (document.referrer) { var r = new URL(document.referrer); if (r.host !== location.host) src.referrer = r.origin; }
+          ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (q.get(k)) src[k] = q.get(k).slice(0, 100); });
+          sessionStorage.setItem('km:src', JSON.stringify(src));
+        }
+      } catch (e) {}
+    </script>
+    <Analytics />
+  </head>
+  <body class="overflow-x-hidden">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:start-3 focus:z-[100] focus:rounded-lg focus:bg-ink focus:px-5 focus:py-3 focus:text-white">پرش به محتوای اصلی</a>
+    <Header />
+    <main id="main" data-progress-target={progress ? '' : undefined}>
+      <slot />
+    </main>
+    <Footer />
+    <!-- Mobile: quick actions stay within thumb reach once the visitor has scrolled past the first screen -->
+    <!-- While it is off screen it is also invisible, so keyboard and screen-reader users never land on hidden links;
+         and it never leaves while it holds keyboard focus, so focus is never dropped or left on a bar that slid away. -->
+    <nav id="quickbar" aria-label="دسترسی سریع" class="quickbar invisible fixed inset-x-0 bottom-0 z-40 translate-y-full border-t border-line bg-paper/95 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur transition-[translate,visibility] duration-300 data-[show=true]:visible data-[show=true]:translate-y-0 sm:hidden" data-show="false">
+      <div class="flex gap-2">
+        <a href="/register/" class="btn-primary flex-1 !min-h-11" data-cta="quickbar">پیش‌ثبت‌نام و مشاوره</a>
+        <a href="/contact/" class="btn-ghost !min-h-11 !px-4"><Icon name="phone" size={18} />تماس</a>
+      </div>
+    </nav>
+    <script>
+      import '../scripts/fx';
+      const qb = document.getElementById('quickbar');
+      if (qb && !location.pathname.startsWith('/register')) {
+        // Up past the first screen, down near the end (it would cover the footer), but up whenever focus is in it
+        const on = () => (qb.dataset.show = String(qb.contains(document.activeElement) || (scrollY > innerHeight * 0.8 && innerHeight + scrollY < document.body.scrollHeight - 200)));
+        on(); addEventListener('scroll', on, { passive: true });
+        qb.addEventListener('focusin', on);
+        qb.addEventListener('focusout', () => setTimeout(on)); // once focus has landed: still in the bar, or gone
+      }
+    </script>
+  </body>
+</html>

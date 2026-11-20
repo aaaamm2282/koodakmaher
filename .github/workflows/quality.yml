@@ -1,0 +1,66 @@
+# بررسی کیفیت: ساخت سایت، نقشه کلمات کلیدی، متن‌های نقشه‌ها، بررسی همه صفحه‌ها در مرورگر
+# (دسترس‌پذیری، لینک شکسته، خطا، بیرون‌زدگی در موبایل) و Lighthouse موبایل با حداقل ۹۰.
+# اگر چیزی خراب باشد این بررسی قرمز می‌شود؛ گزارش Lighthouse در بخش Artifacts همان اجراست.
+# راهنما: docs/deploy.md، بخش «بررسی خودکار کیفیت».
+name: Quality check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 4 * * 6' # every Saturday 07:30 Tehran: catches problems that come from outside a change
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SITE_URL: ${{ vars.SITE_URL }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        id: build
+        run: npm run build
+
+      - name: Keyword map (title, description, H1 and main phrase of every page)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run seo:keywords
+
+      - name: Map listing texts (Neshan, Balad, Google Maps)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run local:profiles
+
+      - name: Every page in Chrome (accessibility, links, errors, phone width)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npm run check:pages
+
+      - name: Lighthouse, mobile (performance, accessibility, best practices, SEO ≥ 90)
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: npx --yes @lhci/cli@0.16.1 autorun
+
+      - name: Keep the Lighthouse reports
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: lighthouse-reports
+          path: lighthouse-reports/
+          retention-days: 30
+          if-no-files-found: ignore

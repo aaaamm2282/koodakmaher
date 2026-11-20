@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import Icon from '../../components/Icon.astro';
+import { getNews, faDate, isoDate } from '../../lib/content';
+import { units } from '../../data/site';
+
+const crumbs = [{ label: 'اطلاعیه‌ها' }];
+const items = await getNews();
+const unitName = (slug: string) => units.find((u) => u.slug === slug)?.name ?? slug;
+---
+<Base title="اطلاعیه‌ها و اخبار | کودک ماهر" description="اطلاعیه‌های ثبت‌نام، رویدادها و خبرهای کودکستان، دبستان، متوسطه اول و آموزشگاه‌های کودک ماهر مانا." crumbs={crumbs} noindex={items.length === 0}>
+  <PageHero title="اطلاعیه‌ها و اخبار" crumbs={crumbs} subtitle="زمان ثبت‌نام، رویدادها و خبرهای واحدهای کودک ماهر." />
+  <section class="container-x py-14 sm:py-20">
+    {items.length === 0 ? (
+      <div class="card max-w-xl p-6 sm:p-8">
+        <p class="font-serif text-2xl font-semibold">فعلاً اطلاعیه‌ای نیست</p>
+        <p class="mt-2 text-ink-soft">برای باخبر شدن از زمان ثبت‌نام، فرم پیش‌ثبت‌نام را پر کنید یا صفحه‌های ما را در شبکه‌های اجتماعی دنبال کنید.</p>
+        <a href="/register/" class="link mt-4 inline-flex items-center gap-1">پیش‌ثبت‌نام<Icon name="arrow" size={16} /></a>
+      </div>
+    ) : (
+      <ul class="divide-y divide-line border-y border-line">
+        {items.map((n) => (
+          <li class="row-wipe relative py-6 sm:px-4">
+            <p class="flex flex-wrap gap-x-3 text-sm text-ink-mute"><time datetime={isoDate(n.data.date)}>{faDate(n.data.date)}</time>{n.data.units.map((u) => <span class="text-accent">{unitName(u)}</span>)}</p>
+            <h2 class="mt-1 text-xl"><a href={`/news/${n.id}/`} class="after:absolute after:inset-0">{n.data.title}</a></h2>
+            <p class="mt-1 text-ink-soft">{n.data.summary}</p>
+          </li>
+        ))}
+      </ul>
+    )}
+  </section>
+</Base>

@@ -1,0 +1,106 @@
+---
+/**
+ * Printable A5 poster with a QR code to the unit's review page («نظر شما»), for the reception desk or
+ * the notice board. The code points to the site, not straight to Google, so the printed sheet keeps
+ * working when the review links in the CMS change, and works for Neshan and Balad too.
+ */
+import QRCode from 'qrcode';
+import Print from '../../../layouts/Print.astro';
+import Logo from '../../../components/Logo.astro';
+import { units, site } from '../../../data/site';
+import { displayName } from '../../../lib/schema';
+import { listings, tagged, reviewPath, shortReviewPath } from '../../../data/local.mjs';
+
+export function getStaticPaths() {
+  return units.filter((u) => !u.soon && u.slug in listings).map((u) => ({ params: { slug: u.slug }, props: { u } }));
+}
+
+const { u } = Astro.props;
+const l = listings[u.slug as keyof typeof listings];
+const name = displayName(u);
+const target = new URL(tagged(reviewPath(u.slug), 'qr', 'print', 'review'), Astro.site).href;
+const qr = await QRCode.toString(target, { type: 'svg', errorCorrectionLevel: 'M', margin: 0, color: { dark: '#17201cff', light: '#ffffffff' } });
+const short = `${new URL(Astro.site!).host}${shortReviewPath(u.slug)}`.replace(/\/$/, '');
+const apps = l.google.reviews ? 'گوگل، نشان یا بلد' : 'نشان یا بلد';
+const missing = [
+  l.google.reviews && !u.reviewUrl ? 'لینک نظر گوگل' : null,
+  !u.mapUrl ? 'لینک نشان' : null,
+  !u.baladUrl ? 'لینک بلد' : null,
+].filter((x) => x !== null);
+---
+<Print title={`پوستر نظرخواهی ${name}`}>
+  <aside class="mx-auto max-w-[148mm] px-4 pt-6 pb-4 text-sm print:hidden" aria-label="راهنمای چاپ">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <a href={reviewPath(u.slug)} class="link">صفحه‌ی نظرخواهی</a>
+      <button type="button" class="btn-primary" data-print>چاپ این برگه (A5)</button>
+    </div>
+    <ul class="mt-4 list-disc space-y-1 ps-5 text-ink-soft">
+      <li>کد QR به صفحه‌ی نظرخواهی همین سایت می‌رود. اگر لینک‌ها در پنل مدیریت عوض شوند، برگه‌ی چاپ‌شده همچنان کار می‌کند.</li>
+      <li>کد به {new URL(Astro.site!).host} می‌رود؛ بعد از راه‌اندازی سایت تازه چاپ کنید.</li>
+      {missing.length > 0 && <li class="font-medium text-danger">هنوز در پنل ثبت نشده: {missing.join('، ')}. تا آن وقت صفحه‌ی نظرخواهی «در حال تکمیل» نشان می‌دهد.</li>}
+    </ul>
+  </aside>
+
+  <main class="sheet mx-auto flex flex-col items-center bg-white text-center text-ink">
+    <div class="flex items-center gap-3">
+      <Logo class="size-[16mm] rounded-[3mm]" />
+      <span class="text-start leading-tight">
+        <span class="block text-[13pt] font-semibold">کودک ماهر مانا</span>
+        <span class="block text-[9pt] text-ink-mute">{site.slogan}</span>
+      </span>
+    </div>
+
+    <p class="mt-[10mm] text-[12pt] text-ink-mute">نظر شما درباره</p>
+    <h1 class="mt-[1.5mm] font-serif text-[22pt] leading-snug font-semibold text-accent">{name}</h1>
+
+    <div class="qr mt-[8mm] rounded-[4mm] border border-line p-[5mm]" set:html={qr} aria-label={`کد QR صفحه‌ی نظرخواهی ${name}`} role="img" />
+
+    <p class="mt-[7mm] text-[12.5pt] leading-relaxed">کد را با دوربین گوشی اسکن کنید<br />و نظرتان را در {apps} بنویسید.</p>
+    <p class="mt-[3mm] text-[10pt] text-ink-mute">یا این نشانی را باز کنید: <span dir="ltr" class="font-medium text-ink">{short}</span></p>
+
+    <p class="mt-auto border-t border-line pt-[4mm] text-[9.5pt] text-ink-soft">هر نظری، چه تعریف و چه انتقاد، برای ما ارزشمند است.</p>
+  </main>
+</Print>
+
+<style is:global>
+  @page {
+    size: A5 portrait;
+    margin: 0;
+  }
+  .sheet {
+    width: 148mm;
+    min-height: 210mm;
+    padding: 14mm 14mm 12mm;
+    box-sizing: border-box;
+  }
+  .qr svg {
+    display: block;
+    width: 62mm;
+    height: 62mm;
+  }
+  @media screen {
+    .sheet {
+      margin-block: 0 24px;
+      box-shadow: var(--shadow-soft);
+    }
+  }
+  @media print {
+    html, body { background: #fff; }
+    .sheet { height: 210mm; zoom: 1 !important; }
+  }
+</style>
+
+<script>
+  document.querySelector('[data-print]')?.addEventListener('click', () => window.print());
+
+  // On a phone the A5 sheet (148 mm) is wider than the screen: show it smaller. Printing ignores this.
+  const sheet = document.querySelector<HTMLElement>('.sheet');
+  const fit = () => {
+    if (!sheet) return;
+    sheet.style.zoom = '';
+    const room = document.documentElement.clientWidth - 32;
+    sheet.style.zoom = sheet.offsetWidth > room ? String(room / sheet.offsetWidth) : '';
+  };
+  fit();
+  addEventListener('resize', fit);
+</script>

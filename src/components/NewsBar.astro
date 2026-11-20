@@ -1,0 +1,18 @@
+---
+// Latest announcement under the home hero (registration dates etc.). Hidden when there is none
+// from the last 90 days, so the home page never shows a stale notice.
+import Icon from './Icon.astro';
+import { getNews, faDate, isoDate } from '../lib/content';
+const recent = (await getNews()).filter((n) => Date.now() - n.data.date.getTime() < 90 * 864e5);
+const latest = recent[0];
+---
+{latest && (
+  <aside class="border-b border-line bg-accent-soft" aria-label="آخرین اطلاعیه">
+    <div class="container-x flex flex-wrap items-center gap-x-4 gap-y-1 py-3 text-sm">
+      <span class="rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-white">اطلاعیه</span>
+      <a href={`/news/${latest.id}/`} class="link inline-flex items-center gap-1 font-medium">{latest.data.title}<Icon name="arrow" size={16} /></a>
+      <time datetime={isoDate(latest.data.date)} class="text-sm text-ink-mute">{faDate(latest.data.date)}</time>
+      {recent.length > 1 && <a href="/news/" class="text-sm text-ink-soft hover:text-accent sm:ms-auto">همه اطلاعیه‌ها</a>}
+    </div>
+  </aside>
+)}
